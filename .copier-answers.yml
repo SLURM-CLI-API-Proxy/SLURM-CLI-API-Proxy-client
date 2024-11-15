@@ -1,0 +1,36 @@
+# Changes here will be overwritten by Copier
+SelectCitation:
+- AddCitationFile_flag
+- AddCFFConvert_flag
+SelectCodeQualityFeatures:
+- AddLocalTests_flag
+- SelectGitHubActions_flag
+- AddLinting_flag
+- AddSonarCloud_flag
+SelectCommunityFeatures:
+- AddCodeConduct_flag
+- AddContributing_flag
+SelectDocumentationFeatures:
+- AddLocalDocumentation_flag
+- AddOnlineDocumentation_flag
+- AddDevDoc_flag
+- AddGitHubActionDocumentation_flag
+SelectGitHubActions:
+- AddGitHubActionBuild_flag
+SelectPublishReleaseFeatures:
+- SelectCitation_flag
+- AddZenodo_flag
+_commit: 0.6.1
+_src_path: https://github.com/nlesc/python-template.git
+code_of_conduct_email: h.cadavid@esciencecenter.nl
+copyright_holder: Hector Cadavid
+email: h.cadavid@esciencecenter.nl
+full_name: Hector Cadavid
+github_organization: hcadavid
+keywords: slurm,cli
+license: Apachev2
+package_name: slurm_api_cli_proxy
+package_short_description: Takes locally issued SLURM commands ("sbatch", "srun",
+    ...) and forwards them to an HPC cluster through the SLURM REST-API.
+template_profile: recommended
+version: 0.1.0
