@@ -20,19 +20,11 @@ Takes locally issued SLURM commands (\"sbatch\", \"srun\", ...) and forwards the
 
 The project setup is documented in [project_setup.md](project_setup.md). Feel free to remove this document (and/or the link to this document) if you don't need it.
 
-## Installation
+## Installation 
 
-To install slurm_api_cli_proxy from GitHub repository, do:
-
-```console
-git clone git@github.com:hcadavid/slurm_api_cli_proxy.git
-cd slurm_api_cli_proxy
-python -m pip install .
-```
 
 ## Documentation
 
-Include a link to your project's full documentation here.
 
 ## Contributing
 
