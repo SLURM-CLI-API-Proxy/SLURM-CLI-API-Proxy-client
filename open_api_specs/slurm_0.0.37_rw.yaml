@@ -1,0 +1,4984 @@
+openapi: 3.0.3
+info:
+  contact:
+    email: sales@schedmd.com
+    name: SchedMD LLC
+    url: https://www.schedmd.com/
+  description: API to access and control Slurm DB.
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: https://github.com/SchedMD/slurm/blob/master/DISCLAIMER
+  title: Slurm Rest API
+  version: dbv0.0.37
+servers:
+- url: /slurmdb/v0.0.37/
+security:
+- user: []
+  token: []
+tags:
+- description: methods that query slurmdbd
+  name: slurm
+- description: methods that query for OpenAPI specifications
+  name: openapi
+paths:
+  /job/{job_id}:
+    get:
+      description: This endpoint may return multiple job entries since job_id is not
+        a unique key - only the tuple (cluster, job_id, start_time) is unique. If
+        the requested job_id is a component of a heterogeneous job all components
+        are returned.
+      operationId: slurmdbd_get_job
+      parameters:
+      - description: Slurm Job ID
+        explode: false
+        in: path
+        name: job_id
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: label
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_job_info'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_job_info'
+          description: Job description
+        default:
+          description: Unable to find job
+      summary: Get job info
+      tags:
+      - slurm
+  /config:
+    get:
+      operationId: slurmdbd_get_db_config
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_config_info'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_config_info'
+          description: slurmdbd configuration
+        default:
+          description: Unable to dump config
+      summary: Dump all configuration information
+      tags:
+      - slurm
+    post:
+      operationId: slurmdbd_set_db_config
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_config_response'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_config_response'
+          description: Load config
+        default:
+          description: Unable to set config
+      summary: Load all configuration information
+      tags:
+      - slurm
+  /tres/:
+    get:
+      operationId: slurmdbd_get_tres
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_tres_info'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_tres_info'
+          description: List of TRES
+        default:
+          description: Unable to retrieve TRES
+      summary: Get TRES info
+      tags:
+      - slurm
+    post:
+      operationId: slurmdbd_update_tres
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_tres'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_tres'
+          description: List of TRES
+        default:
+          description: Unable to update TRES
+      summary: Set TRES info
+      tags:
+      - slurm
+  /qos/{qos_name}:
+    delete:
+      operationId: slurmdbd_delete_qos
+      parameters:
+      - description: Slurm QOS Name
+        explode: false
+        in: path
+        name: qos_name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_qos_delete'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_qos_delete'
+          description: Delete qos
+        default:
+          description: Unable to delete QOS
+      summary: Delete QOS
+      tags:
+      - slurm
+    get:
+      operationId: slurmdbd_get_single_qos
+      parameters:
+      - description: Slurm QOS Name
+        explode: false
+        in: path
+        name: qos_name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_qos_info'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_qos_info'
+          description: QOS information
+        default:
+          description: QOS not found
+      summary: Get QOS info
+      tags:
+      - slurm
+  /qos/:
+    get:
+      operationId: slurmdbd_get_qos
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_qos_info'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_qos_info'
+          description: List of QOS'
+        default:
+          description: QOS not found
+      summary: Get QOS list
+      tags:
+      - slurm
+  /associations/:
+    get:
+      operationId: slurmdbd_get_associations
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_associations_info'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_associations_info'
+          description: List of associations
+        default:
+          description: Association not found
+      summary: Get association list
+      tags:
+      - slurm
+  /association/:
+    delete:
+      operationId: slurmdbd_delete_association
+      parameters:
+      - description: Cluster name
+        explode: false
+        in: query
+        name: cluster
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Account name
+        explode: false
+        in: query
+        name: account
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: User name
+        explode: false
+        in: query
+        name: user
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: Partition Name
+        explode: false
+        in: query
+        name: partition
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_association_delete'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_association_delete'
+          description: Delete associations
+        default:
+          description: Association not found or unable to delete association
+      summary: Delete association
+      tags:
+      - slurm
+    get:
+      operationId: slurmdbd_get_association
+      parameters:
+      - description: Cluster name
+        explode: false
+        in: query
+        name: cluster
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Account name
+        explode: false
+        in: query
+        name: account
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: User name
+        explode: false
+        in: query
+        name: user
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Partition Name
+        explode: false
+        in: query
+        name: partition
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_associations_info'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_associations_info'
+          description: List of associations
+        default:
+          description: Association not found
+      summary: Get association info
+      tags:
+      - slurm
+  /user/{user_name}:
+    delete:
+      operationId: slurmdbd_delete_user
+      parameters:
+      - description: Slurm User Name
+        explode: false
+        in: path
+        name: user_name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_user_delete'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_user_delete'
+          description: Delete user
+        default:
+          description: User not found or unable to delete user
+      summary: Delete user
+      tags:
+      - slurm
+    get:
+      operationId: slurmdbd_get_user
+      parameters:
+      - description: Slurm User Name
+        explode: false
+        in: path
+        name: user_name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_user_info'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_user_info'
+          description: List of users
+        default:
+          description: User not found
+      summary: Get user info
+      tags:
+      - slurm
+  /users/:
+    get:
+      operationId: slurmdbd_get_users
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_user_info'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_user_info'
+          description: List of users
+        default:
+          description: User not found
+      summary: Get user list
+      tags:
+      - slurm
+    post:
+      operationId: slurmdbd_update_users
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_user_update'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_user_update'
+          description: Update users
+        default:
+          description: User not found or not able to update user
+      summary: Update user
+      tags:
+      - slurm
+  /cluster/{cluster_name}:
+    delete:
+      operationId: slurmdbd_delete_cluster
+      parameters:
+      - description: Slurm cluster name
+        explode: false
+        in: path
+        name: cluster_name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_cluster_delete'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_cluster_delete'
+          description: Delete cluster
+        default:
+          description: Cluster not found or unable to delete cluster
+      summary: Delete cluster
+      tags:
+      - slurm
+    get:
+      operationId: slurmdbd_get_cluster
+      parameters:
+      - description: Slurm cluster name
+        explode: false
+        in: path
+        name: cluster_name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_cluster_info'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_cluster_info'
+          description: Cluster information
+        default:
+          description: Cluster not found
+      summary: Get cluster info
+      tags:
+      - slurm
+  /clusters/:
+    get:
+      operationId: slurmdbd_get_clusters
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_cluster_info'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_cluster_info'
+          description: List of clusters
+        default:
+          description: Cluster not found
+      summary: Get cluster list
+      tags:
+      - slurm
+    post:
+      operationId: slurmdbd_add_clusters
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_cluster_add'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_cluster_add'
+          description: List of clusters
+        default:
+          description: Unable to add cluster
+      summary: Add clusters
+      tags:
+      - slurm
+  /wckey/{wckey}:
+    delete:
+      operationId: slurmdbd_delete_wckey
+      parameters:
+      - description: Slurm wckey name
+        explode: false
+        in: path
+        name: wckey
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_wckey_delete'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_wckey_delete'
+          description: Delete wckey
+        default:
+          description: wckey not found or unable to delete wckey
+      summary: Delete wckey
+      tags:
+      - slurm
+    get:
+      operationId: slurmdbd_get_wckey
+      parameters:
+      - description: Slurm wckey name
+        explode: false
+        in: path
+        name: wckey
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_wckey_info'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_wckey_info'
+          description: List of wckey
+        default:
+          description: wckey not found
+      summary: Get wckey info
+      tags:
+      - slurm
+  /wckeys/:
+    get:
+      operationId: slurmdbd_get_wckeys
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_wckey_info'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_wckey_info'
+          description: List of wckeys
+        default:
+          description: wckey not found
+      summary: Get wckey list
+      tags:
+      - slurm
+    post:
+      operationId: slurmdbd_add_wckeys
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_wckey_add'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_wckey_add'
+          description: List of wckeys
+        default:
+          description: Unable to add wckey
+      summary: Add wckeys
+      tags:
+      - slurm
+  /account/{account_name}:
+    delete:
+      operationId: slurmdbd_delete_account
+      parameters:
+      - description: Slurm Account Name
+        explode: false
+        in: path
+        name: account_name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_account_delete'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_response_account_delete'
+          description: Delete account
+        default:
+          description: Unable to delete account
+      summary: Delete account
+      tags:
+      - slurm
+    get:
+      operationId: slurmdbd_get_account
+      parameters:
+      - description: Slurm Account Name
+        explode: false
+        in: path
+        name: account_name
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_account_info'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_account_info'
+          description: List of accounts
+        default:
+          description: Account not found
+      summary: Get account info
+      tags:
+      - slurm
+  /accounts/:
+    get:
+      operationId: slurmdbd_get_accounts
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_account_info'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_account_info'
+          description: List of accounts
+        default:
+          description: Account not found
+      summary: Get account list
+      tags:
+      - slurm
+    post:
+      operationId: slurmdbd_update_account
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_account_response'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_account_response'
+          description: Add/update list of accounts
+        default:
+          description: Unable to add or update accounts
+      summary: Update accounts
+      tags:
+      - slurm
+  /jobs/:
+    get:
+      operationId: slurmdbd_get_jobs
+      parameters:
+      - description: "Filter by submission time\n Accepted formats:\n HH:MM[:SS] [AM|PM]\r\
+          \nMMDD[YY] or MM/DD[/YY] or MM.DD[.YY]\r\nMM/DD[/YY]-HH:MM[:SS]\r\nYYYY-MM-DD[THH:MM[:SS]]"
+        explode: false
+        in: query
+        name: submit_time
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "Filter by start time\n Accepted formats:\n HH:MM[:SS] [AM|PM]\r\
+          \nMMDD[YY] or MM/DD[/YY] or MM.DD[.YY]\r\nMM/DD[/YY]-HH:MM[:SS]\r\nYYYY-MM-DD[THH:MM[:SS]]"
+        explode: false
+        in: query
+        name: start_time
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "Filter by end time\n Accepted formats:\n HH:MM[:SS] [AM|PM]\r\
+          \nMMDD[YY] or MM/DD[/YY] or MM.DD[.YY]\r\nMM/DD[/YY]-HH:MM[:SS]\r\nYYYY-MM-DD[THH:MM[:SS]]"
+        explode: false
+        in: query
+        name: end_time
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Comma delimited list of accounts to match
+        explode: false
+        in: query
+        name: account
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Comma delimited list of associations to match
+        explode: false
+        in: query
+        name: association
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Comma delimited list of cluster to match
+        explode: false
+        in: query
+        name: cluster
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Comma delimited list of constraints to match
+        explode: false
+        in: query
+        name: constraints
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Number of CPUs high range
+        explode: false
+        in: query
+        name: cpus_max
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Number of CPUs low range
+        explode: false
+        in: query
+        name: cpus_min
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Report job step information
+        explode: false
+        in: query
+        name: skip_steps
+        required: false
+        schema:
+          type: boolean
+        style: form
+      - description: Disable waiting for result from slurmdbd
+        explode: false
+        in: query
+        name: disable_wait_for_result
+        required: false
+        schema:
+          type: boolean
+        style: form
+      - description: Exit code of job
+        explode: false
+        in: query
+        name: exit_code
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Comma delimited list of formats to match
+        explode: false
+        in: query
+        name: format
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Comma delimited list of groups to match
+        explode: false
+        in: query
+        name: group
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Comma delimited list of job names to match
+        explode: false
+        in: query
+        name: job_name
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Number of nodes high range
+        explode: false
+        in: query
+        name: nodes_max
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Number of nodes low range
+        explode: false
+        in: query
+        name: nodes_min
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Comma delimited list of partitions to match
+        explode: false
+        in: query
+        name: partition
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Comma delimited list of QOS to match
+        explode: false
+        in: query
+        name: qos
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Comma delimited list of job reasons to match
+        explode: false
+        in: query
+        name: reason
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Comma delimited list of reservations to match
+        explode: false
+        in: query
+        name: reservation
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Comma delimited list of states to match
+        explode: false
+        in: query
+        name: state
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Comma delimited list of job steps to match
+        explode: false
+        in: query
+        name: step
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Comma delimited list of used nodes to match
+        explode: false
+        in: query
+        name: node
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Comma delimited list of wckeys to match
+        explode: false
+        in: query
+        name: wckey
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_job_info'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_job_info'
+          description: List of jobs
+        default:
+          description: Unable to query jobs
+      summary: Get job list
+      tags:
+      - slurm
+  /diag/:
+    get:
+      operationId: slurmdbd_diag
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_diag'
+            application/x-yaml:
+              schema:
+                $ref: '#/components/schemas/dbv0.0.37_diag'
+          description: Dictionary of statistics
+        default:
+          description: Unable to query diagnostics
+      summary: Get slurmdb diagnostics
+      tags:
+      - slurm
+  /openapi:
+    get:
+      responses:
+        "200":
+          description: OpenAPI Specification
+      summary: Retrieve OpenAPI Specification
+      tags:
+      - openapi
+    servers:
+    - url: /
+  /openapi.json:
+    get:
+      responses:
+        "200":
+          description: OpenAPI Specification
+      summary: Retrieve OpenAPI Specification
+      tags:
+      - openapi
+    servers:
+    - url: /
+  /openapi.yaml:
+    get:
+      responses:
+        "200":
+          description: OpenAPI Specification
+      summary: Retrieve OpenAPI Specification
+      tags:
+      - openapi
+    servers:
+    - url: /
+  /openapi/v3:
+    get:
+      responses:
+        "200":
+          description: OpenAPI Specification
+      summary: Retrieve OpenAPI Specification
+      tags:
+      - openapi
+    servers:
+    - url: /
+components:
+  schemas:
+    dbv0.0.37_diag:
+      example:
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+        statistics:
+          time_start: 0
+          RPCs:
+          - rpc: rpc
+            count: 7
+            time:
+              average: 9
+              total: 3
+          - rpc: rpc
+            count: 7
+            time:
+              average: 9
+              total: 3
+          rollups:
+          - max_cycle: 5
+            last_cycle: 1
+            mean_cycles: 2
+            last_run: 6
+            type: type
+            total_time: 5
+          - max_cycle: 5
+            last_cycle: 1
+            mean_cycles: 2
+            last_run: 6
+            type: type
+            total_time: 5
+          users:
+          - count: 2
+            time:
+              average: 4
+              total: 7
+            user: user
+          - count: 2
+            time:
+              average: 4
+              total: 7
+            user: user
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+        statistics:
+          $ref: '#/components/schemas/dbv0_0_37_diag_statistics'
+    dbv0.0.37_account:
+      description: Account description
+      example:
+        associations:
+        - cluster: cluster
+          partition: partition
+          user: user
+          account: account
+        - cluster: cluster
+          partition: partition
+          user: user
+          account: account
+        coordinators:
+        - name: name
+          direct: 0
+        - name: name
+          direct: 0
+        organization: organization
+        name: name
+        flags:
+        - flags
+        - flags
+        description: description
+      properties:
+        associations:
+          description: List of assigned associations
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_association_short_info'
+          type: array
+        coordinators:
+          description: List of assigned coordinators
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_coordinator_info'
+          type: array
+        description:
+          description: Description of account
+          type: string
+        name:
+          description: Name of account
+          type: string
+        organization:
+          description: Assigned organization of account
+          type: string
+        flags:
+          description: List of properties of account
+          items:
+            description: String of property name
+            type: string
+          type: array
+      type: object
+    dbv0.0.37_account_info:
+      example:
+        accounts:
+        - associations:
+          - cluster: cluster
+            partition: partition
+            user: user
+            account: account
+          - cluster: cluster
+            partition: partition
+            user: user
+            account: account
+          coordinators:
+          - name: name
+            direct: 0
+          - name: name
+            direct: 0
+          organization: organization
+          name: name
+          flags:
+          - flags
+          - flags
+          description: description
+        - associations:
+          - cluster: cluster
+            partition: partition
+            user: user
+            account: account
+          - cluster: cluster
+            partition: partition
+            user: user
+            account: account
+          coordinators:
+          - name: name
+            direct: 0
+          - name: name
+            direct: 0
+          organization: organization
+          name: name
+          flags:
+          - flags
+          - flags
+          description: description
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+        accounts:
+          description: List of accounts
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_account'
+          type: array
+      type: object
+    dbv0.0.37_coordinator_info:
+      example:
+        name: name
+        direct: 0
+      properties:
+        name:
+          description: Name of user
+          type: string
+        direct:
+          description: If user is coordinator of this account directly or coordinator
+            status was inheirted from a higher account in the tree
+          type: integer
+      type: object
+    dbv0.0.37_association_short_info:
+      example:
+        cluster: cluster
+        partition: partition
+        user: user
+        account: account
+      properties:
+        account:
+          description: Account name
+          type: string
+        cluster:
+          description: Cluster name
+          type: string
+        partition:
+          description: Partition name (optional)
+          type: string
+        user:
+          description: User name
+          type: string
+      type: object
+    dbv0.0.37_response_account_delete:
+      example:
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+      type: object
+    dbv0.0.37_response_wckey_add:
+      example:
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+      type: object
+    dbv0.0.37_wckey_info:
+      example:
+        wckeys:
+        - cluster: cluster
+          name: name
+          flags:
+          - flags
+          - flags
+          accounts:
+          - accounts
+          - accounts
+          id: 6
+          user: user
+        - cluster: cluster
+          name: name
+          flags:
+          - flags
+          - flags
+          accounts:
+          - accounts
+          - accounts
+          id: 6
+          user: user
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+        wckeys:
+          description: List of wckeys
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_wckey'
+          type: array
+      type: object
+    dbv0.0.37_wckey:
+      example:
+        cluster: cluster
+        name: name
+        flags:
+        - flags
+        - flags
+        accounts:
+        - accounts
+        - accounts
+        id: 6
+        user: user
+      properties:
+        accounts:
+          description: List of assigned accounts
+          items:
+            description: Account name
+            type: string
+          type: array
+        cluster:
+          description: Cluster name
+          type: string
+        id:
+          description: wckey database unique id
+          type: integer
+        name:
+          description: wckey name
+          type: string
+        user:
+          description: wckey user
+          type: string
+        flags:
+          description: List of properties of wckey
+          items:
+            description: String of property name
+            type: string
+          type: array
+      type: object
+    dbv0.0.37_response_wckey_delete:
+      example:
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+      type: object
+    dbv0.0.37_response_cluster_add:
+      example:
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+      type: object
+    dbv0.0.37_cluster_info:
+      example:
+        associations:
+          root:
+            cluster: cluster
+            partition: partition
+            user: user
+            account: account
+        controller:
+          port: 0
+          host: host
+        nodes: nodes
+        flags:
+        - flags
+        - flags
+        name: name
+        rpc_version: 6
+        tres:
+        - errors:
+          - errno: 0
+            error: error
+          - errno: 0
+            error: error
+        - errors:
+          - errno: 0
+            error: error
+          - errno: 0
+            error: error
+        select_plugin: select_plugin
+      properties:
+        controller:
+          $ref: '#/components/schemas/dbv0_0_37_cluster_info_controller'
+        flags:
+          description: List of properties of cluster
+          items:
+            description: String of property name
+            type: string
+          type: array
+        name:
+          description: Cluster name
+          type: string
+        nodes:
+          description: Assigned nodes
+          type: string
+        select_plugin:
+          description: Configured select plugin
+          type: string
+        associations:
+          $ref: '#/components/schemas/dbv0_0_37_cluster_info_associations'
+        rpc_version:
+          description: Number rpc version
+          type: integer
+        tres:
+          description: List of TRES in cluster
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_response_tres'
+          type: array
+      type: object
+    dbv0.0.37_response_cluster_delete:
+      example:
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+      type: object
+    dbv0.0.37_response_user_update:
+      example:
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+      type: object
+    dbv0.0.37_user:
+      description: User description
+      example:
+        associations:
+          root:
+            cluster: cluster
+            partition: partition
+            user: user
+            account: account
+        default:
+          wckey: wckey
+          account: account
+        administrator_level: administrator_level
+        coordinators:
+        - name: name
+          direct: 0
+        - name: name
+          direct: 0
+        name: name
+      properties:
+        administrator_level:
+          description: Description of administrator level
+          type: string
+        associations:
+          $ref: '#/components/schemas/dbv0_0_37_user_associations'
+        coordinators:
+          description: List of assigned coordinators
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_coordinator_info'
+          type: array
+        default:
+          $ref: '#/components/schemas/dbv0_0_37_user_default'
+        name:
+          description: User name
+          type: string
+      type: object
+    dbv0.0.37_user_info:
+      example:
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+        users:
+        - associations:
+            root:
+              cluster: cluster
+              partition: partition
+              user: user
+              account: account
+          default:
+            wckey: wckey
+            account: account
+          administrator_level: administrator_level
+          coordinators:
+          - name: name
+            direct: 0
+          - name: name
+            direct: 0
+          name: name
+        - associations:
+            root:
+              cluster: cluster
+              partition: partition
+              user: user
+              account: account
+          default:
+            wckey: wckey
+            account: account
+          administrator_level: administrator_level
+          coordinators:
+          - name: name
+            direct: 0
+          - name: name
+            direct: 0
+          name: name
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+        users:
+          description: Array of users
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_user'
+          type: array
+      type: object
+    dbv0.0.37_response_user_delete:
+      example:
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+      type: object
+    dbv0.0.37_response_association_delete:
+      example:
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+      type: object
+    dbv0.0.37_association:
+      description: Association description
+      example:
+        cluster: cluster
+        shares_raw: 2
+        max:
+          jobs:
+            per:
+              wall_clock: 6
+          tres:
+            total:
+            - '{}'
+            - '{}'
+            minutes:
+              total:
+              - '{}'
+              - '{}'
+              per:
+                job:
+                - '{}'
+                - '{}'
+            per:
+              node:
+              - '{}'
+              - '{}'
+              job:
+              - '{}'
+              - '{}'
+          per:
+            account:
+              wall_clock: 1
+        usage:
+          fairshare_factor: 3.616076749251911
+          normalized_shares: 7.386281948385884
+          effective_normalized_usage: 1.2315135367772556
+          job_count: 1
+          group_used_wallclock: 9.301444243932576
+          normalized_priority: 4
+          accrue_job_count: 7
+          fairshare_shares: 2
+          fairshare_level: 6.84685269835264
+          raw_usage: 1
+        flags:
+        - flags
+        - flags
+        priority: 5
+        parent_account: parent_account
+        default:
+          qos: qos
+        min:
+          priority_threshold: 5
+        partition: partition
+        qos:
+        - qos
+        - qos
+        user: user
+        account: account
+      properties:
+        account:
+          description: Assigned account
+          type: string
+        cluster:
+          description: Assigned cluster
+          type: string
+        default:
+          $ref: '#/components/schemas/dbv0_0_37_association_default'
+        flags:
+          description: List of properties of association
+          items:
+            description: String of property name
+            type: string
+          type: array
+        max:
+          $ref: '#/components/schemas/dbv0_0_37_association_max'
+        min:
+          $ref: '#/components/schemas/dbv0_0_37_association_min'
+        parent_account:
+          description: Parent account name
+          type: string
+        partition:
+          description: Assigned partition
+          type: string
+        priority:
+          description: Assigned priority
+          type: integer
+        qos:
+          description: Assigned QOS
+          items:
+            description: Assigned single QOS name
+            type: string
+          type: array
+        shares_raw:
+          description: Raw fairshare shares
+          type: integer
+        usage:
+          $ref: '#/components/schemas/dbv0_0_37_association_usage'
+        user:
+          description: Assigned user
+          type: string
+      type: object
+    dbv0.0.37_associations_info:
+      example:
+        associations:
+        - cluster: cluster
+          shares_raw: 2
+          max:
+            jobs:
+              per:
+                wall_clock: 6
+            tres:
+              total:
+              - '{}'
+              - '{}'
+              minutes:
+                total:
+                - '{}'
+                - '{}'
+                per:
+                  job:
+                  - '{}'
+                  - '{}'
+              per:
+                node:
+                - '{}'
+                - '{}'
+                job:
+                - '{}'
+                - '{}'
+            per:
+              account:
+                wall_clock: 1
+          usage:
+            fairshare_factor: 3.616076749251911
+            normalized_shares: 7.386281948385884
+            effective_normalized_usage: 1.2315135367772556
+            job_count: 1
+            group_used_wallclock: 9.301444243932576
+            normalized_priority: 4
+            accrue_job_count: 7
+            fairshare_shares: 2
+            fairshare_level: 6.84685269835264
+            raw_usage: 1
+          flags:
+          - flags
+          - flags
+          priority: 5
+          parent_account: parent_account
+          default:
+            qos: qos
+          min:
+            priority_threshold: 5
+          partition: partition
+          qos:
+          - qos
+          - qos
+          user: user
+          account: account
+        - cluster: cluster
+          shares_raw: 2
+          max:
+            jobs:
+              per:
+                wall_clock: 6
+            tres:
+              total:
+              - '{}'
+              - '{}'
+              minutes:
+                total:
+                - '{}'
+                - '{}'
+                per:
+                  job:
+                  - '{}'
+                  - '{}'
+              per:
+                node:
+                - '{}'
+                - '{}'
+                job:
+                - '{}'
+                - '{}'
+            per:
+              account:
+                wall_clock: 1
+          usage:
+            fairshare_factor: 3.616076749251911
+            normalized_shares: 7.386281948385884
+            effective_normalized_usage: 1.2315135367772556
+            job_count: 1
+            group_used_wallclock: 9.301444243932576
+            normalized_priority: 4
+            accrue_job_count: 7
+            fairshare_shares: 2
+            fairshare_level: 6.84685269835264
+            raw_usage: 1
+          flags:
+          - flags
+          - flags
+          priority: 5
+          parent_account: parent_account
+          default:
+            qos: qos
+          min:
+            priority_threshold: 5
+          partition: partition
+          qos:
+          - qos
+          - qos
+          user: user
+          account: account
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+        associations:
+          description: Array of associations
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_association'
+          type: array
+      type: object
+    dbv0.0.37_qos:
+      description: QOS description
+      example:
+        flags:
+        - flags
+        - flags
+        usage_threshold: 3.5571952270680973
+        description: description
+        usage_factor: 6.438423552598547
+        id: id
+        priority: 9
+        limits:
+          min:
+            priority_threshold: 6
+            tres:
+              per:
+                job:
+                - '{}'
+                - '{}'
+          max:
+            jobs:
+              per:
+                user: 5
+                account: 4
+            accruing:
+              per:
+                user: 9
+                account: 9
+            wall_clock:
+              per:
+                qos: 7
+                job: 1
+            tres:
+              minutes:
+                per:
+                  job:
+                  - '{}'
+                  - '{}'
+                  user:
+                  - '{}'
+                  - '{}'
+                  account:
+                  - '{}'
+                  - '{}'
+              per:
+                node:
+                - '{}'
+                - '{}'
+                job:
+                - '{}'
+                - '{}'
+                user:
+                - '{}'
+                - '{}'
+                account:
+                - '{}'
+                - '{}'
+        preempt:
+          mode:
+          - mode
+          - mode
+          exempt_time: 8
+          list:
+          - list
+          - list
+      properties:
+        description:
+          description: QOS description
+          type: string
+        flags:
+          description: List of properties of QOS
+          items:
+            description: String of property name
+            type: string
+          type: array
+        id:
+          description: Database id
+          type: string
+        limits:
+          $ref: '#/components/schemas/dbv0_0_37_qos_limits'
+        preempt:
+          $ref: '#/components/schemas/dbv0_0_37_qos_preempt'
+        priority:
+          description: QOS priority
+          type: integer
+        usage_factor:
+          description: Usage factor
+          type: number
+        usage_threshold:
+          description: Usage threshold
+          type: number
+      type: object
+    dbv0.0.37_qos_info:
+      example:
+        qos:
+        - flags:
+          - flags
+          - flags
+          usage_threshold: 3.5571952270680973
+          description: description
+          usage_factor: 6.438423552598547
+          id: id
+          priority: 9
+          limits:
+            min:
+              priority_threshold: 6
+              tres:
+                per:
+                  job:
+                  - '{}'
+                  - '{}'
+            max:
+              jobs:
+                per:
+                  user: 5
+                  account: 4
+              accruing:
+                per:
+                  user: 9
+                  account: 9
+              wall_clock:
+                per:
+                  qos: 7
+                  job: 1
+              tres:
+                minutes:
+                  per:
+                    job:
+                    - '{}'
+                    - '{}'
+                    user:
+                    - '{}'
+                    - '{}'
+                    account:
+                    - '{}'
+                    - '{}'
+                per:
+                  node:
+                  - '{}'
+                  - '{}'
+                  job:
+                  - '{}'
+                  - '{}'
+                  user:
+                  - '{}'
+                  - '{}'
+                  account:
+                  - '{}'
+                  - '{}'
+          preempt:
+            mode:
+            - mode
+            - mode
+            exempt_time: 8
+            list:
+            - list
+            - list
+        - flags:
+          - flags
+          - flags
+          usage_threshold: 3.5571952270680973
+          description: description
+          usage_factor: 6.438423552598547
+          id: id
+          priority: 9
+          limits:
+            min:
+              priority_threshold: 6
+              tres:
+                per:
+                  job:
+                  - '{}'
+                  - '{}'
+            max:
+              jobs:
+                per:
+                  user: 5
+                  account: 4
+              accruing:
+                per:
+                  user: 9
+                  account: 9
+              wall_clock:
+                per:
+                  qos: 7
+                  job: 1
+              tres:
+                minutes:
+                  per:
+                    job:
+                    - '{}'
+                    - '{}'
+                    user:
+                    - '{}'
+                    - '{}'
+                    account:
+                    - '{}'
+                    - '{}'
+                per:
+                  node:
+                  - '{}'
+                  - '{}'
+                  job:
+                  - '{}'
+                  - '{}'
+                  user:
+                  - '{}'
+                  - '{}'
+                  account:
+                  - '{}'
+                  - '{}'
+          preempt:
+            mode:
+            - mode
+            - mode
+            exempt_time: 8
+            list:
+            - list
+            - list
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+        qos:
+          description: Array of QOS
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_qos'
+          type: array
+      type: object
+    dbv0.0.37_response_qos_delete:
+      example:
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+      type: object
+    dbv0.0.37_response_tres:
+      example:
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+      type: object
+    dbv0.0.37_tres_info:
+      example:
+        tres:
+        - null
+        - null
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+        tres:
+          description: Array of tres
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_tres_list'
+          type: array
+      type: object
+    dbv0.0.37_tres_list:
+      description: TRES list of attributes
+      items:
+        properties:
+          type:
+            description: TRES type
+            type: string
+          name:
+            description: TRES name (optional)
+            type: string
+          id:
+            description: database id
+            type: integer
+          count:
+            description: count of TRES
+            type: integer
+        type: object
+      type: array
+    dbv0.0.37_job_info:
+      example:
+        jobs:
+        - cluster: cluster
+          flags:
+          - flags
+          - flags
+          association:
+            cluster: cluster
+            partition: partition
+            user: user
+            account: account
+          allocation_nodes: allocation_nodes
+          working_directory: working_directory
+          constraints: constraints
+          required:
+            memory: 6
+            CPUs: 9
+          partition: partition
+          qos: qos
+          array:
+            task: task
+            job_id: 6
+            task_id: 5
+            limits:
+              max:
+                running:
+                  tasks: 1
+          het:
+            job_id: '{}'
+            job_offset: '{}'
+          reservation:
+            name: 9
+            id: 8
+          tres:
+            requested:
+            - '{}'
+            - '{}'
+            allocated:
+            - '{}'
+            - '{}'
+          state:
+            reason: reason
+            current: current
+          mcs:
+            label: label
+          group: group
+          wckey:
+            wckey: wckey
+            flags:
+            - flags
+            - flags
+          priority: 9
+          steps:
+          - nodes:
+              count: 2
+              range: range
+            exit_code:
+              return_code: 1
+              signal:
+                name: name
+                signal_id: 4
+              status: status
+            kill_request_user: kill_request_user
+            CPU:
+              governor:
+              - governor
+              - governor
+              requested_frequency:
+                min: 6
+                max: 5
+            pid: pid
+            step:
+              task:
+                distribution: distribution
+              job_id: 3
+              het:
+                component: 7
+              name: name
+              tres:
+                consumed:
+                  average:
+                  - '{}'
+                  - '{}'
+                  total:
+                  - '{}'
+                  - '{}'
+                  min:
+                  - '{}'
+                  - '{}'
+                  max:
+                  - '{}'
+                  - '{}'
+                requested:
+                  average:
+                  - '{}'
+                  - '{}'
+                  total:
+                  - '{}'
+                  - '{}'
+                  min:
+                  - '{}'
+                  - '{}'
+                  max:
+                  - '{}'
+                  - '{}'
+                allocated:
+                - '{}'
+                - '{}'
+              id: id
+            time:
+              elapsed: 6
+              total:
+                seconds: 1
+                microseconds: 1
+              system:
+                seconds: 4
+                microseconds: 7
+              start: 6
+              end: 3
+              user:
+                seconds: 1
+                microseconds: 6
+              suspended: 1
+            state: state
+            tasks:
+              count: 6
+            statistics:
+              CPU:
+                actual_frequency: 6
+              energy:
+                consumed: 3
+          - nodes:
+              count: 2
+              range: range
+            exit_code:
+              return_code: 1
+              signal:
+                name: name
+                signal_id: 4
+              status: status
+            kill_request_user: kill_request_user
+            CPU:
+              governor:
+              - governor
+              - governor
+              requested_frequency:
+                min: 6
+                max: 5
+            pid: pid
+            step:
+              task:
+                distribution: distribution
+              job_id: 3
+              het:
+                component: 7
+              name: name
+              tres:
+                consumed:
+                  average:
+                  - '{}'
+                  - '{}'
+                  total:
+                  - '{}'
+                  - '{}'
+                  min:
+                  - '{}'
+                  - '{}'
+                  max:
+                  - '{}'
+                  - '{}'
+                requested:
+                  average:
+                  - '{}'
+                  - '{}'
+                  total:
+                  - '{}'
+                  - '{}'
+                  min:
+                  - '{}'
+                  - '{}'
+                  max:
+                  - '{}'
+                  - '{}'
+                allocated:
+                - '{}'
+                - '{}'
+              id: id
+            time:
+              elapsed: 6
+              total:
+                seconds: 1
+                microseconds: 1
+              system:
+                seconds: 4
+                microseconds: 7
+              start: 6
+              end: 3
+              user:
+                seconds: 1
+                microseconds: 6
+              suspended: 1
+            state: state
+            tasks:
+              count: 6
+            statistics:
+              CPU:
+                actual_frequency: 6
+              energy:
+                consumed: 3
+          derived_exit_code:
+            return_code: 1
+            signal:
+              name: name
+              signal_id: 4
+            status: status
+          nodes: nodes
+          job_id: 5
+          exit_code:
+            return_code: 1
+            signal:
+              name: name
+              signal_id: 4
+            status: status
+          name: name
+          kill_request_user: kill_request_user
+          comment:
+            administrator: administrator
+            system: system
+            job: job
+          time:
+            elapsed: 5
+            total:
+              seconds: 1
+              microseconds: 1
+            system:
+              seconds: 4
+              microseconds: 7
+            eligible: 2
+            start: 9
+            limit: 7
+            end: 7
+            submission: 3
+            user:
+              seconds: 1
+              microseconds: 6
+            suspended: 2
+          user: user
+          account: account
+        - cluster: cluster
+          flags:
+          - flags
+          - flags
+          association:
+            cluster: cluster
+            partition: partition
+            user: user
+            account: account
+          allocation_nodes: allocation_nodes
+          working_directory: working_directory
+          constraints: constraints
+          required:
+            memory: 6
+            CPUs: 9
+          partition: partition
+          qos: qos
+          array:
+            task: task
+            job_id: 6
+            task_id: 5
+            limits:
+              max:
+                running:
+                  tasks: 1
+          het:
+            job_id: '{}'
+            job_offset: '{}'
+          reservation:
+            name: 9
+            id: 8
+          tres:
+            requested:
+            - '{}'
+            - '{}'
+            allocated:
+            - '{}'
+            - '{}'
+          state:
+            reason: reason
+            current: current
+          mcs:
+            label: label
+          group: group
+          wckey:
+            wckey: wckey
+            flags:
+            - flags
+            - flags
+          priority: 9
+          steps:
+          - nodes:
+              count: 2
+              range: range
+            exit_code:
+              return_code: 1
+              signal:
+                name: name
+                signal_id: 4
+              status: status
+            kill_request_user: kill_request_user
+            CPU:
+              governor:
+              - governor
+              - governor
+              requested_frequency:
+                min: 6
+                max: 5
+            pid: pid
+            step:
+              task:
+                distribution: distribution
+              job_id: 3
+              het:
+                component: 7
+              name: name
+              tres:
+                consumed:
+                  average:
+                  - '{}'
+                  - '{}'
+                  total:
+                  - '{}'
+                  - '{}'
+                  min:
+                  - '{}'
+                  - '{}'
+                  max:
+                  - '{}'
+                  - '{}'
+                requested:
+                  average:
+                  - '{}'
+                  - '{}'
+                  total:
+                  - '{}'
+                  - '{}'
+                  min:
+                  - '{}'
+                  - '{}'
+                  max:
+                  - '{}'
+                  - '{}'
+                allocated:
+                - '{}'
+                - '{}'
+              id: id
+            time:
+              elapsed: 6
+              total:
+                seconds: 1
+                microseconds: 1
+              system:
+                seconds: 4
+                microseconds: 7
+              start: 6
+              end: 3
+              user:
+                seconds: 1
+                microseconds: 6
+              suspended: 1
+            state: state
+            tasks:
+              count: 6
+            statistics:
+              CPU:
+                actual_frequency: 6
+              energy:
+                consumed: 3
+          - nodes:
+              count: 2
+              range: range
+            exit_code:
+              return_code: 1
+              signal:
+                name: name
+                signal_id: 4
+              status: status
+            kill_request_user: kill_request_user
+            CPU:
+              governor:
+              - governor
+              - governor
+              requested_frequency:
+                min: 6
+                max: 5
+            pid: pid
+            step:
+              task:
+                distribution: distribution
+              job_id: 3
+              het:
+                component: 7
+              name: name
+              tres:
+                consumed:
+                  average:
+                  - '{}'
+                  - '{}'
+                  total:
+                  - '{}'
+                  - '{}'
+                  min:
+                  - '{}'
+                  - '{}'
+                  max:
+                  - '{}'
+                  - '{}'
+                requested:
+                  average:
+                  - '{}'
+                  - '{}'
+                  total:
+                  - '{}'
+                  - '{}'
+                  min:
+                  - '{}'
+                  - '{}'
+                  max:
+                  - '{}'
+                  - '{}'
+                allocated:
+                - '{}'
+                - '{}'
+              id: id
+            time:
+              elapsed: 6
+              total:
+                seconds: 1
+                microseconds: 1
+              system:
+                seconds: 4
+                microseconds: 7
+              start: 6
+              end: 3
+              user:
+                seconds: 1
+                microseconds: 6
+              suspended: 1
+            state: state
+            tasks:
+              count: 6
+            statistics:
+              CPU:
+                actual_frequency: 6
+              energy:
+                consumed: 3
+          derived_exit_code:
+            return_code: 1
+            signal:
+              name: name
+              signal_id: 4
+            status: status
+          nodes: nodes
+          job_id: 5
+          exit_code:
+            return_code: 1
+            signal:
+              name: name
+              signal_id: 4
+            status: status
+          name: name
+          kill_request_user: kill_request_user
+          comment:
+            administrator: administrator
+            system: system
+            job: job
+          time:
+            elapsed: 5
+            total:
+              seconds: 1
+              microseconds: 1
+            system:
+              seconds: 4
+              microseconds: 7
+            eligible: 2
+            start: 9
+            limit: 7
+            end: 7
+            submission: 3
+            user:
+              seconds: 1
+              microseconds: 6
+            suspended: 2
+          user: user
+          account: account
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+        jobs:
+          description: Array of jobs
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_job'
+          type: array
+      type: object
+    dbv0.0.37_job:
+      description: Single job description
+      example:
+        cluster: cluster
+        flags:
+        - flags
+        - flags
+        association:
+          cluster: cluster
+          partition: partition
+          user: user
+          account: account
+        allocation_nodes: allocation_nodes
+        working_directory: working_directory
+        constraints: constraints
+        required:
+          memory: 6
+          CPUs: 9
+        partition: partition
+        qos: qos
+        array:
+          task: task
+          job_id: 6
+          task_id: 5
+          limits:
+            max:
+              running:
+                tasks: 1
+        het:
+          job_id: '{}'
+          job_offset: '{}'
+        reservation:
+          name: 9
+          id: 8
+        tres:
+          requested:
+          - '{}'
+          - '{}'
+          allocated:
+          - '{}'
+          - '{}'
+        state:
+          reason: reason
+          current: current
+        mcs:
+          label: label
+        group: group
+        wckey:
+          wckey: wckey
+          flags:
+          - flags
+          - flags
+        priority: 9
+        steps:
+        - nodes:
+            count: 2
+            range: range
+          exit_code:
+            return_code: 1
+            signal:
+              name: name
+              signal_id: 4
+            status: status
+          kill_request_user: kill_request_user
+          CPU:
+            governor:
+            - governor
+            - governor
+            requested_frequency:
+              min: 6
+              max: 5
+          pid: pid
+          step:
+            task:
+              distribution: distribution
+            job_id: 3
+            het:
+              component: 7
+            name: name
+            tres:
+              consumed:
+                average:
+                - '{}'
+                - '{}'
+                total:
+                - '{}'
+                - '{}'
+                min:
+                - '{}'
+                - '{}'
+                max:
+                - '{}'
+                - '{}'
+              requested:
+                average:
+                - '{}'
+                - '{}'
+                total:
+                - '{}'
+                - '{}'
+                min:
+                - '{}'
+                - '{}'
+                max:
+                - '{}'
+                - '{}'
+              allocated:
+              - '{}'
+              - '{}'
+            id: id
+          time:
+            elapsed: 6
+            total:
+              seconds: 1
+              microseconds: 1
+            system:
+              seconds: 4
+              microseconds: 7
+            start: 6
+            end: 3
+            user:
+              seconds: 1
+              microseconds: 6
+            suspended: 1
+          state: state
+          tasks:
+            count: 6
+          statistics:
+            CPU:
+              actual_frequency: 6
+            energy:
+              consumed: 3
+        - nodes:
+            count: 2
+            range: range
+          exit_code:
+            return_code: 1
+            signal:
+              name: name
+              signal_id: 4
+            status: status
+          kill_request_user: kill_request_user
+          CPU:
+            governor:
+            - governor
+            - governor
+            requested_frequency:
+              min: 6
+              max: 5
+          pid: pid
+          step:
+            task:
+              distribution: distribution
+            job_id: 3
+            het:
+              component: 7
+            name: name
+            tres:
+              consumed:
+                average:
+                - '{}'
+                - '{}'
+                total:
+                - '{}'
+                - '{}'
+                min:
+                - '{}'
+                - '{}'
+                max:
+                - '{}'
+                - '{}'
+              requested:
+                average:
+                - '{}'
+                - '{}'
+                total:
+                - '{}'
+                - '{}'
+                min:
+                - '{}'
+                - '{}'
+                max:
+                - '{}'
+                - '{}'
+              allocated:
+              - '{}'
+              - '{}'
+            id: id
+          time:
+            elapsed: 6
+            total:
+              seconds: 1
+              microseconds: 1
+            system:
+              seconds: 4
+              microseconds: 7
+            start: 6
+            end: 3
+            user:
+              seconds: 1
+              microseconds: 6
+            suspended: 1
+          state: state
+          tasks:
+            count: 6
+          statistics:
+            CPU:
+              actual_frequency: 6
+            energy:
+              consumed: 3
+        derived_exit_code:
+          return_code: 1
+          signal:
+            name: name
+            signal_id: 4
+          status: status
+        nodes: nodes
+        job_id: 5
+        exit_code:
+          return_code: 1
+          signal:
+            name: name
+            signal_id: 4
+          status: status
+        name: name
+        kill_request_user: kill_request_user
+        comment:
+          administrator: administrator
+          system: system
+          job: job
+        time:
+          elapsed: 5
+          total:
+            seconds: 1
+            microseconds: 1
+          system:
+            seconds: 4
+            microseconds: 7
+          eligible: 2
+          start: 9
+          limit: 7
+          end: 7
+          submission: 3
+          user:
+            seconds: 1
+            microseconds: 6
+          suspended: 2
+        user: user
+        account: account
+      properties:
+        account:
+          description: Account charged by job
+          type: string
+        comment:
+          $ref: '#/components/schemas/dbv0_0_37_job_comment'
+        allocation_nodes:
+          description: Nodes allocated to job
+          type: string
+        array:
+          $ref: '#/components/schemas/dbv0_0_37_job_array'
+        time:
+          $ref: '#/components/schemas/dbv0_0_37_job_time'
+        association:
+          $ref: '#/components/schemas/dbv0.0.37_association_short_info'
+        cluster:
+          description: Assigned cluster
+          type: string
+        constraints:
+          description: Constraints on job
+          type: string
+        derived_exit_code:
+          $ref: '#/components/schemas/dbv0.0.37_job_exit_code'
+        exit_code:
+          $ref: '#/components/schemas/dbv0.0.37_job_exit_code'
+        flags:
+          description: List of properties of job
+          items:
+            description: String of property name
+            type: string
+          type: array
+        group:
+          description: User's group to run job
+          type: string
+        het:
+          $ref: '#/components/schemas/dbv0_0_37_job_het'
+        job_id:
+          description: Job id
+          type: integer
+        name:
+          description: Assigned job name
+          type: string
+        mcs:
+          $ref: '#/components/schemas/dbv0_0_37_job_mcs'
+        nodes:
+          description: List of nodes allocated for job
+          type: string
+        partition:
+          description: Assigned job's partition
+          type: string
+        priority:
+          description: Priority
+          type: integer
+        qos:
+          description: Assigned qos name
+          type: string
+        required:
+          $ref: '#/components/schemas/dbv0_0_37_job_required'
+        kill_request_user:
+          description: User who requested job killed
+          type: string
+        reservation:
+          $ref: '#/components/schemas/dbv0_0_37_job_reservation'
+        state:
+          $ref: '#/components/schemas/dbv0_0_37_job_state'
+        steps:
+          description: Job step description
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_job_step'
+          type: array
+        tres:
+          $ref: '#/components/schemas/dbv0_0_37_job_tres'
+        user:
+          description: Job user
+          type: string
+        wckey:
+          $ref: '#/components/schemas/dbv0_0_37_job_wckey'
+        working_directory:
+          description: Directory where job was initially started
+          type: string
+      type: object
+    dbv0.0.37_job_exit_code:
+      example:
+        return_code: 1
+        signal:
+          name: name
+          signal_id: 4
+        status: status
+      properties:
+        status:
+          description: Job exit status
+          type: string
+        return_code:
+          description: Return code from parent process
+          type: integer
+        signal:
+          $ref: '#/components/schemas/dbv0_0_37_job_exit_code_signal'
+      type: object
+    dbv0.0.37_job_step:
+      example:
+        nodes:
+          count: 2
+          range: range
+        exit_code:
+          return_code: 1
+          signal:
+            name: name
+            signal_id: 4
+          status: status
+        kill_request_user: kill_request_user
+        CPU:
+          governor:
+          - governor
+          - governor
+          requested_frequency:
+            min: 6
+            max: 5
+        pid: pid
+        step:
+          task:
+            distribution: distribution
+          job_id: 3
+          het:
+            component: 7
+          name: name
+          tres:
+            consumed:
+              average:
+              - '{}'
+              - '{}'
+              total:
+              - '{}'
+              - '{}'
+              min:
+              - '{}'
+              - '{}'
+              max:
+              - '{}'
+              - '{}'
+            requested:
+              average:
+              - '{}'
+              - '{}'
+              total:
+              - '{}'
+              - '{}'
+              min:
+              - '{}'
+              - '{}'
+              max:
+              - '{}'
+              - '{}'
+            allocated:
+            - '{}'
+            - '{}'
+          id: id
+        time:
+          elapsed: 6
+          total:
+            seconds: 1
+            microseconds: 1
+          system:
+            seconds: 4
+            microseconds: 7
+          start: 6
+          end: 3
+          user:
+            seconds: 1
+            microseconds: 6
+          suspended: 1
+        state: state
+        tasks:
+          count: 6
+        statistics:
+          CPU:
+            actual_frequency: 6
+          energy:
+            consumed: 3
+      properties:
+        time:
+          $ref: '#/components/schemas/dbv0_0_37_job_step_time'
+        exit_code:
+          $ref: '#/components/schemas/dbv0.0.37_job_exit_code'
+        nodes:
+          $ref: '#/components/schemas/dbv0_0_37_job_step_nodes'
+        tasks:
+          $ref: '#/components/schemas/dbv0_0_37_job_step_tasks'
+        pid:
+          description: First process PID
+          type: string
+        CPU:
+          $ref: '#/components/schemas/dbv0_0_37_job_step_CPU'
+        kill_request_user:
+          description: User who requested job killed
+          type: string
+        state:
+          description: State of job step
+          type: string
+        statistics:
+          $ref: '#/components/schemas/dbv0_0_37_job_step_statistics'
+        step:
+          $ref: '#/components/schemas/dbv0_0_37_job_step_step'
+      type: object
+    dbv0.0.37_config_info:
+      example:
+        associations:
+        - cluster: cluster
+          shares_raw: 2
+          max:
+            jobs:
+              per:
+                wall_clock: 6
+            tres:
+              total:
+              - '{}'
+              - '{}'
+              minutes:
+                total:
+                - '{}'
+                - '{}'
+                per:
+                  job:
+                  - '{}'
+                  - '{}'
+              per:
+                node:
+                - '{}'
+                - '{}'
+                job:
+                - '{}'
+                - '{}'
+            per:
+              account:
+                wall_clock: 1
+          usage:
+            fairshare_factor: 3.616076749251911
+            normalized_shares: 7.386281948385884
+            effective_normalized_usage: 1.2315135367772556
+            job_count: 1
+            group_used_wallclock: 9.301444243932576
+            normalized_priority: 4
+            accrue_job_count: 7
+            fairshare_shares: 2
+            fairshare_level: 6.84685269835264
+            raw_usage: 1
+          flags:
+          - flags
+          - flags
+          priority: 5
+          parent_account: parent_account
+          default:
+            qos: qos
+          min:
+            priority_threshold: 5
+          partition: partition
+          qos:
+          - qos
+          - qos
+          user: user
+          account: account
+        - cluster: cluster
+          shares_raw: 2
+          max:
+            jobs:
+              per:
+                wall_clock: 6
+            tres:
+              total:
+              - '{}'
+              - '{}'
+              minutes:
+                total:
+                - '{}'
+                - '{}'
+                per:
+                  job:
+                  - '{}'
+                  - '{}'
+              per:
+                node:
+                - '{}'
+                - '{}'
+                job:
+                - '{}'
+                - '{}'
+            per:
+              account:
+                wall_clock: 1
+          usage:
+            fairshare_factor: 3.616076749251911
+            normalized_shares: 7.386281948385884
+            effective_normalized_usage: 1.2315135367772556
+            job_count: 1
+            group_used_wallclock: 9.301444243932576
+            normalized_priority: 4
+            accrue_job_count: 7
+            fairshare_shares: 2
+            fairshare_level: 6.84685269835264
+            raw_usage: 1
+          flags:
+          - flags
+          - flags
+          priority: 5
+          parent_account: parent_account
+          default:
+            qos: qos
+          min:
+            priority_threshold: 5
+          partition: partition
+          qos:
+          - qos
+          - qos
+          user: user
+          account: account
+        qos:
+        - flags:
+          - flags
+          - flags
+          usage_threshold: 3.5571952270680973
+          description: description
+          usage_factor: 6.438423552598547
+          id: id
+          priority: 9
+          limits:
+            min:
+              priority_threshold: 6
+              tres:
+                per:
+                  job:
+                  - '{}'
+                  - '{}'
+            max:
+              jobs:
+                per:
+                  user: 5
+                  account: 4
+              accruing:
+                per:
+                  user: 9
+                  account: 9
+              wall_clock:
+                per:
+                  qos: 7
+                  job: 1
+              tres:
+                minutes:
+                  per:
+                    job:
+                    - '{}'
+                    - '{}'
+                    user:
+                    - '{}'
+                    - '{}'
+                    account:
+                    - '{}'
+                    - '{}'
+                per:
+                  node:
+                  - '{}'
+                  - '{}'
+                  job:
+                  - '{}'
+                  - '{}'
+                  user:
+                  - '{}'
+                  - '{}'
+                  account:
+                  - '{}'
+                  - '{}'
+          preempt:
+            mode:
+            - mode
+            - mode
+            exempt_time: 8
+            list:
+            - list
+            - list
+        - flags:
+          - flags
+          - flags
+          usage_threshold: 3.5571952270680973
+          description: description
+          usage_factor: 6.438423552598547
+          id: id
+          priority: 9
+          limits:
+            min:
+              priority_threshold: 6
+              tres:
+                per:
+                  job:
+                  - '{}'
+                  - '{}'
+            max:
+              jobs:
+                per:
+                  user: 5
+                  account: 4
+              accruing:
+                per:
+                  user: 9
+                  account: 9
+              wall_clock:
+                per:
+                  qos: 7
+                  job: 1
+              tres:
+                minutes:
+                  per:
+                    job:
+                    - '{}'
+                    - '{}'
+                    user:
+                    - '{}'
+                    - '{}'
+                    account:
+                    - '{}'
+                    - '{}'
+                per:
+                  node:
+                  - '{}'
+                  - '{}'
+                  job:
+                  - '{}'
+                  - '{}'
+                  user:
+                  - '{}'
+                  - '{}'
+                  account:
+                  - '{}'
+                  - '{}'
+          preempt:
+            mode:
+            - mode
+            - mode
+            exempt_time: 8
+            list:
+            - list
+            - list
+        wckeys:
+        - cluster: cluster
+          name: name
+          flags:
+          - flags
+          - flags
+          accounts:
+          - accounts
+          - accounts
+          id: 6
+          user: user
+        - cluster: cluster
+          name: name
+          flags:
+          - flags
+          - flags
+          accounts:
+          - accounts
+          - accounts
+          id: 6
+          user: user
+        tres:
+        - null
+        - null
+        accounts:
+        - associations:
+          - cluster: cluster
+            partition: partition
+            user: user
+            account: account
+          - cluster: cluster
+            partition: partition
+            user: user
+            account: account
+          coordinators:
+          - name: name
+            direct: 0
+          - name: name
+            direct: 0
+          organization: organization
+          name: name
+          flags:
+          - flags
+          - flags
+          description: description
+        - associations:
+          - cluster: cluster
+            partition: partition
+            user: user
+            account: account
+          - cluster: cluster
+            partition: partition
+            user: user
+            account: account
+          coordinators:
+          - name: name
+            direct: 0
+          - name: name
+            direct: 0
+          organization: organization
+          name: name
+          flags:
+          - flags
+          - flags
+          description: description
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+        users:
+        - associations:
+            root:
+              cluster: cluster
+              partition: partition
+              user: user
+              account: account
+          default:
+            wckey: wckey
+            account: account
+          administrator_level: administrator_level
+          coordinators:
+          - name: name
+            direct: 0
+          - name: name
+            direct: 0
+          name: name
+        - associations:
+            root:
+              cluster: cluster
+              partition: partition
+              user: user
+              account: account
+          default:
+            wckey: wckey
+            account: account
+          administrator_level: administrator_level
+          coordinators:
+          - name: name
+            direct: 0
+          - name: name
+            direct: 0
+          name: name
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+        tres:
+          description: Array of TRES
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_tres_list'
+          type: array
+        accounts:
+          description: Array of accounts
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_account'
+          type: array
+        associations:
+          description: Array of associations
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_association'
+          type: array
+        users:
+          description: Array of users
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_user'
+          type: array
+        qos:
+          description: Array of qos
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_qos'
+          type: array
+        wckeys:
+          description: Array of wckeys
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_wckey'
+          type: array
+      type: object
+    dbv0.0.37_account_response:
+      example:
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+      type: object
+    dbv0.0.37_config_response:
+      example:
+        errors:
+        - errno: 0
+          error: error
+        - errno: 0
+          error: error
+      properties:
+        errors:
+          description: Slurm errors
+          items:
+            $ref: '#/components/schemas/dbv0.0.37_error'
+          type: array
+      type: object
+    dbv0.0.37_error:
+      example:
+        errno: 0
+        error: error
+      properties:
+        errno:
+          description: Error number
+          type: integer
+        error:
+          description: Error message
+          type: string
+      type: object
+    dbv0_0_37_diag_statistics_rollups:
+      description: Rollup statistics
+      example:
+        max_cycle: 5
+        last_cycle: 1
+        mean_cycles: 2
+        last_run: 6
+        type: type
+        total_time: 5
+      properties:
+        type:
+          description: Type of rollup
+          type: string
+        last_run:
+          description: Timestamp of last rollup
+          type: integer
+        last_cycle:
+          description: Timestamp of last cycle
+          type: integer
+        max_cycle:
+          description: Max time of all cycles
+          type: integer
+        total_time:
+          description: Total time (s) spent doing rollup
+          type: integer
+        mean_cycles:
+          description: Average time (s) of cycle
+          type: integer
+      type: object
+    dbv0_0_37_diag_statistics_time:
+      description: Time values
+      example:
+        average: 9
+        total: 3
+      properties:
+        average:
+          description: Average time spent processing this RPC type
+          type: integer
+        total:
+          description: Total time spent processing this RPC type
+          type: integer
+      type: object
+    dbv0_0_37_diag_statistics_RPCs:
+      description: Statistics by RPC type
+      example:
+        rpc: rpc
+        count: 7
+        time:
+          average: 9
+          total: 3
+      properties:
+        rpc:
+          description: RPC type
+          type: string
+        count:
+          description: Number of RPCs
+          type: integer
+        time:
+          $ref: '#/components/schemas/dbv0_0_37_diag_statistics_time'
+      type: object
+    dbv0_0_37_diag_statistics_time_1:
+      description: Time values
+      example:
+        average: 4
+        total: 7
+      properties:
+        average:
+          description: Average time spent processing each user RPC
+          type: integer
+        total:
+          description: Total time spent processing each user RPC
+          type: integer
+      type: object
+    dbv0_0_37_diag_statistics_users:
+      description: Statistics by user RPCs
+      example:
+        count: 2
+        time:
+          average: 4
+          total: 7
+        user: user
+      properties:
+        user:
+          description: User name
+          type: string
+        count:
+          description: Number of RPCs
+          type: integer
+        time:
+          $ref: '#/components/schemas/dbv0_0_37_diag_statistics_time_1'
+      type: object
+    dbv0_0_37_diag_statistics:
+      example:
+        time_start: 0
+        RPCs:
+        - rpc: rpc
+          count: 7
+          time:
+            average: 9
+            total: 3
+        - rpc: rpc
+          count: 7
+          time:
+            average: 9
+            total: 3
+        rollups:
+        - max_cycle: 5
+          last_cycle: 1
+          mean_cycles: 2
+          last_run: 6
+          type: type
+          total_time: 5
+        - max_cycle: 5
+          last_cycle: 1
+          mean_cycles: 2
+          last_run: 6
+          type: type
+          total_time: 5
+        users:
+        - count: 2
+          time:
+            average: 4
+            total: 7
+          user: user
+        - count: 2
+          time:
+            average: 4
+            total: 7
+          user: user
+      properties:
+        time_start:
+          description: Unix timestamp of start time
+          type: integer
+        rollups:
+          items:
+            $ref: '#/components/schemas/dbv0_0_37_diag_statistics_rollups'
+          type: array
+        RPCs:
+          items:
+            $ref: '#/components/schemas/dbv0_0_37_diag_statistics_RPCs'
+          type: array
+        users:
+          items:
+            $ref: '#/components/schemas/dbv0_0_37_diag_statistics_users'
+          type: array
+      type: object
+    dbv0_0_37_cluster_info_controller:
+      description: Information about controller
+      example:
+        port: 0
+        host: host
+      properties:
+        host:
+          description: Hostname
+          type: string
+        port:
+          description: Port number
+          type: integer
+      type: object
+    dbv0_0_37_cluster_info_associations:
+      description: Information about associations
+      example:
+        root:
+          cluster: cluster
+          partition: partition
+          user: user
+          account: account
+      properties:
+        root:
+          $ref: '#/components/schemas/dbv0.0.37_association_short_info'
+      type: object
+    dbv0_0_37_user_associations:
+      description: Assigned associations
+      example:
+        root:
+          cluster: cluster
+          partition: partition
+          user: user
+          account: account
+      properties:
+        root:
+          $ref: '#/components/schemas/dbv0.0.37_association_short_info'
+      type: object
+    dbv0_0_37_user_default:
+      description: Default settings
+      example:
+        wckey: wckey
+        account: account
+      properties:
+        account:
+          description: Default account name
+          type: string
+        wckey:
+          description: Default wckey
+          type: string
+      type: object
+    dbv0_0_37_association_default:
+      description: Default settings
+      example:
+        qos: qos
+      properties:
+        qos:
+          description: Default QOS
+          type: string
+      type: object
+    dbv0_0_37_association_max_jobs_per:
+      description: Max jobs per settings
+      example:
+        wall_clock: 6
+      properties:
+        wall_clock:
+          description: Max wallclock per job
+          type: integer
+      type: object
+    dbv0_0_37_association_max_jobs:
+      description: Max jobs settings
+      example:
+        per:
+          wall_clock: 6
+      properties:
+        per:
+          $ref: '#/components/schemas/dbv0_0_37_association_max_jobs_per'
+      type: object
+    dbv0_0_37_association_max_per_account:
+      description: Max per accounting settings
+      example:
+        wall_clock: 1
+      properties:
+        wall_clock:
+          description: Max wallclock per account
+          type: integer
+      type: object
+    dbv0_0_37_association_max_per:
+      description: Max per settings
+      example:
+        account:
+          wall_clock: 1
+      properties:
+        account:
+          $ref: '#/components/schemas/dbv0_0_37_association_max_per_account'
+      type: object
+    dbv0_0_37_association_max_tres_per:
+      description: Max TRES per settings
+      example:
+        node:
+        - '{}'
+        - '{}'
+        job:
+        - '{}'
+        - '{}'
+      properties:
+        job:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+        node:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+      type: object
+    dbv0_0_37_association_max_tres_minutes_per:
+      description: Max TRES minutes per settings
+      example:
+        job:
+        - '{}'
+        - '{}'
+      properties:
+        job:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+      type: object
+    dbv0_0_37_association_max_tres_minutes:
+      description: Max TRES minutes settings
+      example:
+        total:
+        - '{}'
+        - '{}'
+        per:
+          job:
+          - '{}'
+          - '{}'
+      properties:
+        per:
+          $ref: '#/components/schemas/dbv0_0_37_association_max_tres_minutes_per'
+        total:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+      type: object
+    dbv0_0_37_association_max_tres:
+      description: Max TRES settings
+      example:
+        total:
+        - '{}'
+        - '{}'
+        minutes:
+          total:
+          - '{}'
+          - '{}'
+          per:
+            job:
+            - '{}'
+            - '{}'
+        per:
+          node:
+          - '{}'
+          - '{}'
+          job:
+          - '{}'
+          - '{}'
+      properties:
+        per:
+          $ref: '#/components/schemas/dbv0_0_37_association_max_tres_per'
+        total:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+        minutes:
+          $ref: '#/components/schemas/dbv0_0_37_association_max_tres_minutes'
+      type: object
+    dbv0_0_37_association_max:
+      description: Max settings
+      example:
+        jobs:
+          per:
+            wall_clock: 6
+        tres:
+          total:
+          - '{}'
+          - '{}'
+          minutes:
+            total:
+            - '{}'
+            - '{}'
+            per:
+              job:
+              - '{}'
+              - '{}'
+          per:
+            node:
+            - '{}'
+            - '{}'
+            job:
+            - '{}'
+            - '{}'
+        per:
+          account:
+            wall_clock: 1
+      properties:
+        jobs:
+          $ref: '#/components/schemas/dbv0_0_37_association_max_jobs'
+        per:
+          $ref: '#/components/schemas/dbv0_0_37_association_max_per'
+        tres:
+          $ref: '#/components/schemas/dbv0_0_37_association_max_tres'
+      type: object
+    dbv0_0_37_association_min:
+      description: Min settings
+      example:
+        priority_threshold: 5
+      properties:
+        priority_threshold:
+          description: Min priority threshold
+          type: integer
+      type: object
+    dbv0_0_37_association_usage:
+      description: Association usage
+      example:
+        fairshare_factor: 3.616076749251911
+        normalized_shares: 7.386281948385884
+        effective_normalized_usage: 1.2315135367772556
+        job_count: 1
+        group_used_wallclock: 9.301444243932576
+        normalized_priority: 4
+        accrue_job_count: 7
+        fairshare_shares: 2
+        fairshare_level: 6.84685269835264
+        raw_usage: 1
+      properties:
+        accrue_job_count:
+          description: Jobs accuring priority
+          type: integer
+        group_used_wallclock:
+          description: Group used wallclock time (s)
+          type: number
+        fairshare_factor:
+          description: Fairshare factor
+          type: number
+        fairshare_shares:
+          description: Fairshare shares
+          type: integer
+        normalized_priority:
+          description: Currently active jobs
+          type: integer
+        normalized_shares:
+          description: Normalized shares
+          type: number
+        effective_normalized_usage:
+          description: Effective normalized usage
+          type: number
+        raw_usage:
+          description: Raw usage
+          type: integer
+        job_count:
+          description: Total jobs submitted
+          type: integer
+        fairshare_level:
+          description: Fairshare level
+          type: number
+      type: object
+    dbv0_0_37_qos_limits_max_wall_clock_per:
+      description: Limit on wallclock per settings
+      example:
+        qos: 7
+        job: 1
+      properties:
+        qos:
+          description: Max wallclock per QOS
+          type: integer
+        job:
+          description: Max wallclock per job
+          type: integer
+      type: object
+    dbv0_0_37_qos_limits_max_wall_clock:
+      description: Limit on wallclock settings
+      example:
+        per:
+          qos: 7
+          job: 1
+      properties:
+        per:
+          $ref: '#/components/schemas/dbv0_0_37_qos_limits_max_wall_clock_per'
+      type: object
+    dbv0_0_37_qos_limits_max_jobs_per:
+      description: Limits on jobs per settings
+      example:
+        user: 5
+        account: 4
+      properties:
+        account:
+          description: Max jobs per account
+          type: integer
+        user:
+          description: Max jobs per user
+          type: integer
+      type: object
+    dbv0_0_37_qos_limits_max_jobs:
+      description: Limits on jobs settings
+      example:
+        per:
+          user: 5
+          account: 4
+      properties:
+        per:
+          $ref: '#/components/schemas/dbv0_0_37_qos_limits_max_jobs_per'
+      type: object
+    dbv0_0_37_qos_limits_max_accruing_per:
+      description: Max accuring priority per setting
+      example:
+        user: 9
+        account: 9
+      properties:
+        account:
+          description: Max accuring priority per account
+          type: integer
+        user:
+          description: Max accuring priority per user
+          type: integer
+      type: object
+    dbv0_0_37_qos_limits_max_accruing:
+      description: Limits on accruing priority
+      example:
+        per:
+          user: 9
+          account: 9
+      properties:
+        per:
+          $ref: '#/components/schemas/dbv0_0_37_qos_limits_max_accruing_per'
+      type: object
+    dbv0_0_37_qos_limits_max_tres_minutes_per:
+      description: Max TRES minutes per settings
+      example:
+        job:
+        - '{}'
+        - '{}'
+        user:
+        - '{}'
+        - '{}'
+        account:
+        - '{}'
+        - '{}'
+      properties:
+        job:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+        account:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+        user:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+      type: object
+    dbv0_0_37_qos_limits_max_tres_minutes:
+      description: Max TRES minutes settings
+      example:
+        per:
+          job:
+          - '{}'
+          - '{}'
+          user:
+          - '{}'
+          - '{}'
+          account:
+          - '{}'
+          - '{}'
+      properties:
+        per:
+          $ref: '#/components/schemas/dbv0_0_37_qos_limits_max_tres_minutes_per'
+      type: object
+    dbv0_0_37_qos_limits_max_tres_per:
+      description: Max TRES per settings
+      example:
+        node:
+        - '{}'
+        - '{}'
+        job:
+        - '{}'
+        - '{}'
+        user:
+        - '{}'
+        - '{}'
+        account:
+        - '{}'
+        - '{}'
+      properties:
+        account:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+        job:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+        node:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+        user:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+      type: object
+    dbv0_0_37_qos_limits_max_tres:
+      description: Limits on TRES
+      example:
+        minutes:
+          per:
+            job:
+            - '{}'
+            - '{}'
+            user:
+            - '{}'
+            - '{}'
+            account:
+            - '{}'
+            - '{}'
+        per:
+          node:
+          - '{}'
+          - '{}'
+          job:
+          - '{}'
+          - '{}'
+          user:
+          - '{}'
+          - '{}'
+          account:
+          - '{}'
+          - '{}'
+      properties:
+        minutes:
+          $ref: '#/components/schemas/dbv0_0_37_qos_limits_max_tres_minutes'
+        per:
+          $ref: '#/components/schemas/dbv0_0_37_qos_limits_max_tres_per'
+      type: object
+    dbv0_0_37_qos_limits_max:
+      description: Limits on max settings
+      example:
+        jobs:
+          per:
+            user: 5
+            account: 4
+        accruing:
+          per:
+            user: 9
+            account: 9
+        wall_clock:
+          per:
+            qos: 7
+            job: 1
+        tres:
+          minutes:
+            per:
+              job:
+              - '{}'
+              - '{}'
+              user:
+              - '{}'
+              - '{}'
+              account:
+              - '{}'
+              - '{}'
+          per:
+            node:
+            - '{}'
+            - '{}'
+            job:
+            - '{}'
+            - '{}'
+            user:
+            - '{}'
+            - '{}'
+            account:
+            - '{}'
+            - '{}'
+      properties:
+        wall_clock:
+          $ref: '#/components/schemas/dbv0_0_37_qos_limits_max_wall_clock'
+        jobs:
+          $ref: '#/components/schemas/dbv0_0_37_qos_limits_max_jobs'
+        accruing:
+          $ref: '#/components/schemas/dbv0_0_37_qos_limits_max_accruing'
+        tres:
+          $ref: '#/components/schemas/dbv0_0_37_qos_limits_max_tres'
+      type: object
+    dbv0_0_37_qos_limits_min_tres_per:
+      description: Min tres per settings
+      example:
+        job:
+        - '{}'
+        - '{}'
+      properties:
+        job:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+      type: object
+    dbv0_0_37_qos_limits_min_tres:
+      description: Min tres settings
+      example:
+        per:
+          job:
+          - '{}'
+          - '{}'
+      properties:
+        per:
+          $ref: '#/components/schemas/dbv0_0_37_qos_limits_min_tres_per'
+      type: object
+    dbv0_0_37_qos_limits_min:
+      description: Min limit settings
+      example:
+        priority_threshold: 6
+        tres:
+          per:
+            job:
+            - '{}'
+            - '{}'
+      properties:
+        priority_threshold:
+          description: Min priority threshold
+          type: integer
+        tres:
+          $ref: '#/components/schemas/dbv0_0_37_qos_limits_min_tres'
+      type: object
+    dbv0_0_37_qos_limits:
+      description: Assigned limits
+      example:
+        min:
+          priority_threshold: 6
+          tres:
+            per:
+              job:
+              - '{}'
+              - '{}'
+        max:
+          jobs:
+            per:
+              user: 5
+              account: 4
+          accruing:
+            per:
+              user: 9
+              account: 9
+          wall_clock:
+            per:
+              qos: 7
+              job: 1
+          tres:
+            minutes:
+              per:
+                job:
+                - '{}'
+                - '{}'
+                user:
+                - '{}'
+                - '{}'
+                account:
+                - '{}'
+                - '{}'
+            per:
+              node:
+              - '{}'
+              - '{}'
+              job:
+              - '{}'
+              - '{}'
+              user:
+              - '{}'
+              - '{}'
+              account:
+              - '{}'
+              - '{}'
+      properties:
+        max:
+          $ref: '#/components/schemas/dbv0_0_37_qos_limits_max'
+        min:
+          $ref: '#/components/schemas/dbv0_0_37_qos_limits_min'
+      type: object
+    dbv0_0_37_qos_preempt:
+      description: Preemption settings
+      example:
+        mode:
+        - mode
+        - mode
+        exempt_time: 8
+        list:
+        - list
+        - list
+      properties:
+        list:
+          description: List of preemptable QOS
+          items:
+            description: Preemptable QOS
+            type: string
+          type: array
+        mode:
+          description: List of preemption modes
+          items:
+            description: Preemption mode
+            type: string
+          type: array
+        exempt_time:
+          description: Grace period (s) before jobs can preempted
+          type: integer
+      type: object
+    dbv0_0_37_job_comment:
+      description: Job comments by type
+      example:
+        administrator: administrator
+        system: system
+        job: job
+      properties:
+        administrator:
+          description: Administrator set comment
+          type: string
+        job:
+          description: Job comment
+          type: string
+        system:
+          description: System set comment
+          type: string
+      type: object
+    dbv0_0_37_job_array_limits_max_running:
+      description: Limits on array settings
+      example:
+        tasks: 1
+      properties:
+        tasks:
+          description: Max running tasks in array at any one time
+          type: integer
+      type: object
+    dbv0_0_37_job_array_limits_max:
+      description: Limits on array settings
+      example:
+        running:
+          tasks: 1
+      properties:
+        running:
+          $ref: '#/components/schemas/dbv0_0_37_job_array_limits_max_running'
+      type: object
+    dbv0_0_37_job_array_limits:
+      description: Limits on array settings
+      example:
+        max:
+          running:
+            tasks: 1
+      properties:
+        max:
+          $ref: '#/components/schemas/dbv0_0_37_job_array_limits_max'
+      type: object
+    dbv0_0_37_job_array:
+      description: Array properties (optional)
+      example:
+        task: task
+        job_id: 6
+        task_id: 5
+        limits:
+          max:
+            running:
+              tasks: 1
+      properties:
+        job_id:
+          description: Job id of array
+          type: integer
+        limits:
+          $ref: '#/components/schemas/dbv0_0_37_job_array_limits'
+        task:
+          description: Array task
+          type: string
+        task_id:
+          description: Array task id
+          type: integer
+      type: object
+    dbv0_0_37_job_time_system:
+      description: System time values
+      example:
+        seconds: 4
+        microseconds: 7
+      properties:
+        seconds:
+          description: Total number of CPU-seconds used by the system on behalf of
+            the process (in kernel mode), in seconds
+          type: integer
+        microseconds:
+          description: Total number of CPU-seconds used by the system on behalf of
+            the process (in kernel mode), in microseconds
+          type: integer
+      type: object
+    dbv0_0_37_job_time_total:
+      description: System time values
+      example:
+        seconds: 1
+        microseconds: 1
+      properties:
+        seconds:
+          description: Total number of CPU-seconds used by the job, in seconds
+          type: integer
+        microseconds:
+          description: Total number of CPU-seconds used by the job, in microseconds
+          type: integer
+      type: object
+    dbv0_0_37_job_time_user:
+      description: User land time values
+      example:
+        seconds: 1
+        microseconds: 6
+      properties:
+        seconds:
+          description: Total number of CPU-seconds used by the job in user land, in
+            seconds
+          type: integer
+        microseconds:
+          description: Total number of CPU-seconds used by the job in user land, in
+            microseconds
+          type: integer
+      type: object
+    dbv0_0_37_job_time:
+      description: Time properties
+      example:
+        elapsed: 5
+        total:
+          seconds: 1
+          microseconds: 1
+        system:
+          seconds: 4
+          microseconds: 7
+        eligible: 2
+        start: 9
+        limit: 7
+        end: 7
+        submission: 3
+        user:
+          seconds: 1
+          microseconds: 6
+        suspended: 2
+      properties:
+        elapsed:
+          description: Total time elapsed
+          type: integer
+        eligible:
+          description: Total time eligible to run
+          type: integer
+        end:
+          description: Timestamp of when job ended
+          type: integer
+        start:
+          description: Timestamp of when job started
+          type: integer
+        submission:
+          description: Timestamp of when job submitted
+          type: integer
+        suspended:
+          description: Timestamp of when job last suspended
+          type: integer
+        system:
+          $ref: '#/components/schemas/dbv0_0_37_job_time_system'
+        total:
+          $ref: '#/components/schemas/dbv0_0_37_job_time_total'
+        user:
+          $ref: '#/components/schemas/dbv0_0_37_job_time_user'
+        limit:
+          description: Job wall clock time limit
+          type: integer
+      type: object
+    dbv0_0_37_job_het:
+      description: Heterogeneous Job details (optional)
+      example:
+        job_id: '{}'
+        job_offset: '{}'
+      properties:
+        job_id:
+          description: Parent HetJob id
+          type: object
+        job_offset:
+          description: Offset of this job to parent
+          type: object
+      type: object
+    dbv0_0_37_job_mcs:
+      description: Multi-Category Security
+      example:
+        label: label
+      properties:
+        label:
+          description: Assigned MCS label
+          type: string
+      type: object
+    dbv0_0_37_job_required:
+      description: Job run requirements
+      example:
+        memory: 6
+        CPUs: 9
+      properties:
+        CPUs:
+          description: Required number of CPUs
+          type: integer
+        memory:
+          description: Required amount of memory (MiB)
+          type: integer
+      type: object
+    dbv0_0_37_job_reservation:
+      description: Reservation usage details
+      example:
+        name: 9
+        id: 8
+      properties:
+        id:
+          description: Database id of reservation
+          type: integer
+        name:
+          description: Name of reservation
+          type: integer
+      type: object
+    dbv0_0_37_job_state:
+      description: State properties of job
+      example:
+        reason: reason
+        current: current
+      properties:
+        current:
+          description: Current state of job
+          type: string
+        reason:
+          description: Last reason job didn't run
+          type: string
+      type: object
+    dbv0_0_37_job_tres:
+      description: TRES settings
+      example:
+        requested:
+        - '{}'
+        - '{}'
+        allocated:
+        - '{}'
+        - '{}'
+      properties:
+        allocated:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+        requested:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+      type: object
+    dbv0_0_37_job_wckey:
+      description: Job assigned wckey details
+      example:
+        wckey: wckey
+        flags:
+        - flags
+        - flags
+      properties:
+        wckey:
+          description: Job assigned wckey
+          type: string
+        flags:
+          description: wckey flags
+          items:
+            description: Flag string
+            type: string
+          type: array
+      type: object
+    dbv0_0_37_job_exit_code_signal:
+      description: Signal details (if signaled)
+      example:
+        name: name
+        signal_id: 4
+      properties:
+        signal_id:
+          description: Signal number process received
+          type: integer
+        name:
+          description: Name of signal received
+          type: string
+      type: object
+    dbv0_0_37_job_step_time:
+      description: Time properties
+      example:
+        elapsed: 6
+        total:
+          seconds: 1
+          microseconds: 1
+        system:
+          seconds: 4
+          microseconds: 7
+        start: 6
+        end: 3
+        user:
+          seconds: 1
+          microseconds: 6
+        suspended: 1
+      properties:
+        elapsed:
+          description: Total time elapsed
+          type: integer
+        end:
+          description: Timestamp of when job ended
+          type: integer
+        start:
+          description: Timestamp of when job started
+          type: integer
+        suspended:
+          description: Timestamp of when job last suspended
+          type: integer
+        system:
+          $ref: '#/components/schemas/dbv0_0_37_job_time_system'
+        total:
+          $ref: '#/components/schemas/dbv0_0_37_job_time_total'
+        user:
+          $ref: '#/components/schemas/dbv0_0_37_job_time_user'
+      type: object
+    dbv0_0_37_job_step_nodes:
+      description: Node details
+      example:
+        count: 2
+        range: range
+      properties:
+        count:
+          description: Total number of nodes in step
+          type: integer
+        range:
+          description: Nodes in step
+          type: string
+      type: object
+    dbv0_0_37_job_step_tasks:
+      description: Task properties
+      example:
+        count: 6
+      properties:
+        count:
+          description: Number of tasks in step
+          type: integer
+      type: object
+    dbv0_0_37_job_step_CPU_requested_frequency:
+      description: CPU frequency requested
+      example:
+        min: 6
+        max: 5
+      properties:
+        min:
+          description: Min CPU frequency
+          type: integer
+        max:
+          description: Max CPU frequency
+          type: integer
+      type: object
+    dbv0_0_37_job_step_CPU:
+      description: CPU properties
+      example:
+        governor:
+        - governor
+        - governor
+        requested_frequency:
+          min: 6
+          max: 5
+      properties:
+        requested_frequency:
+          $ref: '#/components/schemas/dbv0_0_37_job_step_CPU_requested_frequency'
+        governor:
+          description: CPU governor
+          items:
+            description: CPU governor type
+            type: string
+          type: array
+      type: object
+    dbv0_0_37_job_step_statistics_CPU:
+      description: Statistics of CPU
+      example:
+        actual_frequency: 6
+      properties:
+        actual_frequency:
+          description: Actual frequency of CPU during step
+          type: integer
+      type: object
+    dbv0_0_37_job_step_statistics_energy:
+      description: Statistics of energy
+      example:
+        consumed: 3
+      properties:
+        consumed:
+          description: Energy consumed during step
+          type: integer
+      type: object
+    dbv0_0_37_job_step_statistics:
+      description: Statistics of job step
+      example:
+        CPU:
+          actual_frequency: 6
+        energy:
+          consumed: 3
+      properties:
+        CPU:
+          $ref: '#/components/schemas/dbv0_0_37_job_step_statistics_CPU'
+        energy:
+          $ref: '#/components/schemas/dbv0_0_37_job_step_statistics_energy'
+      type: object
+    dbv0_0_37_job_step_step_het:
+      description: Heterogeneous job details
+      example:
+        component: 7
+      properties:
+        component:
+          description: Parent HetJob component id
+          type: integer
+      type: object
+    dbv0_0_37_job_step_step_task:
+      description: Task properties
+      example:
+        distribution: distribution
+      properties:
+        distribution:
+          description: Task distribution type
+          type: string
+      type: object
+    dbv0_0_37_job_step_step_tres_requested:
+      description: TRES requested for job
+      example:
+        average:
+        - '{}'
+        - '{}'
+        total:
+        - '{}'
+        - '{}'
+        min:
+        - '{}'
+        - '{}'
+        max:
+        - '{}'
+        - '{}'
+      properties:
+        average:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+        max:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+        min:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+        total:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+      type: object
+    dbv0_0_37_job_step_step_tres:
+      description: TRES usage
+      example:
+        consumed:
+          average:
+          - '{}'
+          - '{}'
+          total:
+          - '{}'
+          - '{}'
+          min:
+          - '{}'
+          - '{}'
+          max:
+          - '{}'
+          - '{}'
+        requested:
+          average:
+          - '{}'
+          - '{}'
+          total:
+          - '{}'
+          - '{}'
+          min:
+          - '{}'
+          - '{}'
+          max:
+          - '{}'
+          - '{}'
+        allocated:
+        - '{}'
+        - '{}'
+      properties:
+        requested:
+          $ref: '#/components/schemas/dbv0_0_37_job_step_step_tres_requested'
+        consumed:
+          $ref: '#/components/schemas/dbv0_0_37_job_step_step_tres_requested'
+        allocated:
+          description: TRES list of attributes
+          items:
+            properties:
+              type:
+                description: TRES type
+                type: string
+              name:
+                description: TRES name (optional)
+                type: string
+              id:
+                description: database id
+                type: integer
+              count:
+                description: count of TRES
+                type: integer
+            type: object
+          type: array
+      type: object
+    dbv0_0_37_job_step_step:
+      description: Step details
+      example:
+        task:
+          distribution: distribution
+        job_id: 3
+        het:
+          component: 7
+        name: name
+        tres:
+          consumed:
+            average:
+            - '{}'
+            - '{}'
+            total:
+            - '{}'
+            - '{}'
+            min:
+            - '{}'
+            - '{}'
+            max:
+            - '{}'
+            - '{}'
+          requested:
+            average:
+            - '{}'
+            - '{}'
+            total:
+            - '{}'
+            - '{}'
+            min:
+            - '{}'
+            - '{}'
+            max:
+            - '{}'
+            - '{}'
+          allocated:
+          - '{}'
+          - '{}'
+        id: id
+      properties:
+        job_id:
+          description: Parent job id
+          type: integer
+        het:
+          $ref: '#/components/schemas/dbv0_0_37_job_step_step_het'
+        id:
+          description: Step id
+          type: string
+        name:
+          description: Step name
+          type: string
+        task:
+          $ref: '#/components/schemas/dbv0_0_37_job_step_step_task'
+        tres:
+          $ref: '#/components/schemas/dbv0_0_37_job_step_step_tres'
+      type: object
+  securitySchemes:
+    user:
+      description: User name
+      in: header
+      name: X-SLURM-USER-NAME
+      type: apiKey
+    token:
+      description: User access token
+      in: header
+      name: X-SLURM-USER-TOKEN
+      type: apiKey
