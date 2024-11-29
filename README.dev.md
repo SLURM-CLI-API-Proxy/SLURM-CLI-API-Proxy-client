@@ -2,6 +2,10 @@
 
 If you're looking for user documentation, go [here](README.md).
 
+##
+MOCK API
+https://app.swaggerhub.com/apis/hcadavid6/slurm-rest_api_rw_jobs/0.0.37
+
 ## Development install
 
 ```shell
