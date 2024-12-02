@@ -27,16 +27,16 @@ The project setup is documented in [project_setup.md](project_setup.md). Feel fr
 
 ## Reference API mocks
 
-https://app.swaggerhub.com/apis/hcadavid6/slurm-rest_api_ro/0.0.38
-https://app.swaggerhub.com/apis/hcadavid6/slurm-rest_api_rw_jobs/0.0.37
+- https://app.swaggerhub.com/apis/hcadavid6/slurm-rest_api_ro/0.0.38
+- https://app.swaggerhub.com/apis/hcadavid6/slurm-rest_api_rw_jobs/0.0.37
 
 ## Containerized SLURM clusters
 
-https://github.com/rancavil/slurm-cluster
-https://codebase.helmholtz.cloud/ufz-tsm/slurm-scheduler
-https://github.com/nathan-hess/docker-slurm
-https://github.com/giovtorres/slurm-docker-cluster
-https://github.com/JBris/slurm-rest-api-docker
+- https://github.com/rancavil/slurm-cluster
+- https://codebase.helmholtz.cloud/ufz-tsm/slurm-scheduler
+- https://github.com/nathan-hess/docker-slurm
+- https://github.com/giovtorres/slurm-docker-cluster
+- https://github.com/JBris/slurm-rest-api-docker
 
 
 ## Contributing
