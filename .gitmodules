@@ -1,0 +1,6 @@
+[submodule "SLURM_REST_API_CLIENT"]
+	path = SLURM_REST_API_CLIENT
+	url = https://github.com/hcadavid/SLURM_REST_API_CLIENT
+[submodule "SLURM_API_STUB"]
+	path = SLURM_API_STUB
+	url = https://github.com/hcadavid/SLURM_API_STUB
