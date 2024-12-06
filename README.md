@@ -31,6 +31,24 @@ pip install git+https://github.com/hcadavid/SLURM_REST_API_CLIENT.git
 
 Based on the SLURM OpenAPI specification, and the clients created for it with https://github.com/OpenAPITools/openapi-generator
 
+### Reference API mocks
+
+- https://app.swaggerhub.com/apis/hcadavid6/slurm-rest_api_ro/0.0.38
+- https://app.swaggerhub.com/apis/hcadavid6/slurm-rest_api_rw_jobs/0.0.37
+
+### Reference OpenAPI specs
+
+- https://api.swaggerhub.com/apis/hcadavid6/slurm-rest_api_ro/0.0.38
+
+### Containerized SLURM clusters
+
+- https://github.com/rancavil/slurm-cluster
+- https://codebase.helmholtz.cloud/ufz-tsm/slurm-scheduler
+- https://github.com/nathan-hess/docker-slurm
+- https://github.com/giovtorres/slurm-docker-cluster
+- https://github.com/JBris/slurm-rest-api-docker
+
+
 
 ## Contributing
 
