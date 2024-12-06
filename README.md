@@ -30,6 +30,10 @@ The project setup is documented in [project_setup.md](project_setup.md). Feel fr
 - https://app.swaggerhub.com/apis/hcadavid6/slurm-rest_api_ro/0.0.38
 - https://app.swaggerhub.com/apis/hcadavid6/slurm-rest_api_rw_jobs/0.0.37
 
+## Reference OpenAPI specs
+
+- https://api.swaggerhub.com/apis/hcadavid6/slurm-rest_api_ro/0.0.38
+
 ## Containerized SLURM clusters
 
 - https://github.com/rancavil/slurm-cluster
