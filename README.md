@@ -22,8 +22,14 @@ The project setup is documented in [project_setup.md](project_setup.md). Feel fr
 
 ## Installation 
 
+```
+pip install git+https://github.com/hcadavid/SLURM_REST_API_CLIENT.git
+```
+
 
 ## Documentation
+
+Based on the SLURM OpenAPI specification, and the clients created for it with https://github.com/OpenAPITools/openapi-generator
 
 
 ## Contributing
