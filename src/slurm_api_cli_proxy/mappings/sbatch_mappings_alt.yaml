@@ -1,0 +1,461 @@
+parameters:
+  - name: --array
+    abbreviation: -a
+    is_mandatory: false
+    data_type: str
+
+  - name: --account
+    abbreviation: -A
+    is_mandatory: false
+    data_type: str
+
+  - name: --bb
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --bbf
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --begin
+    abbreviation: -b
+    is_mandatory: false
+    data_type: str
+
+  - name: --comment
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --cpu-freq
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --cpus-per-task
+    abbreviation: -c
+    is_mandatory: false
+    data_type: int
+
+  - name: --dependency
+    abbreviation: -d
+    is_mandatory: false
+    data_type: str
+
+  - name: --deadline
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --delay-boot
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --chdir
+    abbreviation: -D
+    is_mandatory: false
+    data_type: str
+
+  - name: --error
+    abbreviation: -e
+    is_mandatory: false
+    data_type: str
+
+  - name: --export
+    abbreviation: --export
+    is_mandatory: false
+    data_type: str
+
+  - name: --get-user-env
+    abbreviation: --get-user-env
+    is_mandatory: false
+    data_type: bool
+
+  - name: --gid
+    abbreviation: --gid
+    is_mandatory: false
+    data_type: int
+
+  - name: --gres
+    abbreviation: --gres
+    is_mandatory: false
+    data_type: list
+
+  - name: --gres-flags
+    abbreviation: --gres-flags
+    is_mandatory: false
+    data_type: str
+
+  - name: --hold
+    abbreviation: -H
+    is_mandatory: false
+    data_type: bool
+
+  - name: --ignore-pbs
+    abbreviation: --ignore-pbs
+    is_mandatory: false
+    data_type: bool
+
+  - name: --input
+    abbreviation: -i
+    is_mandatory: false
+    data_type: str
+
+  - name: --job-name
+    abbreviation: -J
+    is_mandatory: false
+    data_type: str
+
+  - name: --no-kill
+    abbreviation: -k
+    is_mandatory: false
+    data_type: bool
+
+  - name: --licenses
+    abbreviation: -L
+    is_mandatory: false
+    data_type: list
+
+  - name: --clusters
+    abbreviation: -M
+    is_mandatory: false
+    data_type: str
+
+  - name: --container
+    abbreviation: --container
+    is_mandatory: false
+    data_type: str
+
+  - name: --container-id
+    abbreviation: --container-id
+    is_mandatory: false
+    data_type: str
+
+  - name: --distribution
+    abbreviation: --m
+    is_mandatory: false
+    data_type: str
+
+  - name: --mail-type
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --mail-user
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --mcs-label
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --ntasks
+    abbreviation: -n
+    is_mandatory: false
+    data_type: int
+
+  - name: --nice
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --no-requeue
+    abbreviation: 
+    is_mandatory: false
+    data_type: bool
+
+  - name: --ntasks-per-node
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --nodes
+    abbreviation: -N
+    is_mandatory: false
+    data_type: int
+
+  - name: --output
+    abbreviation: -o
+    is_mandatory: false
+    data_type: str
+
+  - name: --overcommit
+    abbreviation: -O
+    is_mandatory: false
+    data_type: bool
+
+  - name: --partition
+    abbreviation: -p
+    is_mandatory: false
+    data_type: str
+
+  - name: --parsable
+    abbreviation: 
+    is_mandatory: false
+    data_type: bool
+
+  - name: --power
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --priority
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --profile
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --propagate
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --qos
+    abbreviation: -q
+    is_mandatory: false
+    data_type: str
+
+  - name: --quiet
+    abbreviation: -Q
+    is_mandatory: false
+    data_type: bool
+
+  - name: --reboot
+    abbreviation: --reboot
+    is_mandatory: false
+    data_type: bool
+
+  - name: --requeue
+    abbreviation: --requeue
+    is_mandatory: false
+    data_type: bool
+
+  - name: --oversubscribe
+    abbreviation: -s
+    is_mandatory: false
+    data_type: bool
+
+  - name: --core-spec
+    abbreviation: -S
+    is_mandatory: false
+    data_type: int
+
+  - name: --signal
+    abbreviation: --signal
+    is_mandatory: false
+    data_type: str
+
+  - name: --spread-job
+    abbreviation: 
+    is_mandatory: false
+    data_type: bool
+
+  - name: --switches
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --thread-spec
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --time
+    abbreviation: -t
+    is_mandatory: false
+    data_type: int
+
+  - name: --time-min
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --tres-bind
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --tres-per-task
+    abbreviation: 
+    is_mandatory: false
+    data_type: list
+
+  - name: --uid
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --use-min-nodes
+    abbreviation: 
+    is_mandatory: false
+    data_type: bool
+
+  - name: --verbose
+    abbreviation: -v
+    is_mandatory: false
+    data_type: bool
+
+  - name: --wait
+    abbreviation: 
+    is_mandatory: false
+    data_type: bool
+
+  - name: --wckey
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --wrap
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --cluster-constraint
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --contiguous
+    abbreviation: 
+    is_mandatory: false
+    data_type: bool
+
+  - name: --constraint
+    abbreviation: -C
+    is_mandatory: false
+    data_type: list
+
+  - name: --nodefile
+    abbreviation: -F
+    is_mandatory: false
+    data_type: str
+
+  - name: --mem
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --mincpus
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --reservation
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --tmp
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --nodelist
+    abbreviation: -w
+    is_mandatory: false
+    data_type: list
+
+  - name: --exclude
+    abbreviation: -x
+    is_mandatory: false
+    data_type: list
+
+  - name: --exclusive
+    abbreviation: 
+    is_mandatory: false
+    data_type: bool
+
+  - name: --mem-per-cpu
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --sockets-per-node
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --cores-per-socket
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --threads-per-core
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --extra-node-info
+    abbreviation: -B
+    is_mandatory: false
+    data_type: str
+
+  - name: --ntasks-per-core
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --ntasks-per-socket
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --cpus-per-gpu
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --gpus
+    abbreviation: -G
+    is_mandatory: false
+    data_type: int
+
+  - name: --gpu-bind
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --gpu-freq
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+
+  - name: --gpus-per-node
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --gpus-per-socket
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --gpus-per-task
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --mem-per-gpu
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+
+  - name: --usage
+    abbreviation: 
+    is_mandatory: false
+    data_type: bool
+
+  - name: --version
+    abbreviation: -V
+    is_mandatory: false
+    data_type: bool
+

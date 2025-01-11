@@ -1,0 +1,140 @@
+parameters:
+  - name: --account
+    abbreviation: -A
+    is_mandatory: false
+    data_type: str
+    
+  - name: --array
+    abbreviation: -a
+    is_mandatory: false
+    data_type: int
+    
+  - name: --begin
+    abbreviation: -b
+    is_mandatory: false
+    data_type: str
+    
+  - name: --comment
+    abbreviation: -C
+    is_mandatory: false
+    data_type: str
+    
+  - name: --cpus-per-task
+    abbreviation: -c
+    is_mandatory: false
+    data_type: int
+    
+  - name: --dependency
+    abbreviation: -d
+    is_mandatory: false
+    data_type: str
+    
+  - name: --distribution
+    abbreviation: -G
+    is_mandatory: false
+    data_type: str
+    
+  - name: --end
+    abbreviation: -e
+    is_mandatory: false
+    data_type: str
+    
+  - name: --exclusive
+    abbreviation: -x
+    is_mandatory: false
+    data_type: bool
+    
+  - name: --get-user-env
+    abbreviation: --gxe
+    is_mandatory: false
+    data_type: str
+    
+  - name: --job-name
+    abbreviation: -J
+    is_mandatory: false
+    data_type: str
+    
+  - name: --kill-on-error
+    abbreviation: -k
+    is_mandatory: false
+    data_type: bool
+    
+  - name: --mail-type
+    abbreviation: -m
+    is_mandatory: false
+    data_type: str
+    
+  - name: --mail-user
+    abbreviation: -M
+    is_mandatory: false
+    data_type: str
+    
+  - name: --mem
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+    
+  - name: --mem-per-cpu
+    abbreviation: 
+    is_mandatory: false
+    data_type: str
+        
+  - name: --ntasks
+    abbreviation: -n
+    is_mandatory: false
+    data_type: int
+    
+  - name: --ntasks-per-node
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+    
+  - name: --output
+    abbreviation: -o
+    is_mandatory: false
+    data_type: str
+    
+  - name: --partition
+    abbreviation: -p
+    is_mandatory: false
+    data_type: str
+    
+  - name: --priority
+    abbreviation: 
+    is_mandatory: false
+    data_type: int
+    
+  - name: --qos
+    abbreviation: -q
+    is_mandatory: false
+    data_type: str
+    
+  - name: --reservation
+    abbreviation: -R
+    is_mandatory: false
+    data_type: str
+    
+  - name: --requeue
+    abbreviation: -r
+    is_mandatory: false
+    data_type: bool
+    
+  - name: --signal
+    abbreviation: -s
+    is_mandatory: false
+    data_type: str
+    
+  - name: --time
+    abbreviation: -t
+    is_mandatory: false
+    data_type: str
+    
+  - name: --tmp
+    abbreviation: -T
+    is_mandatory: false
+    data_type: str
+    
+  - name: --wait
+    abbreviation: -w
+    is_mandatory: false
+    data_type: bool
