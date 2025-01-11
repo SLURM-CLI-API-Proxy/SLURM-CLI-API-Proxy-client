@@ -4,6 +4,7 @@ import yaml
 import os
 import signal
 from pathlib import Path
+import pkg_resources
 from .arguments_evaluator import build_parser
 
 
@@ -12,7 +13,9 @@ def sbatch():
     #To handle a clean SIGINT (no python runtime stack trace) as the original sbatch.
     #Sbatch has an error code = 130 when aborted (ctrl-c) (codes 129-192 indicate jobs terminated by Linux signals) 
     signal.signal(signal.SIGINT, lambda signum,frame : sys.exit(130))
-    
+
+    print(">>>>>>>",pkg_resources.resource_filename(__name__, 'mappings/sbatch_mappings.yaml'))
+
     local_path = Path(__file__).resolve().parent
     cli_param_parser = build_parser(os.path.join(local_path,"mappings","sbatch_mappings_alt.yaml"))
 

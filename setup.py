@@ -9,6 +9,8 @@ setup(
     version="0.1.0",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
+    include_package_data=True,
+    package_data={'slurm_api_cli_proxy': ['mappings/*.yaml']},
     install_requires=[
         f'openapi_client @ file://{slurm_api_client_path}'
     ],

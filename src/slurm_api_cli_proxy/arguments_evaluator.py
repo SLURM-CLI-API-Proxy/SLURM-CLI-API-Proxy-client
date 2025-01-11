@@ -8,7 +8,7 @@ def build_parser(config_path:str):
     local_path = Path(__file__).resolve().parent
     sbatch_args_metadata = yaml.safe_load(open(config_path))
     parser = argparse.ArgumentParser()
-
+        
     for arg in sbatch_args_metadata['parameters']:
 
         arg_data_type = __get_python_type(arg['data_type'])
