@@ -1,1 +1,1 @@
-include command_handler.py
+include src/slurm_api_cli_proxy/mappings/*
