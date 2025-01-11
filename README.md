@@ -20,10 +20,28 @@ Takes locally issued SLURM commands (\"sbatch\", \"srun\", ...) and forwards the
 
 The project setup is documented in [project_setup.md](project_setup.md). Feel free to remove this document (and/or the link to this document) if you don't need it.
 
+## Status
+
+- [X] Baseline project
+- [ ] Setting up GitHub actions/badges
+- [X] Client for SLURM REST API 0.0.38, 0.0.39, and 0.0.40 generated and integrated
+- [X] Proxy sbatch (workin as an stand-alone command) with the input parameters parsing, basic validation and return error codes equivalent to the original one.
+- [X] Dynamic definition of command arguments through YAML files
+- [X] SLURM REST API Client reference examples
+- [ ] Mapping between input parameters, API resources and Payload parameters
+- [ ] Dynamic generation of request Payloads and request execution
+- [ ] Mapping return codes to CLI STDOUT results
+- [ ] Defining strategies for the consistency of output file paths (local vs cluster file system)
+- [ ] Approach for setting Proxy parameters (target API URI)
+- [ ] Handling API JWT reset
+- [ ] squeue proxy: formatting STDOUT messages
+- [ ] Testing integration with golang programs (handling STDIN/STDERR) & Unix piping
+- [ ] ...
+
 ## Installation 
 
 ```
-pip install git+https://github.com/hcadavid/SLURM_REST_API_CLIENT.git
+pip install git+https://github.com/hcadavid/SLURM_CLI_PROXY.git
 ```
 
 

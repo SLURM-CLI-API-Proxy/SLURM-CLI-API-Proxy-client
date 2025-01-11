@@ -16,7 +16,7 @@ def sbatch():
     local_path = Path(__file__).resolve().parent
     cli_param_parser = build_parser(os.path.join(local_path,"mappings","sbatch_mappings_alt.yaml"))
 
-    #Additional argument for the input file. If no provided, it is read from STDIN
+    #Additional argument for the input file. 
     cli_param_parser.add_argument('input_file', nargs='?', help='Input script')
 
     args = cli_param_parser.parse_args()
@@ -24,6 +24,7 @@ def sbatch():
     input_script = None
 
     if not args.input_file:
+        #If input file is no provided, the script is read from STDIN
         input_script = sys.stdin.read().strip()
     else:
         if os.path.isfile(args.input_file):
