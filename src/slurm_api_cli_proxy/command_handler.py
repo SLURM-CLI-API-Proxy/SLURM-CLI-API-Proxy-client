@@ -14,7 +14,7 @@ def sbatch():
     #Sbatch has an error code = 130 when aborted (ctrl-c) (codes 129-192 indicate jobs terminated by Linux signals) 
     signal.signal(signal.SIGINT, lambda signum,frame : sys.exit(130))
 
-    sbatch_mappings_file = pkg_resources.resource_filename(__name__, 'mappings/sbatch_mappings.yaml')
+    sbatch_mappings_file = pkg_resources.resource_filename(__name__, 'mappings/sbatch_mappings_alt.yaml')
 
     cli_param_parser = build_parser(sbatch_mappings_file)
 
