@@ -1,0 +1,1 @@
+go build test_run.go

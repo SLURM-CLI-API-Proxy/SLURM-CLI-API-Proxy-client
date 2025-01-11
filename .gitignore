@@ -67,3 +67,6 @@ venv.bak/
 *.swp
 *.swo
 *.orig
+
+
+golang_interfacing_test/test_run
