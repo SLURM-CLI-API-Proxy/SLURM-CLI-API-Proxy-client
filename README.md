@@ -29,6 +29,7 @@ The project setup is documented in [project_setup.md](project_setup.md). Feel fr
 - [X] Dynamic definition of command arguments through YAML files
 - [X] SLURM REST API Client reference examples
 - [ ] Mapping between input parameters, API resources and Payload parameters
+- [ ] Mapping between SLURM environment variables and API request Payload parameters
 - [ ] Dynamic generation of request Payloads and request execution
 - [ ] Mapping return codes to CLI STDOUT results
 - [ ] Defining strategies for the consistency of output file paths (local vs cluster file system)
@@ -36,29 +37,40 @@ The project setup is documented in [project_setup.md](project_setup.md). Feel fr
 - [ ] Handling API JWT reset
 - [ ] squeue proxy: formatting STDOUT messages
 - [ ] Testing integration with golang programs (handling STDIN/STDERR) & Unix piping
+- [ ] Documentation
 - [ ] ...
 
-## Installation 
+## Installation (to be changed when once the repo is public)
+
+1. Setup a Python virtual environment
+2. Run the following:
+```
+git clone git@github.com:hcadavid/SLURM_CLI_PROXY.git
+cd SLURM_CLI_PROXY
+pip install .
+```
+
+## Use
+
+If running from a shell terminal, the virtual environment where the package was installed must be active on it. Once this is done, the SLURM proxy commands can be used as the original ones:
+
+````
+sbatch --help
+````
+
+To call these commands from other programs, the 'bin' folder of the virtual environment where the package was installed (e.g., `/venvpath/venv/bin`) must be on the PATH environment variable of these programs.
+
+
+
+### Reference containerized SLURM cluster (for generating the API client and testing the implementation)
+
+Docker image [created for the xenon project](https://github.com/xenon-middleware/xenon-docker-images/tree/master/slurm-23).
 
 ```
-pip install git+https://github.com/hcadavid/SLURM_CLI_PROXY.git
+docker run -p 10022:22 -p 6820:6820 ghcr.io/xenon-middleware/slurm:23
 ```
 
-
-## Documentation
-
-Based on the SLURM OpenAPI specification, and the clients created for it with https://github.com/OpenAPITools/openapi-generator
-
-### Reference API mocks
-
-- https://app.swaggerhub.com/apis/hcadavid6/slurm-rest_api_ro/0.0.38
-- https://app.swaggerhub.com/apis/hcadavid6/slurm-rest_api_rw_jobs/0.0.37
-
-### Reference OpenAPI specs
-
-- https://api.swaggerhub.com/apis/hcadavid6/slurm-rest_api_ro/0.0.38
-
-### Containerized SLURM clusters
+### Other SLURM-Docker images
 
 - https://github.com/rancavil/slurm-cluster
 - https://codebase.helmholtz.cloud/ufz-tsm/slurm-scheduler
@@ -67,6 +79,11 @@ Based on the SLURM OpenAPI specification, and the clients created for it with ht
 - https://github.com/JBris/slurm-rest-api-docker
 
 
+### References
+
+- Schmed's [Slurm REST API documentation](https://slurm.schedmd.com/rest_api.html)
+- Schmed's [Slurm command line documentation](https://slurm.schedmd.com/sbatch.html)
+- [Slurm version vs supported API versions](https://slurm.schedmd.com/upgrades.html#openapi_changes)
 
 ## Contributing
 
