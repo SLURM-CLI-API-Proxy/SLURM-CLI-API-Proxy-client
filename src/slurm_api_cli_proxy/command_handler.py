@@ -16,6 +16,8 @@ def sbatch():
 
     sbatch_mappings_file = pkg_resources.resource_filename(__name__, 'mappings/sbatch_mappings_alt.yaml')
 
+    sbatch_args_metadata:dict = yaml.safe_load(open(sbatch_mappings_file))
+
     cli_param_parser = build_parser(sbatch_mappings_file)
 
     #Additional argument for the input file. 

@@ -26,7 +26,6 @@ def build_parser(config_path:str):
             else:        
                 parser.add_argument(arg['abbreviation'],arg['name'], type= arg_data_type, help="", required=arg['is_mandatory'])
 
-
     return parser
 
 
