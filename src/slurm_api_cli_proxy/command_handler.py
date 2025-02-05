@@ -37,6 +37,7 @@ def sbatch():
             return 1
 
     print(f"running sbatch with arguments:{args}. Script to be sent: {input_script}")
+    print(type(args))
     return 0
 
 def squeue():

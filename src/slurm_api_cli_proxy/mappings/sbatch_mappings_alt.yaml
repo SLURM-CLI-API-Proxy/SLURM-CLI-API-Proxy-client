@@ -1,4 +1,40 @@
+mapping_meta:
+  - command: sbatch
+  - api_version: 0.0.39
+  - api_client_payload_class: V0039JobSubmission
+
 parameters:
+
+  - name: --export
+    abbreviation: --export
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job.environment
+
+
+  - name: --job-name
+    abbreviation: -J
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job.name
+
+  - name: --output
+    abbreviation: -o
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job.output
+
+  - name: --chdir
+    abbreviation: -D
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job.current_working_directory
+
+
   - name: --array
     abbreviation: -a
     is_mandatory: false
@@ -54,20 +90,11 @@ parameters:
     is_mandatory: false
     data_type: int
 
-  - name: --chdir
-    abbreviation: -D
-    is_mandatory: false
-    data_type: str
-
   - name: --error
     abbreviation: -e
     is_mandatory: false
     data_type: str
 
-  - name: --export
-    abbreviation: --export
-    is_mandatory: false
-    data_type: str
 
   - name: --get-user-env
     abbreviation: --get-user-env
@@ -101,11 +128,6 @@ parameters:
 
   - name: --input
     abbreviation: -i
-    is_mandatory: false
-    data_type: str
-
-  - name: --job-name
-    abbreviation: -J
     is_mandatory: false
     data_type: str
 
@@ -178,11 +200,6 @@ parameters:
     abbreviation: -N
     is_mandatory: false
     data_type: int
-
-  - name: --output
-    abbreviation: -o
-    is_mandatory: false
-    data_type: str
 
   - name: --overcommit
     abbreviation: -O
