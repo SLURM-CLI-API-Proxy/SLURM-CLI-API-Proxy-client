@@ -2,10 +2,22 @@ from abc import ABC, abstractmethod
 import openapi_client
 import importlib
 
-class ArgsLinker(ABC):
+
+class SbatchResponse():
+    def __init__(self,job_id,step_id):
+        self.errors = []
+        self.warnings = []
+        self.job_id = job_id
+        self.step_id = step_id
+
+    def __str__(self):
+        return f"Job {self.job_id} - {len(self.errors)} errors:{self.errors}"
+
+
+class SlurmCMDRequestHandler(ABC):
 
     @abstractmethod
-    def sbatch_post_request(request:dict,conf:openapi_client.Configuration)-> str: 
+    def sbatch_post_request(self,request:dict,conf:openapi_client.Configuration)-> SbatchResponse: 
         """
         Sends a POST request to the sbatch endpoint.
 
@@ -20,14 +32,14 @@ class ArgsLinker(ABC):
         pass
 
     @abstractmethod
-    def squeue_post_request(request:dict,conf:openapi_client.Configuration)-> str:
+    def squeue_post_request(self,request:dict,conf:openapi_client.Configuration)-> str:
         pass
 
 
-def get_args_linker(app_config:dict)->ArgsLinker:
+def get_args_linker(app_config:dict)->SlurmCMDRequestHandler:
 
-    dummy_conf = {"module":"slurm_api_cli_proxy.client_args_linker.v39.cli_args_linker_v39",
-                  "class_name":"V39ArgsLinker"}
+    dummy_conf = {"module":"slurm_api_cli_proxy.client_args_linker.v39.api_request_handler_v39",
+                  "class_name":"V39SlurmCMDRequestHandler"}
 
     linker_mod = importlib.import_module(dummy_conf["module"])
     
@@ -35,7 +47,7 @@ def get_args_linker(app_config:dict)->ArgsLinker:
 
     linker_inst = linker_class()
 
-    if not isinstance(linker_inst,ArgsLinker):
+    if not isinstance(linker_inst,SlurmCMDRequestHandler):
         raise Exception(f"Dynamically load of arguments linker failed (${dummy_conf["module"]}.${dummy_conf["class_name"]}). An ArgsLinker subclass is expected)")
 
     return linker_inst
