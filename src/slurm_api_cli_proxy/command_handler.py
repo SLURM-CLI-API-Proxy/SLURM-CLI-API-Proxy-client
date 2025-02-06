@@ -5,6 +5,7 @@ import os
 import signal
 from pathlib import Path
 import pkg_resources
+from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
 from .arguments_evaluator import build_parser
 
 
@@ -14,11 +15,13 @@ def sbatch():
     #Sbatch has an error code = 130 when aborted (ctrl-c) (codes 129-192 indicate jobs terminated by Linux signals) 
     signal.signal(signal.SIGINT, lambda signum,frame : sys.exit(130))
 
-    sbatch_mappings_file = pkg_resources.resource_filename(__name__, 'mappings/sbatch_mappings_alt.yaml')
+    sbatch_mappings_file_path = pkg_resources.resource_filename(__name__, 'mappings/sbatch_mappings_alt.yaml')
 
-    sbatch_args_metadata:dict = yaml.safe_load(open(sbatch_mappings_file))
+    cli_to_json_mappings = CliToJsonPayloadMappings(yaml_config_path=sbatch_mappings_file_path)
 
-    cli_param_parser = build_parser(sbatch_mappings_file)
+    #sbatch_args_metadata:dict = yaml.safe_load(open(sbatch_mappings_file_path))
+
+    cli_param_parser = build_parser(cli_to_json_mappings)
 
     #Additional argument for the input file. 
     cli_param_parser.add_argument('input_file', nargs='?', help='Input script')

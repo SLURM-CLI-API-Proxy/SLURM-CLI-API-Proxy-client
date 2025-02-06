@@ -43,7 +43,10 @@ with openapi_client.ApiClient(configuration) as api_client:
             sleep 10
             """,  # Modified to include sleep command
         "job": {
-            "environment": ["PATH=/bin/:/usr/bin/:/sbin/"],
+            "environment": ["PATH=/bin/:/usr/bin/:/sbin/",
+                            "MY_VAR=value1",
+                            "ANOTHER_VAR=value2",                            
+                            ],
             "current_working_directory": "/home/hcadavid",
             "name": "test slurmrestd job",
             "output": "slurm-%j.out"
