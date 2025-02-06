@@ -46,7 +46,15 @@ class PayloadBuildTest(unittest.TestCase):
                 "is_mandatory": False,
                 "data_type": "str",
                 "api_mapping": {"request_property": "job.current_working_directory"}
+            },
+            {
+                "name": "--ignored-arg",
+                "abbreviation": "-NA",
+                "is_mandatory": False,
+                "data_type": "str",
+                "api_mapping": {"request_property": "should.not.be.included"}
             }
+
 
         ]
     }
@@ -59,9 +67,11 @@ class PayloadBuildTest(unittest.TestCase):
             export='PATH=/bin/:/usr/bin/:/sbin/',
             job_name = 'jname',
             chdir = '/home/testuser',
-            output = 'slurm-%j.out'
+            output = 'slurm-%j.out',
+            #simulating a non-used argument, which should be ignored
+            ignored_arg = None
         )
-        
+
         script = "#!/bin/bash"
 
         #Expected generated dictionary (which would be used for generating the JSON payload)
