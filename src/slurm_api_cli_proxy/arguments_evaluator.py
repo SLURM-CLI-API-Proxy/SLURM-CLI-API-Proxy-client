@@ -2,14 +2,15 @@ import yaml
 import os
 from pathlib import Path
 import argparse
+from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
 
-def build_parser(config_path:str):
+def build_parser(mappings:CliToJsonPayloadMappings):
 
-    local_path = Path(__file__).resolve().parent
-    sbatch_args_metadata = yaml.safe_load(open(config_path))
+    #local_path = Path(__file__).resolve().parent
+    #sbatch_args_metadata = yaml.safe_load(open(config_path))
     parser = argparse.ArgumentParser()
         
-    for arg in sbatch_args_metadata['parameters']:
+    for arg in mappings.arguments_list:
 
         arg_data_type = __get_python_type(arg['data_type'])
 
@@ -25,7 +26,6 @@ def build_parser(config_path:str):
                 parser.add_argument(arg['name'],                     type= arg_data_type, help="", required=arg['is_mandatory'])            
             else:        
                 parser.add_argument(arg['abbreviation'],arg['name'], type= arg_data_type, help="", required=arg['is_mandatory'])
-
 
     return parser
 
