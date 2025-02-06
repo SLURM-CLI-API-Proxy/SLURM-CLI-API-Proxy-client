@@ -15,7 +15,7 @@ from .arguments_evaluator import build_parser
 
 
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
@@ -52,8 +52,6 @@ def sbatch():
             return 1
 
 
-    logging.debug(args)
-
     #Removing the (provisional) argument used to capture the input file    
     cli_args_dict = vars(args)
     cli_args_dict.pop('proxy_cli_input_file')
@@ -79,6 +77,7 @@ def sbatch():
         #TODO check if special error codes are required
         return 1
     else:
+        print(f"Submitted batch job {response.job_id}")
         return 0
 
     
