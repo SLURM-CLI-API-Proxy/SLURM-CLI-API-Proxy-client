@@ -37,6 +37,9 @@ coverage.xml
 # Sphinx documentation
 docs/_build
 
+# mkdocs documentation
+/site
+
 # ide
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
