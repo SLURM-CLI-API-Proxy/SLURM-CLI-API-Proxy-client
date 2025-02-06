@@ -36,7 +36,7 @@ class SlurmAPIClientWrapper(ABC):
         pass
 
 
-def get_slurm_api_client(app_config:dict)->SlurmAPIClientWrapper:
+def get_slurm_api_client_wrapper(app_config:dict)->SlurmAPIClientWrapper:
 
     #TODO to be parametrizable on a real configuration file
     dummy_conf = {"module":"slurm_api_cli_proxy.client_args_linker.v39.slurm_api_client_wrapper_v39",
