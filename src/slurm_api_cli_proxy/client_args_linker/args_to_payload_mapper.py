@@ -1,5 +1,6 @@
 import argparse
 from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
+import os
 
 
 
@@ -33,9 +34,11 @@ def args_to_request_payload(script_content:str,cmd_args_dict:dict,sbatch_mapping
     request_payload["job"]={}
     request_payload["script"] = script_content
 
-    #Default values for properties that are not mandatory on the CLI, but are on the API Client request.
-    #This value will be overriden if the argument is used when invoking the sbatch command.
+    #Default values for properties that are optional on the CLI, but are mandatory for the API Client request.
+    #These value will be overriden if used when invoking the sbatch command.
     request_payload["job"]["environment"]=["ALL"]
+    request_payload["job"]["current_working_directory"] = os.getcwd()
+
     
 
     for cmd_arg in cmd_args_dict:
