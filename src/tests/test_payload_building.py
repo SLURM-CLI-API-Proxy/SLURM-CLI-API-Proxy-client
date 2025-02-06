@@ -21,7 +21,10 @@ class PayloadBuildTest(unittest.TestCase):
                 "abbreviation": "--export",
                 "is_mandatory": False,
                 "data_type": "str",
-                "api_mapping": {"request_property": "job.environment"}
+                "api_mapping": {
+                                "request_property": "job.environment",
+                                "lambda_expression": "lambda p: p.split(',')"
+                                }
             },
             {
                 "name": "--job-name",
@@ -66,7 +69,7 @@ class PayloadBuildTest(unittest.TestCase):
             "job": {
                 "environment": ["PATH=/bin/:/usr/bin/:/sbin/"],
                 "current_working_directory": "/home/testuser",
-                "name": "test slurmrestd job",
+                "name": "jname",
                 "output": "slurm-%j.out"
             }
         }

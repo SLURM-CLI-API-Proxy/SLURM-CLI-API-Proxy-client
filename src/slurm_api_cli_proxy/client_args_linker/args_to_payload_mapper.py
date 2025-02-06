@@ -51,7 +51,13 @@ def args_to_request_payload(script_content:str,cmd_args:argparse.Namespace,sbatc
             arg_mappings = sbatch_mappings.arguments_dict[original_arg_name]
             
             if 'api_mapping' in arg_mappings:
+                ## path within the dictionary/JSON doc where the property will be included
                 doc_path = arg_mappings['api_mapping']['request_property']
+                
+                ## if a lambda expression is included, it is used to pre-process the value
+                if 'lambda_expression' in arg_mappings['api_mapping']:
+                    preproc_func = eval(arg_mappings['api_mapping']['lambda_expression'])
+                    arg_value = preproc_func(arg_value)
 
                 __add_nested_path(request_payload,doc_path,arg_value)
                 

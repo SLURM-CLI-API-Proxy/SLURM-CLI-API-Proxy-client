@@ -11,6 +11,7 @@ parameters:
     data_type: str
     api_mapping:
       request_property: job.environment
+      lambda_expression: "lambda p: p.split(',')"
 
 
   - name: --job-name
