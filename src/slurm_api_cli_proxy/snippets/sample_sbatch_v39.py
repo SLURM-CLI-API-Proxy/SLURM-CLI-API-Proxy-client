@@ -37,21 +37,37 @@ with openapi_client.ApiClient(configuration) as api_client:
 
     #https://slurm.schedmd.com/rest_api.html#v0.0.42_job_submit_req
 
+
+    #job_request = {'script': '#!/bin/bash', 'job': {'name': 'dajob'}}
+
+
+
     job_request = {
-        "script": """#!/bin/bash
-            ls > /home/hcadavid/temp_file.txt
-            sleep 10
-            """,  # Modified to include sleep command
+        "script": "#!/bin/bash",  
         "job": {
-            "environment": ["PATH=/bin/:/usr/bin/:/sbin/",
-                            "MY_VAR=value1",
-                            "ANOTHER_VAR=value2",                            
-                            ],
-            "current_working_directory": "/home/hcadavid",
-            "name": "test slurmrestd job",
-            "output": "slurm-%j.out"
+            "environment": ["ALL"],
+            #"current_working_directory": "/home/testuser",
+            #"name": "jname"
+            #"output": "slurm-%j.out"
         }
     }
+
+
+    # job_request = {
+    #     "script": """#!/bin/bash
+    #         ls > /home/hcadavid/temp_file.txt
+    #         sleep 10
+    #         """,  # Modified to include sleep command
+    #     "job": {
+    #         "environment": ["PATH=/bin/:/usr/bin/:/sbin/",
+    #                         "MY_VAR=value1",
+    #                         "ANOTHER_VAR=value2",                            
+    #                         ],
+    #         "current_working_directory": "/home/hcadavid",
+    #         "name": "test slurmrestd job",
+    #         "output": "slurm-%j.out"
+    #     }
+    # }
 
     # Convert the dictionary to a JSON string
     json_req_string = json.dumps(job_request, indent=2)

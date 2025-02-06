@@ -3,12 +3,16 @@ from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMapping
 
 
 
-def args_to_request_payload(script_content:str,cmd_args:argparse.Namespace,sbatch_mappings:CliToJsonPayloadMappings)->dict:
+def args_to_request_payload(script_content:str,cmd_args_dict:dict,sbatch_mappings:CliToJsonPayloadMappings)->dict:
     """
     Converts command-line arguments into a payload dictionary for API requests.
     Args:
         script_content (str): The content of the script to be executed.
-        cmd_args (argparse.Namespace): The parsed command-line arguments.
+        cmd_args : a dictionary with the arguments parsed from the CLI, using the
+            naming conventions of argparse (--job-name -> job_name). Eg:
+            {'export': 'PATH=/bin/:/usr/bin/:/sbin/', 
+             'job_name': 'jname', 
+             'chdir': '/home/testuser'}
         sbatch_mappings (dict): A dictionary mapping sbatch parameters to their values.
     Returns:
         dict: A dictionary representing the payload to be sent in the API request.
@@ -24,18 +28,21 @@ def args_to_request_payload(script_content:str,cmd_args:argparse.Namespace,sbatc
         }
     """    
     
-    # Parameters 
-    cmd_args_dict = vars(cmd_args)
 
-    request_payload = {}   
+    request_payload = {}
+    request_payload["job"]={}
     request_payload["script"] = script_content
+
+    #Default values for properties that are not mandatory on the CLI, but are on the API Client request.
+    #This value will be overriden if the argument is used when invoking the sbatch command.
+    request_payload["job"]["environment"]=["ALL"]
+    
 
     for cmd_arg in cmd_args_dict:
         
         # Only checking arguments with a set value
         #TODO include also the 'boolean' (with no value) ones
-        if cmd_args_dict[cmd_arg] != None:
-            
+        if cmd_args_dict[cmd_arg] != None:            
             # argument name using argparse naming conventions (arg_x)
             arg_name = cmd_arg
 

@@ -87,7 +87,34 @@ class PayloadBuildTest(unittest.TestCase):
 
         mappings = CliToJsonPayloadMappings(config_mapping_dict=self.sbatch_test_param_mappings)
 
-        payload_dict = args_to_request_payload(script_content=script,cmd_args=args,sbatch_mappings=mappings)
+        payload_dict = args_to_request_payload(script_content=script,cmd_args_dict=vars(args),sbatch_mappings=mappings)
+
+        assert payload_dict == expected_output
+
+
+    def test_payload_build_default_values(self):
+
+        #Namespace object created by argparse when input is
+        #sbatch --job-name jname
+        args = Namespace(
+            job_name = 'jname'
+        )
+
+        script = "#!/bin/bash"
+
+        #Expected generated dictionary (which would be used for generating the JSON payload)
+        #The mandatory environment property must be included even when no specified with --export
+        expected_output = {
+            "script": "#!/bin/bash",  
+            "job": {
+                "environment": ["ALL"],
+                "name": "jname",
+            }
+        }
+
+        mappings = CliToJsonPayloadMappings(config_mapping_dict=self.sbatch_test_param_mappings)
+
+        payload_dict = args_to_request_payload(script_content=script,cmd_args_dict=vars(args),sbatch_mappings=mappings)
 
         assert payload_dict == expected_output
 

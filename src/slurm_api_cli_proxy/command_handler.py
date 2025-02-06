@@ -10,8 +10,14 @@ from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import get_
 from slurm_api_cli_proxy.client_args_linker.args_to_payload_mapper import args_to_request_payload
 from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SbatchResponse
 import openapi_client
+import logging
 from .arguments_evaluator import build_parser
 
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 def sbatch():
 
@@ -27,30 +33,37 @@ def sbatch():
 
     cli_param_parser = build_parser(cli_to_json_mappings)
 
-    #Additional argument for the input file. 
-    cli_param_parser.add_argument('input_file', nargs='?', help='Input script')
+    #Additional argument to capture the input file path. 
+    cli_param_parser.add_argument('proxy_cli_input_file', nargs='?', help='Input script')
 
     args = cli_param_parser.parse_args()
 
     input_script = None
 
-    if not args.input_file:
+    if not args.proxy_cli_input_file:
         #If input file is no provided, the script is read from STDIN
         input_script = sys.stdin.read().strip()
     else:
-        if os.path.isfile(args.input_file):
-            with open(args.input_file, 'r') as file:
+        if os.path.isfile(args.proxy_cli_input_file):
+            with open(args.proxy_cli_input_file, 'r') as file:
                 input_script = file.read().strip()
         else:
-            sys.stderr.write(f"sbatch: error: Unable to open file {args.input_file}\n")
+            sys.stderr.write(f"sbatch: error: Unable to open file {args.proxy_cli_input_file}\n")
             return 1
+
+
+    logging.debug(args)
+
+    #Removing the (provisional) argument used to capture the input file    
+    cli_args_dict = vars(args)
+    cli_args_dict.pop('proxy_cli_input_file')
 
     #transforms the values given to the parameters and the script file into a dictionary
     #with the structure required by the JSON file sent by the SLURM API client
-    job_request = args_to_request_payload(script_content=input_script,cmd_args=args,sbatch_mappings=cli_to_json_mappings)
+    job_request = args_to_request_payload(script_content=input_script,cmd_args_dict=cli_args_dict,sbatch_mappings=cli_to_json_mappings)
 
-    #Get an appropriate SlurmCliWrapper based on the SLURM API Version required
-    #TODO set this on a config file
+    #Getting an appropriate SlurmCliWrapper based on the SLURM API Version required
+    #TODO pass an actual config file (wrapper version is hard coded at the moment)
     slurm_cli_wrapper = get_slurm_api_client_wrapper({})
 
     #API client basic configuratin
