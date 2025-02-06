@@ -97,7 +97,8 @@ class PayloadBuildTest(unittest.TestCase):
         #Namespace object created by argparse when input is
         #sbatch --job-name jname
         args = Namespace(
-            job_name = 'jname'
+            job_name = 'jname',
+            chdir = '/home/testuser'
         )
 
         script = "#!/bin/bash"
@@ -108,6 +109,7 @@ class PayloadBuildTest(unittest.TestCase):
             "script": "#!/bin/bash",  
             "job": {
                 "environment": ["ALL"],
+                "current_working_directory": "/home/testuser",
                 "name": "jname",
             }
         }
