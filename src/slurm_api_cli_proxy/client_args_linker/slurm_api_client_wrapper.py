@@ -14,7 +14,7 @@ class SbatchResponse():
         return f"Job {self.job_id} - {len(self.errors)} errors:{self.errors}"
 
 
-class SlurmCMDRequestHandler(ABC):
+class SlurmAPIClientWrapper(ABC):
 
     @abstractmethod
     def sbatch_post_request(self,request:dict,conf:openapi_client.Configuration)-> SbatchResponse: 
@@ -36,10 +36,11 @@ class SlurmCMDRequestHandler(ABC):
         pass
 
 
-def get_args_linker(app_config:dict)->SlurmCMDRequestHandler:
+def get_slurm_api_client(app_config:dict)->SlurmAPIClientWrapper:
 
-    dummy_conf = {"module":"slurm_api_cli_proxy.client_args_linker.v39.api_request_handler_v39",
-                  "class_name":"V39SlurmCMDRequestHandler"}
+    #TODO to be parametrizable on a real configuration file
+    dummy_conf = {"module":"slurm_api_cli_proxy.client_args_linker.v39.slurm_api_client_wrapper_v39",
+                  "class_name":"V39SlurmAPIClientWrapper"}
 
     linker_mod = importlib.import_module(dummy_conf["module"])
     
@@ -47,7 +48,7 @@ def get_args_linker(app_config:dict)->SlurmCMDRequestHandler:
 
     linker_inst = linker_class()
 
-    if not isinstance(linker_inst,SlurmCMDRequestHandler):
+    if not isinstance(linker_inst,SlurmAPIClientWrapper):
         raise Exception(f"Dynamically load of arguments linker failed (${dummy_conf["module"]}.${dummy_conf["class_name"]}). An ArgsLinker subclass is expected)")
 
     return linker_inst

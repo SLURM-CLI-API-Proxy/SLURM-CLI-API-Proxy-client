@@ -3,7 +3,7 @@ import openapi_client
 from argparse import Namespace
 
 
-from slurm_api_cli_proxy.client_args_linker.api_request_handler import get_args_linker
+from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import get_slurm_api_client
 from slurm_api_cli_proxy.client_args_linker.args_to_payload_mapper import args_to_request_payload
 from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
 
@@ -64,6 +64,7 @@ class PayloadBuildTest(unittest.TestCase):
         
         script = "#!/bin/bash"
 
+        #Expected generated dictionary (which would be used for generating the JSON payload)
         expected_output = {
             "script": "#!/bin/bash",  
             "job": {
@@ -102,7 +103,7 @@ class PayloadBuildTest(unittest.TestCase):
             }
         }
 
-        req_handler = get_args_linker({})
+        req_handler = get_slurm_api_client({})
 
         response = req_handler.sbatch_post_request(job_request, configuration)
         

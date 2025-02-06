@@ -1,7 +1,7 @@
 import unittest
 import openapi_client
 
-from slurm_api_cli_proxy.client_args_linker.api_request_handler import get_args_linker
+from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import get_slurm_api_client
 
         
 configuration = openapi_client.Configuration(
@@ -21,7 +21,7 @@ job_request = {
     }
 }
 
-req_handler = get_args_linker({})
+req_handler = get_slurm_api_client({})
 
 print(type(req_handler))
 

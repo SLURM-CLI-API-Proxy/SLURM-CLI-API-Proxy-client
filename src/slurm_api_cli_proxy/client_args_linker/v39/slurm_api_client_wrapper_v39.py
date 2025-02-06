@@ -1,4 +1,4 @@
-from slurm_api_cli_proxy.client_args_linker.api_request_handler import SlurmCMDRequestHandler, SbatchResponse
+from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SlurmAPIClientWrapper, SbatchResponse
 import openapi_client
 from openapi_client.models.v0039_job_submission import V0039JobSubmission
 from openapi_client.models.v0039_job_submission_response import V0039JobSubmissionResponse
@@ -7,7 +7,7 @@ import os
 import json
 
 
-class V39SlurmCMDRequestHandler(SlurmCMDRequestHandler):
+class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
     def sbatch_post_request(self,request:dict,conf:openapi_client.Configuration)-> SbatchResponse:        
         configuration = conf
