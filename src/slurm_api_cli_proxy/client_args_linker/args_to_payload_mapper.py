@@ -34,8 +34,7 @@ def args_to_request_payload(script_content:str,cmd_args:argparse.Namespace,sbatc
         
         # Only checking arguments with a set value
         #TODO include also the 'boolean' (with no value) ones
-
-        if cmd_arg != None:
+        if cmd_args_dict[cmd_arg] != None:
             
             # argument name using argparse naming conventions (arg_x)
             arg_name = cmd_arg
@@ -57,6 +56,7 @@ def args_to_request_payload(script_content:str,cmd_args:argparse.Namespace,sbatc
                 ## if a lambda expression is included, it is used to pre-process the value
                 if 'lambda_expression' in arg_mappings['api_mapping']:
                     preproc_func = eval(arg_mappings['api_mapping']['lambda_expression'])
+                    print(">>>>>> LAMBDA FOUND FOR",doc_path)
                     arg_value = preproc_func(arg_value)
 
                 __add_nested_path(request_payload,doc_path,arg_value)
