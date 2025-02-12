@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
+from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
 import openapi_client
 import importlib
+
 
 
 class SbatchResponse():
@@ -17,7 +19,7 @@ class SbatchResponse():
 class SlurmAPIClientWrapper(ABC):
 
     @abstractmethod
-    def sbatch_post_request(self,request:dict,conf:openapi_client.Configuration)-> SbatchResponse: 
+    def sbatch_post_request(self,request:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SbatchResponse: 
         """
         Sends a POST request to the sbatch endpoint.
 
@@ -32,19 +34,22 @@ class SlurmAPIClientWrapper(ABC):
         pass
 
     @abstractmethod
-    def squeue_post_request(self,request:dict,conf:openapi_client.Configuration)-> str:
+    def squeue_post_request(self,request:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> str:
         pass
 
 
-def get_slurm_api_client_wrapper(app_config:dict)->SlurmAPIClientWrapper:
+def get_slurm_api_client_wrapper(payload_mappings:CliToJsonPayloadMappings)->SlurmAPIClientWrapper:
 
-    #TODO to be parametrizable on a real configuration file
+    wrapper_pkg:str = payload_mappings.metadata["wrapper_package"]
+    wrapper_class:str = payload_mappings.metadata["wrapper_class"]
+
+
     dummy_conf = {"module":"slurm_api_cli_proxy.client_args_linker.v39.slurm_api_client_wrapper_v39",
                   "class_name":"V39SlurmAPIClientWrapper"}
 
-    linker_mod = importlib.import_module(dummy_conf["module"])
+    linker_mod = importlib.import_module(wrapper_pkg)
     
-    linker_class = getattr(linker_mod, dummy_conf["class_name"])
+    linker_class = getattr(linker_mod, wrapper_class)
 
     linker_inst = linker_class()
 

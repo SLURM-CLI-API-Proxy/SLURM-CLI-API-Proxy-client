@@ -24,7 +24,8 @@ def sbatch():
     #Sbatch has an error code = 130 when aborted (ctrl-c) (codes 129-192 indicate jobs terminated by Linux signals) 
     signal.signal(signal.SIGINT, lambda signum,frame : sys.exit(130))
 
-    sbatch_mappings_file_path = pkg_resources.resource_filename(__name__, 'mappings/sbatch_mappings_alt.yaml')
+    #TODO 
+    sbatch_mappings_file_path = pkg_resources.resource_filename(__name__, 'mappings/sbatch_mappings_r23.11_v0.0.39.yaml')
 
     cli_to_json_mappings = CliToJsonPayloadMappings(yaml_config_path=sbatch_mappings_file_path)
 
@@ -62,7 +63,7 @@ def sbatch():
 
         #Getting an appropriate SlurmCliWrapper based on the SLURM API Version required
         #TODO pass an actual config file (wrapper version is hard coded at the moment)
-        slurm_cli_wrapper = get_slurm_api_client_wrapper({})
+        slurm_cli_wrapper = get_slurm_api_client_wrapper(cli_to_json_mappings)
 
         #API client basic configuratin
         #TODO to be set through a config file
@@ -70,9 +71,15 @@ def sbatch():
             host = "http://slurm-controller:6820"
         )
 
-        response:SbatchResponse = slurm_cli_wrapper.sbatch_post_request(job_request, configuration)
 
-        #Errors reported by the server, after a successful request
+        if "SLURM_JWT" not in os.environ:
+            sys.stderr.write("[SLURM_CLI_PROXY_ERROR] SLURM_JWT environment variable is not set.\n")
+            return 1
+        else:
+            slurm_jwt = os.environ["SLURM_JWT"]
+
+        response:SbatchResponse = slurm_cli_wrapper.sbatch_post_request(job_request, configuration,slurm_jwt)
+
         if (len(response.errors)>0):
             print(response.errors)
             #TODO check if special error codes are required
@@ -80,13 +87,13 @@ def sbatch():
         else:
             print(f"Submitted batch job {response.job_id}")
             return 0
-    
+
     #Errors catched while building the request
     except UnsuportedArgumentException as e:
-        print(f"SLURM_CLI_PROXY_ERROR: Unsupported argument (or not yet implemented):{e.argument}")
+        print(f"[SLURM_CLI_PROXY_ERROR]: Unsupported argument (or not yet implemented):{e.argument}")
         return 1
     except Exception as e:
-        print(f"SLURM_CLI_PROXY_ERROR - Unexpected error:{e.message}")
+        print(f"[SLURM_CLI_PROXY_ERROR] - Unexpected error:{e.message}")
         return 1
 
 
