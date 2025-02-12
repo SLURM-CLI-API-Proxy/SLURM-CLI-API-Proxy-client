@@ -1,15 +1,22 @@
 from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SlurmAPIClientWrapper, SbatchResponse
 import openapi_client
+
+#sbatch related
 from openapi_client.models.v0039_job_submission import V0039JobSubmission
 from openapi_client.models.v0039_job_submission_response import V0039JobSubmissionResponse
 from openapi_client.rest import ApiException
+
+#squeue related
+from openapi_client.models.v0039_jobs_response import V0039JobsResponse
+
 import os
 import json
 
 
 class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
-    def sbatch_post_request(self,request:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SbatchResponse:        
+    def sbatch_post_request(self,request:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SbatchResponse:     
+        #Based on the code snippet included on the documentation generated from the Slurm OpenAPI specification
         configuration = conf
         configuration.api_key['token'] = slurmrestd_token
         with openapi_client.ApiClient(configuration) as api_client:
@@ -39,7 +46,23 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
                 response.errors.append(f"SLURM_PROXY_ERROR: {e}")
                 return response
 
-    def squeue_post_request(self,json_request:str)-> str:
-        raise Exception("Not implemented")
-    
 
+    def squeue_get_request(self,request:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> str:
+        #Based on the code snippet included on the documentation generated from the Slurm OpenAPI specification
+        configuration = conf
+        configuration.api_key['token'] = slurmrestd_token
+    
+    
+        with openapi_client.ApiClient(configuration) as api_client:
+            # Create an instance of the API class
+            api_instance = openapi_client.SlurmApi(api_client)
+            update_time = 56 # int | Filter if changed since update_time. Use of this parameter can result in faster replies. (optional)
+
+            try:
+                # get list of jobs
+                api_response = api_instance.slurm_v0039_get_jobs(update_time=update_time)
+
+                return api_response
+        
+            except Exception as e:
+                print("Exception when calling SlurmApi->slurmdb_v0039_get_jobs: %s\n" % e)

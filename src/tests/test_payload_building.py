@@ -4,7 +4,7 @@ from argparse import Namespace
 
 
 from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import get_slurm_api_client_wrapper
-from slurm_api_cli_proxy.client_args_linker.args_to_payload_mapper import args_to_request_payload
+from slurm_api_cli_proxy.client_args_linker.args_to_payload_mapper import args_to_sbatch_request_payload
 from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
 
 class PayloadBuildTest(unittest.TestCase):
@@ -59,6 +59,8 @@ class PayloadBuildTest(unittest.TestCase):
         ]
     }
 
+    
+
     def test_payload_build(self):
 
         #Namespace object created by argparse when input is
@@ -87,7 +89,7 @@ class PayloadBuildTest(unittest.TestCase):
 
         mappings = CliToJsonPayloadMappings(config_mapping_dict=self.sbatch_test_param_mappings)
 
-        payload_dict = args_to_request_payload(script_content=script,cmd_args_dict=vars(args),sbatch_mappings=mappings)
+        payload_dict = args_to_sbatch_request_payload(script_content=script,cmd_args_dict=vars(args),sbatch_mappings=mappings)
 
         assert payload_dict == expected_output
 
@@ -116,7 +118,7 @@ class PayloadBuildTest(unittest.TestCase):
 
         mappings = CliToJsonPayloadMappings(config_mapping_dict=self.sbatch_test_param_mappings)
 
-        payload_dict = args_to_request_payload(script_content=script,cmd_args_dict=vars(args),sbatch_mappings=mappings)
+        payload_dict = args_to_sbatch_request_payload(script_content=script,cmd_args_dict=vars(args),sbatch_mappings=mappings)
 
         assert payload_dict == expected_output
 

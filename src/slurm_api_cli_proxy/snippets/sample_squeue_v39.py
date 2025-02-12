@@ -36,6 +36,9 @@ with openapi_client.ApiClient(configuration) as api_client:
     try:
         # get list of jobs
         api_response = api_instance.slurm_v0039_get_jobs(update_time=update_time)
+
+        print (type(api_response))
+
         print("The response of SlurmApi->slurm_v0039_get_jobs:\n")
         pprint(api_response)
     except Exception as e:
