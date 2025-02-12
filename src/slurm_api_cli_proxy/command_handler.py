@@ -7,7 +7,7 @@ from pathlib import Path
 import pkg_resources
 from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
 from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import get_slurm_api_client_wrapper
-from slurm_api_cli_proxy.client_args_linker.args_to_payload_mapper import args_to_sbatch_request_payload,args_to_squeue_request_payload,UnsuportedArgumentException
+from slurm_api_cli_proxy.client_args_linker.args_to_payload_mapper import args_to_sbatch_request_payload,args_to_squeue_parameters_dict,UnsuportedArgumentException
 from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SbatchResponse
 import openapi_client
 import logging
@@ -111,13 +111,12 @@ def squeue():
 
     cli_args = cli_param_parser.parse_args()
 
-    #TODO remove - GET request to /jobs doesn't require any arguments
-    request_args = args_to_squeue_request_payload(squeue_args_dict=vars(cli_args),squeue_mappings=cli_to_json_mappings)
+    #dictionary with the arguments/values given to the squeue command
+    request_args = args_to_squeue_parameters_dict(squeue_args_dict=vars(cli_args),squeue_mappings=cli_to_json_mappings)
 
     try:
 
-        #Getting an appropriate SlurmCliWrapper based on the SLURM API Version required
-        #TODO pass an actual config file (wrapper version is hard coded at the moment)
+        #Getting an appropriate SlurmCliWrapper based on the SLURM API Version required        
         slurm_cli_wrapper = get_slurm_api_client_wrapper(cli_to_json_mappings)
 
         #API client basic configuratin
@@ -135,23 +134,20 @@ def squeue():
 
         response = slurm_cli_wrapper.squeue_get_request(request_args, configuration,slurm_jwt)
 
-        print(type(response))
-        print(response)
-
-        # if (len(response.errors)>0):
-        #     print(response.errors)
-        #     #TODO check if special error codes are required
-        #     return 1
-        # else:
-        #     print(f"Submitted batch job {response.job_id}")
-        #     return 0
+        if (len(response.errors)>0):
+            print(response.errors)
+            #TODO check if special error codes are required
+            return 1
+        else:
+            print(response.pre_processed_output)
+            return 0
 
     #Errors catched while building the request
     except UnsuportedArgumentException as e:
         print(f"[SLURM_CLI_PROXY_ERROR]: Unsupported argument (or not yet implemented):{e.argument}")
         return 1
     except Exception as e:
-        print(f"[SLURM_CLI_PROXY_ERROR] - Unexpected error:{e.message}")
+        print(f"[SLURM_CLI_PROXY_ERROR] - Unexpected error:{e}")
         return 1
 
 

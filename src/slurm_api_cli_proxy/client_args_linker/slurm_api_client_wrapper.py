@@ -17,15 +17,11 @@ class SbatchResponse():
 
 
 class SqueueResponse():
-    def __init__(self,job_id,step_id):
-        self.errors = []
-        self.warnings = []
-        self.job_id = job_id
-        self.step_id = step_id
-
-    def __str__(self):
-        return f"Job {self.job_id} - {len(self.errors)} errors:{self.errors}"
-
+    def __init__(self,output_text:str, errors = [], warnings = []):
+        self.errors = errors
+        self.warnings = warnings
+        self.pre_processed_output:str  = output_text
+        
 
 
 
@@ -47,19 +43,21 @@ class SlurmAPIClientWrapper(ABC):
         pass
 
     @abstractmethod
-    def squeue_get_request(self,request:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> str:
+    def squeue_get_request(self,cli_arguments:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SqueueResponse:
         """
         Sends a GET request to the job endpoint.
 
         Args:
-            request (dict): The arguments required by the API client. 
+            cli_arguments (dict): a dictionary with the arguments (and values) given to the squee command
             conf (openapi_client.Configuration): The configuration object for the API client.
+            slurmrestd_token (str): The authentication token for the SLURM REST API.
 
         Returns:
-            str: The response from the sbatch endpoint (to be processed and sent to STDOUT).
+            str: The processed response (ready to be sent to STDOUT)
         """
-
         pass
+
+
 
 
 def get_slurm_api_client_wrapper(payload_mappings:CliToJsonPayloadMappings)->SlurmAPIClientWrapper:

@@ -83,17 +83,18 @@ def args_to_sbatch_request_payload(script_content:str,cmd_args_dict:dict,sbatch_
 
 
 
-def args_to_squeue_request_payload(squeue_args_dict:dict,squeue_mappings:CliToJsonPayloadMappings)->dict:
+def args_to_squeue_parameters_dict(squeue_args_dict:dict,squeue_mappings:CliToJsonPayloadMappings)->dict:
     """
-    Converts command-line arguments into a payload for an squeue API request.
+    Get a dictionary with the arguments given in the CLI
 
     Args:
         cmd_args_dict : a dictionary with the squeue arguments parsed from the CLI, using the
             naming conventions of argparse (--name -> job_name).    
-        cmd_args_dict (dict): A dictionary containing command-line arguments and their values.
+        cmd_args_dict (dict): A dictionary containing command-line arguments and their values. Here is only
+            used 
         squeue_mappings (CliToJsonPayloadMappings): An object containing mappings from CLI arguments to API request properties.
     Returns:
-        dict: A dictionary representing the payload for the squeue API request.
+        dict: A dictionary with the arguments given in the CLI
     Raises:
         UnsuportedArgumentException: If a command argument is not supported or not yet implemented in the CLI Proxy.
     Notes:
@@ -108,7 +109,6 @@ def args_to_squeue_request_payload(squeue_args_dict:dict,squeue_mappings:CliToJs
         
         # Only checking arguments with an assigned value
         #TODO include also the 'boolean' (with no value) ones
-        #TODO de-duplicate
         if squeue_args_dict[cmd_arg] != None:            
             # argument name using argparse naming conventions (e.g, arg_x)
             arg_name = cmd_arg
@@ -118,25 +118,8 @@ def args_to_squeue_request_payload(squeue_args_dict:dict,squeue_mappings:CliToJs
 
             # value given to the argument            
             arg_value = squeue_args_dict[cmd_arg]
-
-            # look in the mappings for the corresponding property that 
-            # must be included on the API request
-            arg_mappings = squeue_mappings.arguments_dict[original_arg_name]
             
-            if 'api_mapping' in arg_mappings:
-                
-                #the argument name as required to make the request
-                arg_name = arg_mappings['api_mapping']['request_property']
-
-                ## if a lambda expression is included, it is used to pre-process the value
-                if 'lambda_expression' in arg_mappings['api_mapping']:
-                    preproc_func = eval(arg_mappings['api_mapping']['lambda_expression'])
-                    arg_value = preproc_func(arg_value)
-
-                squeue_request_params[arg_name] = arg_value
-
-            else:
-                raise UnsuportedArgumentException("Command argument not supported or not yet implemented in the CLI Proxy",original_arg_name)
+            squeue_request_params[original_arg_name]=arg_value
 
     return squeue_request_params
 

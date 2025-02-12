@@ -14,23 +14,15 @@ parameters:
   - name: --user
     abbreviation: -u
     is_mandatory: false
-    data_type: str
-    api_mapping:
-      request_property: users
-
+    data_type: str    
 
   - name: --name
     abbreviation: --name
     is_mandatory: false
     data_type: str
-    api_mapping:
-      request_property: job_name
       
-
-  # - name: --job
-  #   abbreviation: -j
-  #   is_mandatory: false
-  #   data_type: str
-  #   api_mapping:
-  #     request_property: job.name
+  - name: --json
+    abbreviation: --json
+    is_mandatory: false
+    data_type: bool
 
