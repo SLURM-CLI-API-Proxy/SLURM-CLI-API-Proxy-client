@@ -2,7 +2,13 @@ import argparse
 from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
 import os
 
+class UnsuportedArgumentException(Exception):
+    argument:str
 
+    def __init__(self, message, argument):
+        self.message = message
+        self.argument = argument
+        super().__init__(self.message)
 
 def args_to_request_payload(script_content:str,cmd_args_dict:dict,sbatch_mappings:CliToJsonPayloadMappings)->dict:
     """
@@ -71,7 +77,7 @@ def args_to_request_payload(script_content:str,cmd_args_dict:dict,sbatch_mapping
                 __add_nested_path(request_payload,doc_path,arg_value)
                 
             else:
-                raise Exception(f"Command argument not supported or not yet implemented in the CLI Proxy:{original_arg_name}")
+                raise UnsuportedArgumentException("Command argument not supported or not yet implemented in the CLI Proxy",original_arg_name)
 
     return request_payload
 
