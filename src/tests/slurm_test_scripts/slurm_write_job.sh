@@ -8,4 +8,6 @@
 #SBATCH --cpus-per-task=1
 
 # Write content to a file
+echo "Running Slurm job $SLURM_JOB_ID!"
+sleep 10
 echo "Hello from Slurm job $SLURM_JOB_ID!" >> /tmp/output.txt
