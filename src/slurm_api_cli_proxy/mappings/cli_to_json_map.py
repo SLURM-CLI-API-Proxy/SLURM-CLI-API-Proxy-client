@@ -25,7 +25,7 @@ class CliToJsonPayloadMappings():
         elif (config_mapping_dict is not None):
             args_mappings = config_mapping_dict
         else:
-            raise Exception("No configuration parameters provided.")
+            raise Exception("No configuration parameters provided - either yaml_config_path or config_mapping_dict must be set")
 
         self.metadata = args_mappings['mapping_meta']
         self.arguments_list = args_mappings['parameters']

@@ -9,9 +9,9 @@ import json
 
 class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
-    def sbatch_post_request(self,request:dict,conf:openapi_client.Configuration)-> SbatchResponse:        
+    def sbatch_post_request(self,request:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SbatchResponse:        
         configuration = conf
-        configuration.api_key['token'] = os.environ["SLURM_JWT"]
+        configuration.api_key['token'] = slurmrestd_token
         with openapi_client.ApiClient(configuration) as api_client:
             # Create an instance of the API class
             
