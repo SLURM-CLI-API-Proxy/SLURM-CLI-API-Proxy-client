@@ -1,0 +1,77 @@
+site_name: SLURM_CLI_PROXY
+site_description: Command Line Interface (CLI) proxy for SLURM REST API
+strict: true
+site_url: https://github.com/hcadavid/SLURM_CLI_PROXY
+
+theme:
+  # https://squidfunk.github.io/mkdocs-material/
+  name: 'material'
+  palette:
+  - media: "(prefers-color-scheme: light)"
+    scheme: default
+    primary: light blue
+    accent: indigo
+    toggle:
+      icon: material/weather-sunny
+      name: "Switch to dark mode"
+  - media: "(prefers-color-scheme: dark)"
+    scheme: slate
+    primary: light blue
+    accent: indigo
+    toggle:
+      icon: material/weather-night
+      name: "Switch to light mode"
+  features:
+    - content.tabs.link
+    - content.code.annotate
+    - content.code.copy
+    - announce.dismiss
+    - navigation.tabs
+  icon:
+    logo: 'material/library-outline'
+    previous: fontawesome/solid/angle-left
+    next: fontawesome/solid/angle-right
+  favicon: 'favicon.png'
+
+repo_name: hcadavid/SLURM_CLI_PROXY
+repo_url: https://github.com/hcadavid/SLURM_CLI_PROXY
+edit_uri: edit/dev/docs/
+
+# https://www.mkdocs.org/user-guide/configuration/#validation
+#validation:
+#  omitted_files: warn
+#  absolute_links: warn
+#  unrecognized_links: warn
+
+nav:
+- Developer documentation:
+  - Introduction: index.md
+  - Setup: setup.md
+  - Limitations: limitations.md  
+  
+
+markdown_extensions:
+# https://python-markdown.github.io/extensions/
+- toc:
+    permalink: true
+- admonition
+# https://facelessuser.github.io/pymdown-extensions
+- pymdownx.details
+- pymdownx.highlight:
+    anchor_linenums: true
+    pygments_lang_class: true
+- pymdownx.extra:
+    pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+- pymdownx.tabbed:
+    alternate_style: true
+- pymdownx.magiclink
+
+watch:
+- docs
+
+plugins:
+- search

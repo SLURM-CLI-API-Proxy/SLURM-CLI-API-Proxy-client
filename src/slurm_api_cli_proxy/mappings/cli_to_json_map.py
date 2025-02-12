@@ -8,7 +8,7 @@ class CliToJsonPayloadMappings():
     def __init__(self,yaml_config_path:str=None,config_mapping_dict:dict=None):
         """
         Initializes the CLI to JSON mapping object using one of two input: a YAML
-        file (yaml_config_path) or its equivalent given as a dictionary. If
+        file (yaml_config_path) or its equivalent (in memory) given as a dictionary. If
         both are provided, only the YAML file is considered.
             
         Args:

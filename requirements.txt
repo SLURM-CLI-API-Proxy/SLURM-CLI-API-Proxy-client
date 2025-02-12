@@ -2,6 +2,7 @@ annotated-types==0.7.0
 argcomplete==3.5.1
 click==8.1.7
 iniconfig==2.0.0
+mkdocs==1.6.1
 openapi-generator-cli==7.10.0.post0
 packaging==24.2
 pipx==1.7.1
