@@ -1,7 +1,13 @@
+# Proxy mapping configuration for the SLURM WLM release 23.11 and slumrestd API version 0.0.39
+# the api_mapping/request_property entries must correspond with one of the the "v0.0.39_job_desc_msg" object
+# properties defined on the OpenAPI specification.
+
 mapping_meta:
-  - command: sbatch
-  - api_version: 0.0.39
-  - api_client_payload_class: V0039JobSubmission
+  command: sbatch
+  api_version: 0.0.39
+  wlm_release: 23.11
+  wrapper_package: slurm_api_cli_proxy.client_args_linker.v39.slurm_api_client_wrapper_v39
+  wrapper_class: V39SlurmAPIClientWrapper
 
 parameters:
 
