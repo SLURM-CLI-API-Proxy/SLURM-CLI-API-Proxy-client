@@ -45,13 +45,13 @@ def args_to_sbatch_request_payload(script_content:str,cmd_args_dict:dict,sbatch_
     request_payload["job"]["environment"]=["ALL"]
     request_payload["job"]["current_working_directory"] = os.getcwd()
 
-    
-
     for cmd_arg in cmd_args_dict:
         
-        # Only checking arguments with an assigned value
-        #TODO include also the 'boolean' (with no value) ones
-        if cmd_args_dict[cmd_arg] != None:            
+        cmd_arg_value = cmd_args_dict[cmd_arg]
+
+        # Ignore arguments that were not used on the cli: str/int arguments with a None value, 
+        #   or bool arguments ('flag' arguments with no value, which are True when included)
+        if cmd_arg_value != None and cmd_arg_value != False:            
             # argument name using argparse naming conventions (arg_x)
             arg_name = cmd_arg
 

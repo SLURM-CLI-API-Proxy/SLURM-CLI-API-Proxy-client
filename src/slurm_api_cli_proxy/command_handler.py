@@ -5,8 +5,9 @@ import os
 import signal
 from pathlib import Path
 import pkg_resources
+import traceback
 from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
-from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import get_slurm_api_client_wrapper
+from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import get_slurm_api_client_wrapper,ApiClientException
 from slurm_api_cli_proxy.client_args_linker.args_to_payload_mapper import args_to_sbatch_request_payload,args_to_squeue_parameters_dict,UnsuportedArgumentException
 from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SbatchResponse
 import openapi_client
@@ -93,6 +94,8 @@ def sbatch():
         print(f"[SLURM_CLI_PROXY_ERROR]: Unsupported argument (or not yet implemented):{e.argument}")
         return 1
     except Exception as e:
+        #TODO debug log
+        print(e)
         print(f"[SLURM_CLI_PROXY_ERROR] - Unexpected error:{e.message}")
         return 1
 
@@ -134,8 +137,8 @@ def squeue():
 
         response = slurm_cli_wrapper.squeue_get_request(request_args, configuration,slurm_jwt)
 
-        if (len(response.errors)>0):
-            print(response.errors)
+        if (len(response.slurm_errors)>0):
+            print(response.slurm_errors)
             #TODO check if special error codes are required
             return 1
         else:
@@ -146,8 +149,9 @@ def squeue():
     except UnsuportedArgumentException as e:
         print(f"[SLURM_CLI_PROXY_ERROR]: Unsupported argument (or not yet implemented):{e.argument}")
         return 1
-    except Exception as e:
-        print(f"[SLURM_CLI_PROXY_ERROR] - Unexpected error:{e}")
+    except ApiClientException as e:
+        #TODO debug log
+        print(f"[SLURM_CLI_PROXY_ERROR]: API client exception:{e}")
         return 1
 
 

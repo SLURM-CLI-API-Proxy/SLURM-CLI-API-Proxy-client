@@ -7,7 +7,7 @@ import importlib
 
 class SbatchResponse():
     def __init__(self,job_id,step_id):
-        self.errors = []
+        self.errors = []        
         self.warnings = []
         self.job_id = job_id
         self.step_id = step_id
@@ -17,11 +17,19 @@ class SbatchResponse():
 
 
 class SqueueResponse():
-    def __init__(self,output_text:str, errors = [], warnings = []):
-        self.errors = errors
-        self.warnings = warnings
+    def __init__(self,output_text:str,errors:list[str] = [], warnings:list[str] = []):
+        self.slurm_errors:list[str] = errors
+        self.slurm_warnings:list[str] = warnings
         self.pre_processed_output:str  = output_text
-        
+
+class ApiClientException(Exception):
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return self.message
+
 
 
 
@@ -39,6 +47,10 @@ class SlurmAPIClientWrapper(ABC):
 
         Returns:
             str: The response from the sbatch endpoint (to be processed and sent to STDOUT).
+
+        Raises:
+            ApiClientException: If there is an error on the proxy, different from the errors returned
+            by the SLURM API            
         """
         pass
 
@@ -54,6 +66,11 @@ class SlurmAPIClientWrapper(ABC):
 
         Returns:
             str: The processed response (ready to be sent to STDOUT)
+
+        Raises:
+            ApiClientException: If there is an error on the proxy, different from the errors returned
+            by the SLURM API            
+
         """
         pass
 
