@@ -35,6 +35,8 @@ def __get_python_type(type_str):
         return str
     elif (type_str == "int"):
         return int
+    elif (type_str == "bool"):
+        return bool
 
 
 
