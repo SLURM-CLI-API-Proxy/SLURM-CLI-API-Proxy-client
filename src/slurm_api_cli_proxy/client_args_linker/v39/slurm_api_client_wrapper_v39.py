@@ -125,7 +125,7 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
         for job in jobs:            
             job_resources:V0039JobRes = job.job_resources      
-            elapsed_time = str(seconds_to_hhmm(timestamp-job.start_time)) if job.job_state == "RUNNING" else ""
+            elapsed_time = str(seconds_to_hhmm(timestamp-job.start_time)) if job.job_state == "RUNNING" else "00:00"
             output += f"{str(job.job_id)[:5]:5} {str(job.partition)[:9]:9} {str(job.name)[:8]:8} {job.user_name[:8]:8} {slurm_statuses[job.job_state][:8]:8} {elapsed_time[:5]:5} {str(job_resources.allocated_hosts)[:5]:5} {job_resources.nodes}\n"
 
         return output
