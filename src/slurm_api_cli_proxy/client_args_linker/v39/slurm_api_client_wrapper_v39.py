@@ -108,10 +108,6 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
                     
             output = "JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)\n"
 
-
-
-            #e.g.: V0039JobRes(nodes='slurm-worker', allocated_cores=0, allocated_cpus=0, allocated_hosts=1, allocated_nodes=[{'sockets': {'0': {'cores': {'0': 'allocated'}}}, 'nodename': 'slurm-worker', 'cpus_used': 0, 'memory_used': 0, 'memory_allocated': 1}])
-
             if user_filter == None:
                 for job in jobs:                            
                     job_resources:V0039JobRes = job.job_resources                          

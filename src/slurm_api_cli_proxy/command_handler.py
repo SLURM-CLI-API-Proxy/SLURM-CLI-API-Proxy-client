@@ -115,7 +115,7 @@ def squeue():
     cli_args = cli_param_parser.parse_args()
 
     #dictionary with the arguments/values given to the squeue command
-    request_args = args_to_squeue_parameters_dict(squeue_args_dict=vars(cli_args),squeue_mappings=cli_to_json_mappings)
+    request_args = args_to_squeue_parameters_dict(squeue_args_dict=vars(cli_args))
 
     try:
 

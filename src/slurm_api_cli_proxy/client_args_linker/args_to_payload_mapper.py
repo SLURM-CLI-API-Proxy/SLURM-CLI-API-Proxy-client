@@ -42,6 +42,8 @@ def args_to_sbatch_request_payload(script_content:str,cmd_args_dict:dict,sbatch_
 
     #Default values for properties that are optional on the CLI, but are mandatory for the API Client request.
     #These value will be overriden if used when invoking the sbatch command.
+    
+    #TODO to be defined on the YAML file
     request_payload["job"]["environment"]=["ALL"]
     request_payload["job"]["current_working_directory"] = os.getcwd()
 
@@ -83,24 +85,15 @@ def args_to_sbatch_request_payload(script_content:str,cmd_args_dict:dict,sbatch_
 
 
 
-def args_to_squeue_parameters_dict(squeue_args_dict:dict,squeue_mappings:CliToJsonPayloadMappings)->dict:
+def args_to_squeue_parameters_dict(squeue_args_dict:dict)->dict:
     """
     Get a dictionary with the arguments given in the CLI
 
     Args:
         cmd_args_dict : a dictionary with the squeue arguments parsed from the CLI, using the
-            naming conventions of argparse (--name -> job_name).    
-        cmd_args_dict (dict): A dictionary containing command-line arguments and their values. Here is only
-            used 
-        squeue_mappings (CliToJsonPayloadMappings): An object containing mappings from CLI arguments to API request properties.
+            naming conventions of argparse (--job-name -> job_name).    
     Returns:
-        dict: A dictionary with the arguments given in the CLI
-    Raises:
-        UnsuportedArgumentException: If a command argument is not supported or not yet implemented in the CLI Proxy.
-    Notes:
-        - Only arguments with an assigned value are processed. Boolean arguments (with no value) are not yet included.
-        - The function uses mappings to convert CLI argument names to the corresponding API request properties.
-        - If a lambda expression is provided in the mappings, it is used to preprocess the argument value before including it in the request payload.
+        dict: A dictionary with the squeue arguments using the original naming conventions of the arguments
     """
 
     squeue_request_params = {}
@@ -108,7 +101,6 @@ def args_to_squeue_parameters_dict(squeue_args_dict:dict,squeue_mappings:CliToJs
     for cmd_arg in squeue_args_dict:
         
         # Only checking arguments with an assigned value
-        #TODO include also the 'boolean' (with no value) ones
         if squeue_args_dict[cmd_arg] != None:            
             # argument name using argparse naming conventions (e.g, arg_x)
             arg_name = cmd_arg
