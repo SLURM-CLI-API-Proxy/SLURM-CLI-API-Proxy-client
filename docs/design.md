@@ -10,3 +10,11 @@
 Client:
 
 https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/SlurmApi.md
+
+
+
+### References
+
+- Schmed's [Slurm REST API documentation](https://slurm.schedmd.com/rest_api.html)
+- Schmed's [Slurm command line documentation](https://slurm.schedmd.com/sbatch.html)
+- [Slurm version vs supported API versions](https://slurm.schedmd.com/upgrades.html#openapi_changes)
