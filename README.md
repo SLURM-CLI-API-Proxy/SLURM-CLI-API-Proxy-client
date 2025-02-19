@@ -1,20 +1,27 @@
 ## Badges
 
-(Customize these badges with your own links, and check https://shields.io/ or https://badgen.net/ to see which other badges are available.)
+
+
+
 
 | fair-software.eu recommendations | |
 | :-- | :--  |
-| (1/5) code repository              | [![github repo badge](https://img.shields.io/badge/github-repo-000.svg?logo=github&labelColor=gray&color=blue)](https://github.com/hcadavid/slurm_api_cli_proxy) |
-| (2/5) license                      | [![github license badge](https://img.shields.io/github/license/hcadavid/slurm_api_cli_proxy)](https://github.com/hcadavid/slurm_api_cli_proxy) |
+| (1/5) code repository              | [![github repo badge](https://img.shields.io/badge/github-repo-000.svg?logo=github&labelColor=gray&color=blue)](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client) |
+| (2/5) license                      | [![github license badge](https://img.shields.io/github/license/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client)](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/LICENSE) |
 | (3/5) community registry           | [![RSD](https://img.shields.io/badge/rsd-slurm_api_cli_proxy-00a3e3.svg)](https://www.research-software.nl/software/slurm_api_cli_proxy) [![workflow pypi badge](https://img.shields.io/pypi/v/slurm_api_cli_proxy.svg?colorB=blue)](https://pypi.python.org/project/slurm_api_cli_proxy/) |
 | (4/5) citation                     | [![DOI](https://zenodo.org/badge/DOI/<replace-with-created-DOI>.svg)](https://doi.org/<replace-with-created-DOI>)|
 | (5/5) checklist                    | [![workflow cii badge](https://bestpractices.coreinfrastructure.org/projects/<replace-with-created-project-identifier>/badge)](https://bestpractices.coreinfrastructure.org/projects/<replace-with-created-project-identifier>) |
 | howfairis                          | [![fair-software badge](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow)](https://fair-software.eu) |
 | **Other best practices**           | &nbsp; |
-| Static analysis                    | [![workflow scq badge](https://sonarcloud.io/api/project_badges/measure?project=hcadavid_slurm_api_cli_proxy&metric=alert_status)](https://sonarcloud.io/dashboard?id=hcadavid_slurm_api_cli_proxy) |
-| Coverage                           | [![workflow scc badge](https://sonarcloud.io/api/project_badges/measure?project=hcadavid_slurm_api_cli_proxy&metric=coverage)](https://sonarcloud.io/dashboard?id=hcadavid_slurm_api_cli_proxy) || Documentation                      | [![Documentation Status](https://readthedocs.org/projects/slurm_api_cli_proxy/badge/?version=latest)](https://slurm_api_cli_proxy.readthedocs.io/en/latest/?badge=latest) || **GitHub Actions**                 | &nbsp; |
-| Build                              | [![build](https://github.com/hcadavid/slurm_api_cli_proxy/actions/workflows/build.yml/badge.svg)](https://github.com/hcadavid/slurm_api_cli_proxy/actions/workflows/build.yml) |
-| Citation data consistency          | [![cffconvert](https://github.com/hcadavid/slurm_api_cli_proxy/actions/workflows/cffconvert.yml/badge.svg)](https://github.com/hcadavid/slurm_api_cli_proxy/actions/workflows/cffconvert.yml) || SonarCloud                         | [![sonarcloud](https://github.com/hcadavid/slurm_api_cli_proxy/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/hcadavid/slurm_api_cli_proxy/actions/workflows/sonarcloud.yml) |## How to use slurm_api_cli_proxy
+| Static analysis                    | [![workflow scq badge](https://sonarcloud.io/api/project_badges/measure?project=SLURM-CLI-API-Proxy_SLURM-CLI-API-Proxy-client&metric=alert_status)](https://sonarcloud.io/dashboard?id=SLURM-CLI-API-Proxy_SLURM-CLI-API-Proxy-client) |
+| Coverage                           | [![workflow scc badge](https://sonarcloud.io/api/project_badges/measure?project=SLURM-CLI-API-Proxy_SLURM-CLI-API-Proxy-client&metric=coverage)](https://sonarcloud.io/dashboard?id=SLURM-CLI-API-Proxy_SLURM-CLI-API-Proxy-client) |
+| Documentation                      | [![Documentation Status](https://readthedocs.org/projects/slurm_api_cli_proxy/badge/?version=latest)](https://slurm_api_cli_proxy.readthedocs.io/en/latest/?badge=latest) |
+| **GitHub Actions**                 | &nbsp; |
+| Build                              | [![build](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/actions/workflows/build.yml/badge.svg)](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/actions/workflows/build.yml) |
+| Citation data consistency          | [![cffconvert](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/actions/workflows/cffconvert.yml/badge.svg)](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/actions/workflows/cffconvert.yml) |
+| SonarCloud                         | [![sonarcloud](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/actions/workflows/sonarcloud.yml) |
+
+
 
 
 ![alt text](docs/img/slurm_proxy_title.svg)
@@ -22,6 +29,7 @@
 SLURM CLI-API Proxy client is a tool designed to bridge existing applications and scripts that rely on the SLURM CLI. The tool mimics a selection of SLURM CLI commands, translating them into REST API calls, enabling seamless integration of existing tools with external SLURM workload managers. 
 
 Due to the extensive range of optional SLURM command arguments, only a limited subset is supported. However, the tool is designed for flexibility—the support to new arguments can be easily enabled by mapping them to the corresponding API request parameters or payload properties (the documentation on how to do this is a work in progress).
+
 
 
 ## Setup and usage
