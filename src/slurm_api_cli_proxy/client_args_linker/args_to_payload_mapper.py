@@ -10,9 +10,9 @@ class UnsuportedArgumentException(Exception):
         self.argument = argument
         super().__init__(self.message)
 
-def args_to_request_payload(script_content:str,cmd_args_dict:dict,sbatch_mappings:CliToJsonPayloadMappings)->dict:
+def args_to_sbatch_request_payload(script_content:str,cmd_args_dict:dict,sbatch_mappings:CliToJsonPayloadMappings)->dict:
     """
-    Converts command-line arguments into a payload dictionary for API requests.
+    Converts sbatch command-line arguments into a payload dictionary for slurmrestd API requests.
     Args:
         script_content (str): The content of the script to be executed.
         cmd_args : a dictionary with the arguments parsed from the CLI, using the
@@ -42,16 +42,18 @@ def args_to_request_payload(script_content:str,cmd_args_dict:dict,sbatch_mapping
 
     #Default values for properties that are optional on the CLI, but are mandatory for the API Client request.
     #These value will be overriden if used when invoking the sbatch command.
+    
+    #TODO to be defined on the YAML file
     request_payload["job"]["environment"]=["ALL"]
     request_payload["job"]["current_working_directory"] = os.getcwd()
 
-    
-
     for cmd_arg in cmd_args_dict:
         
-        # Only checking arguments with a set value
-        #TODO include also the 'boolean' (with no value) ones
-        if cmd_args_dict[cmd_arg] != None:            
+        cmd_arg_value = cmd_args_dict[cmd_arg]
+
+        # Ignore arguments that were not used on the cli: str/int arguments with a None value, 
+        #   or bool arguments ('flag' arguments with no value, which are True when included)
+        if cmd_arg_value != None and cmd_arg_value != False:            
             # argument name using argparse naming conventions (arg_x)
             arg_name = cmd_arg
 
@@ -80,6 +82,38 @@ def args_to_request_payload(script_content:str,cmd_args_dict:dict,sbatch_mapping
                 raise UnsuportedArgumentException("Command argument not supported or not yet implemented in the CLI Proxy",original_arg_name)
 
     return request_payload
+
+
+
+def args_to_squeue_parameters_dict(squeue_args_dict:dict)->dict:
+    """
+    Get a dictionary with the arguments given in the CLI
+
+    Args:
+        cmd_args_dict : a dictionary with the squeue arguments parsed from the CLI, using the
+            naming conventions of argparse (--job-name -> job_name).    
+    Returns:
+        dict: A dictionary with the squeue arguments using the original naming conventions of the arguments
+    """
+
+    squeue_request_params = {}
+
+    for cmd_arg in squeue_args_dict:
+        
+        # Only checking arguments with an assigned value
+        if squeue_args_dict[cmd_arg] != None:            
+            # argument name using argparse naming conventions (e.g, arg_x)
+            arg_name = cmd_arg
+
+            # original argument used by the CLI (e.g., --arg-x)
+            original_arg_name = f"--{arg_name.replace('_','-')}"
+
+            # value given to the argument            
+            arg_value = squeue_args_dict[cmd_arg]
+            
+            squeue_request_params[original_arg_name]=arg_value
+
+    return squeue_request_params
 
 
 def __add_nested_path(dictionary:dict, path:str, value=None):

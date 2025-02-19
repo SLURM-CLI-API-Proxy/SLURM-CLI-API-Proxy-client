@@ -1,89 +1,100 @@
 ## Badges
 
-(Customize these badges with your own links, and check https://shields.io/ or https://badgen.net/ to see which other badges are available.)
+
+
+
 
 | fair-software.eu recommendations | |
 | :-- | :--  |
-| (1/5) code repository              | [![github repo badge](https://img.shields.io/badge/github-repo-000.svg?logo=github&labelColor=gray&color=blue)](https://github.com/hcadavid/slurm_api_cli_proxy) |
-| (2/5) license                      | [![github license badge](https://img.shields.io/github/license/hcadavid/slurm_api_cli_proxy)](https://github.com/hcadavid/slurm_api_cli_proxy) |
+| (1/5) code repository              | [![github repo badge](https://img.shields.io/badge/github-repo-000.svg?logo=github&labelColor=gray&color=blue)](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client) |
+| (2/5) license                      | [![github license badge](https://img.shields.io/github/license/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client)](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/LICENSE) |
 | (3/5) community registry           | [![RSD](https://img.shields.io/badge/rsd-slurm_api_cli_proxy-00a3e3.svg)](https://www.research-software.nl/software/slurm_api_cli_proxy) [![workflow pypi badge](https://img.shields.io/pypi/v/slurm_api_cli_proxy.svg?colorB=blue)](https://pypi.python.org/project/slurm_api_cli_proxy/) |
 | (4/5) citation                     | [![DOI](https://zenodo.org/badge/DOI/<replace-with-created-DOI>.svg)](https://doi.org/<replace-with-created-DOI>)|
 | (5/5) checklist                    | [![workflow cii badge](https://bestpractices.coreinfrastructure.org/projects/<replace-with-created-project-identifier>/badge)](https://bestpractices.coreinfrastructure.org/projects/<replace-with-created-project-identifier>) |
 | howfairis                          | [![fair-software badge](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow)](https://fair-software.eu) |
 | **Other best practices**           | &nbsp; |
-| Static analysis                    | [![workflow scq badge](https://sonarcloud.io/api/project_badges/measure?project=hcadavid_slurm_api_cli_proxy&metric=alert_status)](https://sonarcloud.io/dashboard?id=hcadavid_slurm_api_cli_proxy) |
-| Coverage                           | [![workflow scc badge](https://sonarcloud.io/api/project_badges/measure?project=hcadavid_slurm_api_cli_proxy&metric=coverage)](https://sonarcloud.io/dashboard?id=hcadavid_slurm_api_cli_proxy) || Documentation                      | [![Documentation Status](https://readthedocs.org/projects/slurm_api_cli_proxy/badge/?version=latest)](https://slurm_api_cli_proxy.readthedocs.io/en/latest/?badge=latest) || **GitHub Actions**                 | &nbsp; |
-| Build                              | [![build](https://github.com/hcadavid/slurm_api_cli_proxy/actions/workflows/build.yml/badge.svg)](https://github.com/hcadavid/slurm_api_cli_proxy/actions/workflows/build.yml) |
-| Citation data consistency          | [![cffconvert](https://github.com/hcadavid/slurm_api_cli_proxy/actions/workflows/cffconvert.yml/badge.svg)](https://github.com/hcadavid/slurm_api_cli_proxy/actions/workflows/cffconvert.yml) || SonarCloud                         | [![sonarcloud](https://github.com/hcadavid/slurm_api_cli_proxy/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/hcadavid/slurm_api_cli_proxy/actions/workflows/sonarcloud.yml) |## How to use slurm_api_cli_proxy
+| Static analysis                    | [![workflow scq badge](https://sonarcloud.io/api/project_badges/measure?project=SLURM-CLI-API-Proxy_SLURM-CLI-API-Proxy-client&metric=alert_status)](https://sonarcloud.io/dashboard?id=SLURM-CLI-API-Proxy_SLURM-CLI-API-Proxy-client) |
+| Coverage                           | [![workflow scc badge](https://sonarcloud.io/api/project_badges/measure?project=SLURM-CLI-API-Proxy_SLURM-CLI-API-Proxy-client&metric=coverage)](https://sonarcloud.io/dashboard?id=SLURM-CLI-API-Proxy_SLURM-CLI-API-Proxy-client) |
+| Documentation                      | [![Documentation Status](https://readthedocs.org/projects/slurm_api_cli_proxy/badge/?version=latest)](https://slurm_api_cli_proxy.readthedocs.io/en/latest/?badge=latest) |
+| **GitHub Actions**                 | &nbsp; |
+| Build                              | [![build](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/actions/workflows/build.yml/badge.svg)](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/actions/workflows/build.yml) |
+| Citation data consistency          | [![cffconvert](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/actions/workflows/cffconvert.yml/badge.svg)](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/actions/workflows/cffconvert.yml) |
+| SonarCloud                         | [![sonarcloud](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/actions/workflows/sonarcloud.yml) |
 
-Takes locally issued SLURM commands (\"sbatch\", \"srun\", ...) and forwards them to an HPC cluster through the SLURM REST-API.
 
-The project setup is documented in [project_setup.md](project_setup.md). Feel free to remove this document (and/or the link to this document) if you don't need it.
 
-## Status
 
-- [X] Baseline project
-- [ ] Setting up GitHub actions/badges
-- [X] Client for SLURM REST API 0.0.38, 0.0.39, and 0.0.40 generated and integrated
-- [X] Proxy sbatch (workin as an stand-alone command) with the input parameters parsing, basic validation and return error codes equivalent to the original one.
-- [X] Dynamic definition of command arguments through YAML files
-- [X] SLURM REST API Client reference examples
-- [ ] Mapping between input parameters, API resources and Payload parameters
-- [ ] Mapping between SLURM environment variables and API request Payload parameters
-- [ ] Dynamic generation of request Payloads and request execution
-- [ ] Mapping return codes to CLI STDOUT results
-- [ ] Defining strategies for the consistency of output file paths (local vs cluster file system)
-- [ ] Approach for setting Proxy parameters (target API URI)
-- [ ] Handling API JWT reset
-- [ ] squeue proxy: formatting STDOUT messages
-- [ ] Testing integration with golang programs (handling STDIN/STDERR) & Unix piping
-- [ ] Documentation
-- [ ] ...
+![alt text](docs/img/slurm_proxy_title.svg)
 
-## Installation (to be changed when once the repo is public)
+SLURM CLI-API Proxy client is a tool designed to bridge existing applications and scripts that rely on the SLURM CLI. The tool mimics a selection of SLURM CLI commands, translating them into REST API calls, enabling seamless integration of existing tools with external SLURM workload managers. 
 
-1. Setup a Python virtual environment
-2. Run the following:
-```
-git clone git@github.com:hcadavid/SLURM_CLI_PROXY.git
-cd SLURM_CLI_PROXY
+Due to the extensive range of optional SLURM command arguments, only a limited subset is supported. However, the tool is designed for flexibility—the support to new arguments can be easily enabled by mapping them to the corresponding API request parameters or payload properties (the documentation on how to do this is a work in progress).
+
+
+
+## Setup and usage
+
+### Requirement
+- Linux, MacOS or [Windows with WSL](https://learn.microsoft.com/en-us/windows/wsl/)
+- Python version ≥3.10
+
+### Installation 
+
+```shell
+# Check python version (requiring ≥3.10)
+python --version
+
+# Create a new virtual environment
+python -m venv env
+source env/bin/activate
+
+# install 
 pip install .
+
 ```
 
-## Use
+A virtual environment is *required* to install the the non-pypi dependencies. You can also use `conda` to manage python environments. If running from a shell terminal, the virtual environment where the package was installed must be active on it.
 
-If running from a shell terminal, the virtual environment where the package was installed must be active on it. Once this is done, the SLURM proxy commands can be used as the original ones:
+### Usage from a shell terminal
 
-````
+1. Define the URI of the target SLURM API through the `PROXY_SLURM_API_URL` environment variable:
+
+```shell
+#Example:
+export PROXY_SLURM_API_URL=http://slurm-controller:6820
+```
+
+2. Set the SLURM_JWT environment variable with the API token of the target SLURM API. An script is provided to do this if you have ssh access to the SLURM workload manager:
+
+```shell
+#source update_token.sh <ssh-user> <wlm-host>
+source update_token.sh userx slurm-controller
+```
+
+3. Run slurm commands as you would do* with the real ones:
+
+```shell
+
+#sbatch help
 sbatch --help
-````
 
-To call these commands from other programs, the 'bin' folder of the virtual environment where the package was installed (e.g., `/venvpath/venv/bin`) must be on the PATH environment variable of these programs.
+#request a job
+sbatch --job-name jobx --chdir /home/userx  tests/slurm_test_scripts/slurm_write_job.sh
 
-
-
-### Reference containerized SLURM cluster (for generating the API client and testing the implementation)
-
-Docker image [created for the xenon project](https://github.com/xenon-middleware/xenon-docker-images/tree/master/slurm-23).
+squeue --json
 
 ```
-docker run -p 10022:22 -p 6820:6820 ghcr.io/xenon-middleware/slurm:23
-```
 
-### Other SLURM-Docker images
+🚧 Alpha release notice* 🚧
 
-- https://github.com/rancavil/slurm-cluster
-- https://codebase.helmholtz.cloud/ufz-tsm/slurm-scheduler
-- https://github.com/nathan-hess/docker-slurm
-- https://github.com/giovtorres/slurm-docker-cluster
-- https://github.com/JBris/slurm-rest-api-docker
+- Only `sbatch` and `squeue` commands have been implemented
+- Core functionality of these commands is present but may be incomplete
+- Documentation and testing coverage are ongoing
+- APIs and interfaces may change without notice
+- Performance optimizations are still in progress
 
+If you encounter issues or have feedback, please report them through the project's issue tracker.
 
-### References
-
-- Schmed's [Slurm REST API documentation](https://slurm.schedmd.com/rest_api.html)
-- Schmed's [Slurm command line documentation](https://slurm.schedmd.com/sbatch.html)
-- [Slurm version vs supported API versions](https://slurm.schedmd.com/upgrades.html#openapi_changes)
 
 ## Contributing
 
