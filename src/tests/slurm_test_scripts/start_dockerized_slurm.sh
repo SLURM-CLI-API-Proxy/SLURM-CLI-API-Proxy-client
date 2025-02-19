@@ -9,11 +9,12 @@ if [ -n "$CONTAINER_ID" ]; then
     echo "Container testslurm is already running, only updating the token"
     TEST_CLUSTER_TOKEN=$(docker exec testslurm scontrol token)
     export $TEST_CLUSTER_TOKEN
+    echo $SLURM_JWT
 
 else
     echo "Starting slurm test container"
     #Dockerized slurm server from the xenon-middleware project.
-    docker run -p 10022:22  -p 6821:6820 --name testslurm ghcr.io/xenon-middleware/slurm:23 -d &
+    docker run -p 10022:22  -p 6821:6820 --name testslurm --privileged  ghcr.io/xenon-middleware/slurm:23 -d &
 
     # Wait for container to become healthy
     while ! docker exec testslurm scontrol ping > /dev/null 2>&1; do
@@ -23,6 +24,8 @@ else
 
     TEST_CLUSTER_TOKEN=$(docker exec testslurm scontrol token)
     export $TEST_CLUSTER_TOKEN
+    echo $SLURM_JWT
+
     read -t 0
 
 fi
