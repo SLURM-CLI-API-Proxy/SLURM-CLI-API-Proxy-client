@@ -82,10 +82,6 @@ def get_slurm_api_client_wrapper(payload_mappings:CliToJsonPayloadMappings)->Slu
     wrapper_pkg:str = payload_mappings.metadata["wrapper_package"]
     wrapper_class:str = payload_mappings.metadata["wrapper_class"]
 
-
-    dummy_conf = {"module":"slurm_api_cli_proxy.client_args_linker.v39.slurm_api_client_wrapper_v39",
-                  "class_name":"V39SlurmAPIClientWrapper"}
-
     linker_mod = importlib.import_module(wrapper_pkg)
     
     linker_class = getattr(linker_mod, wrapper_class)
@@ -93,7 +89,7 @@ def get_slurm_api_client_wrapper(payload_mappings:CliToJsonPayloadMappings)->Slu
     linker_inst = linker_class()
 
     if not isinstance(linker_inst,SlurmAPIClientWrapper):
-        raise Exception(f"Dynamically load of arguments linker failed (${dummy_conf["module"]}.${dummy_conf["class_name"]}). An ArgsLinker subclass is expected)")
+        raise Exception(f"Dynamically load of arguments linker failed ({wrapper_pkg}.{wrapper_class}). An ArgsLinker subclass is expected)")
 
     return linker_inst
 
