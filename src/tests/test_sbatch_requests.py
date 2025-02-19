@@ -65,34 +65,34 @@ class ApiRequestsTest(unittest.TestCase):
 
 
      
-    # def test_sbatch_post_request(self):
+    def test_sbatch_post_request(self):
         
         
-    #     configuration = openapi_client.Configuration(
-    #         host = "http://localhost:6821"
-    #     )
+        configuration = openapi_client.Configuration(
+            host = "http://localhost:6821"
+        )
 
-    #     job_request = {
-    #         "script": """#!/bin/bash
-    #             ls > /tmp/temp_file.txt
-    #             sleep 10
-    #             """,  
-    #         "job": {
-    #             "environment": ["PATH=/bin/:/usr/bin/:/sbin/"],
-    #             "current_working_directory": "/home/tmp",
-    #             "name": "test slurmrestd job",
-    #             "output": "slurm-%j.out"
-    #         }
-    #     }
+        job_request = {
+            "script": """#!/bin/bash
+                ls > /tmp/temp_file.txt
+                sleep 10
+                """,  
+            "job": {
+                "environment": ["PATH=/bin/:/usr/bin/:/sbin/"],
+                "current_working_directory": "/home/tmp",
+                "name": "test slurmrestd job",
+                "output": "slurm-%j.out"
+            }
+        }
 
-    #     mappings = CliToJsonPayloadMappings(config_mapping_dict=self.sbatch_test_param_mappings)
+        mappings = CliToJsonPayloadMappings(config_mapping_dict=self.sbatch_test_param_mappings)
 
-    #     req_handler = get_slurm_api_client_wrapper(mappings)
+        req_handler = get_slurm_api_client_wrapper(mappings)
 
-    #     slurm_jwt = os.environ["SLURM_JWT"]
+        slurm_jwt = os.environ["SLURM_JWT"]
 
-    #     response = req_handler.sbatch_post_request(job_request, configuration, slurmrestd_token=slurm_jwt)
+        response = req_handler.sbatch_post_request(job_request, configuration, slurmrestd_token=slurm_jwt)
         
 
-    #     assert (len(response.errors)==0)
+        assert (len(response.errors)==0)
         
