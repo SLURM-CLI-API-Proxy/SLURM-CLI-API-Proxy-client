@@ -1,6 +1,0 @@
-slurm_cli_proxy_config:
-  client_wrapper: 
-    module: "slurm_api_cli_proxy.client_args_linker.v39.slurm_api_client_wrapper_v39"
-    class: "V39SlurmAPIClientWrapper"
-  openapi_client_config:
-    host: "http://slurm-controller:6820"

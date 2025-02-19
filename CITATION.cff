@@ -4,11 +4,11 @@ cff-version: "1.2.0"
 title: "slurm_api_cli_proxy"
 authors:
   - family-names: Cadavid
-    given-names: Hector
-    orcid: "https://orcid.org/0000-0000-0000-0000"
+    given-names: Héctor
+    orcid: "https://orcid.org/0000-0003-4965-4243"
 date-released: 2024-11-15
 version: "0.1.0"
-repository-code: "https://github.com/hcadavid/slurm_api_cli_proxy"
+repository-code: "https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client"
 keywords:
   - "slurm"
   - "cli"
