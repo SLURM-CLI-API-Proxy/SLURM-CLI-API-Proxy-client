@@ -48,6 +48,7 @@ nav:
   - Introduction: index.md
   - Setup: setup.md
   - Limitations: limitations.md  
+  - Developer guide: design.md
   
 
 markdown_extensions:
