@@ -1,7 +1,7 @@
-site_name: SLURM_CLI_PROXY
+site_name: SLURM-CLI-API-Proxy-client
 site_description: Command Line Interface (CLI) proxy for SLURM REST API
 strict: true
-site_url: https://github.com/hcadavid/SLURM_CLI_PROXY
+site_url: https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client
 
 theme:
   # https://squidfunk.github.io/mkdocs-material/
@@ -33,8 +33,8 @@ theme:
     next: fontawesome/solid/angle-right
   favicon: 'favicon.png'
 
-repo_name: hcadavid/SLURM_CLI_PROXY
-repo_url: https://github.com/hcadavid/SLURM_CLI_PROXY
+repo_name: SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client
+repo_url: https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client
 edit_uri: edit/dev/docs/
 
 # https://www.mkdocs.org/user-guide/configuration/#validation
