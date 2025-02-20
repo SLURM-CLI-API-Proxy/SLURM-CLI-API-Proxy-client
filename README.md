@@ -28,7 +28,8 @@
 
 SLURM CLI-API Proxy client is a tool designed to bridge existing applications and scripts that rely on the SLURM CLI. The tool mimics a selection of SLURM CLI commands, translating them into REST API calls, enabling seamless integration of existing tools with external SLURM workload managers. 
 
-Due to the extensive range of optional SLURM command arguments, only a limited subset is supported. However, the tool is designed for flexibility—the support to new arguments can be easily enabled by mapping them to the corresponding API request parameters or payload properties (the documentation on how to do this is a work in progress).
+Due to the extensive range of optional SLURM command arguments, only a limited subset is supported. However, the tool is designed for flexibility—the support to new arguments can be easily enabled by mapping them to the corresponding API request parameters or payload properties. Additionally, the design prioritizes extensibility, allowing support for alternative SLURM API versions (currently working with v0.0.39). The developers documentation detailing these design elements is still a work in progress.
+
 
 
 
@@ -67,10 +68,14 @@ export PROXY_SLURM_API_URL=http://slurm-controller:6820
 2. Set the SLURM_JWT environment variable with the API token of the target SLURM API. An script is provided to do this if you have ssh access to the SLURM workload manager:
 
 ```shell
-#source update_token.sh <ssh-user> <wlm-host>
+# Setting the SLURM_JWT variable (can be obtained by running 'scontrol token' on the SLURM workload manager)
+export SLURM_JWT=<token>
+
+# Setting the SLURM_JWT variable through the provided script (password for opening an ssh session will be requested)
+# source update_token.sh <slurm-wlm-user> <slurm-wlm-host>. E.g.:
 source update_token.sh userx slurm-controller
 ```
-
+   
 3. Run slurm commands as you would do* with the real ones:
 
 ```shell
@@ -78,20 +83,25 @@ source update_token.sh userx slurm-controller
 #sbatch help
 sbatch --help
 
-#request a job
-sbatch --job-name jobx --chdir /home/userx  tests/slurm_test_scripts/slurm_write_job.sh
+#request a job defined on a shell script
+sbatch --job-name jobx --chdir /home/userx  src/tests/slurm_test_scripts/slurm_write_job.sh
 
+#capture a job definition through STDIN and request its execution
+sbatch --job-name jobx --chdir /home/userx
+
+#show running jobs
+squeue 
+
+#show running jobs in json format
 squeue --json
 
 ```
 
 🚧 Alpha release notice* 🚧
 
-- Only `sbatch` and `squeue` commands have been implemented
-- Core functionality of these commands is present but may be incomplete
+- Only `sbatch` and `squeue` commands have been implemented, with a limited number of arguments
+- Design refinements are still in progress
 - Documentation and testing coverage are ongoing
-- APIs and interfaces may change without notice
-- Performance optimizations are still in progress
 
 If you encounter issues or have feedback, please report them through the project's issue tracker.
 
