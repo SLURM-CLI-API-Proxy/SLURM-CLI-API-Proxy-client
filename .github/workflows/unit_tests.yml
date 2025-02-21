@@ -1,8 +1,9 @@
-name: Launching a test Slurm cluster and running unit tests 
+name: Launching a test Slurm cluster, running unit tests, and performing a SonarQube scan
 on:
   push:
     branches:
       - main
+      - fix/enabling_slurm_tests
     paths:
       - 'src/**'
   
@@ -24,7 +25,7 @@ jobs:
           pip install .
           pip install pytest
 
-      - name: Start Slurm Container
+      - name: Start Slurm Container and run pytest
         run: |
           echo "Starting slurm test container"
           nohup docker run -p 10022:22  -p 6821:6820 --name testslurm --privileged  ghcr.io/xenon-middleware/slurm:23 -d &
@@ -41,7 +42,10 @@ jobs:
           export $TEST_CLUSTER_TOKEN
 
           # Run tests
-          pytest
+          python -m pytest --cov --cov-report term --cov-report xml --junitxml=xunit-result.xml
+
+          # Correct coverage paths within coverage.xml file
+          sed -i "s+$PWD/++g" coverage.xml
           
           # Cleanup
           echo "KILLING $pid"
@@ -50,3 +54,10 @@ jobs:
           # Remove container
           docker stop testslurm
           docker rm testslurm
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}          
+
+  
