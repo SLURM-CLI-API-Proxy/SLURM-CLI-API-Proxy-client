@@ -30,7 +30,10 @@ func executeCommand(command string) (string, string, error) {
 
 func main() {
     // Example usage
-    command := "ls -l"
+
+    fmt.Printf("Running sbatch command:\n")
+
+    command := "sbatch slurm_dummy_job.sh"
     stdout, stderr, err := executeCommand(command)
     
     if err != nil {
@@ -43,4 +46,23 @@ func main() {
     fmt.Println(stdout)
     fmt.Println("stderr:")
     fmt.Println(stderr)
+
+
+    fmt.Printf("Running squeue command:\n")
+
+    command = "squeue"
+    stdout, stderr, err = executeCommand(command)
+    
+    if err != nil {
+        fmt.Println("Error:", err)
+        return
+    }
+    
+    fmt.Printf("Command executed successfully\n")
+    fmt.Println("stdout:")
+    fmt.Println(stdout)
+    fmt.Println("stderr:")
+    fmt.Println(stderr)
+
+
 }
