@@ -66,11 +66,18 @@ source src/tests/slurm_test_scripts/start_dockerized_slurm.sh
 pytest
 ```
 
-#### Running only unit tests
+#### Running unit tests only (doesn't require the dockerized slurm cluster)
 
 ```shell
 # Run tests, excluding integration ones (which require the dockerized slurm cluster running on localhost)
 pytest -m "not integration"
+```
+
+#### Static type checking
+
+```shell
+#Static type checking with mypy. 
+mypy src --ignore-missing-imports --check-untyped-defs
 ```
 
 ### Usage from a shell terminal
