@@ -6,6 +6,7 @@ on:
       - fix/enabling_slurm_tests
     paths:
       - 'src/**'
+      - '.github/workflows/**'
   
 
 jobs:
