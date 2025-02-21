@@ -1,1 +1,3 @@
 include src/slurm_api_cli_proxy/mappings/*
+recursive-include slurm_api_client *
+include requirements.txt
