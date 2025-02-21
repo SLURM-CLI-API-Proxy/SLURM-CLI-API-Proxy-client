@@ -169,6 +169,7 @@ def format_squeue_job(job:V0039JobInfo,job_resources:V0039JobRes):
         f"{str(job_resources.allocated_hosts)[:5]:5} "
         f"{job_resources.nodes}\n"
     )
+
 def seconds_to_hhmm(seconds):
     """
     Convert seconds to HH:MM format.
