@@ -23,7 +23,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install .
-          pip install pytest
+          pip install pytest pytest-cov
 
       - name: Start Slurm Container and run pytest
         run: |
