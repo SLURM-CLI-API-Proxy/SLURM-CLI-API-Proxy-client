@@ -99,7 +99,7 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
         
         else:
 
-            user_filter:str = None
+            user_filter:str|None = None
 
             if "--user" in cli_arguments:
                 user_filter = cli_arguments["--user"] 
@@ -116,7 +116,7 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
             else:
                 for job in jobs:
                     if job.user_name == user_filter:
-                        job_resources:V0039JobRes = job.job_resources                                                      
+                        job_resources = job.job_resources                                                      
                         output += format_squeue_job(job,job_resources)
 
 

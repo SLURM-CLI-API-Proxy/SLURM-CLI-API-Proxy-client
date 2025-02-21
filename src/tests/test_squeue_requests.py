@@ -1,6 +1,7 @@
 import unittest
 import openapi_client
 import os
+import pytest
 from argparse import Namespace
 
 
@@ -40,7 +41,7 @@ class ApiRequestsTest(unittest.TestCase):
         ]        
     }
 
-
+    @pytest.mark.integration
     def test_squeue_get_request(self):
                 
         configuration = openapi_client.Configuration(

@@ -1,11 +1,12 @@
 import yaml
+from typing import Optional, Dict, List
 
 class CliToJsonPayloadMappings():
     metadata: dict
     arguments_dict: dict
     arguments_list: list
 
-    def __init__(self,yaml_config_path:str=None,config_mapping_dict:dict=None):
+    def __init__(self,yaml_config_path:Optional[str]=None,config_mapping_dict:Optional[Dict]=None):
         """
         Initializes the CLI to JSON mapping object using one of two input: a YAML
         file (yaml_config_path) or its equivalent (in memory) given as a dictionary. If
