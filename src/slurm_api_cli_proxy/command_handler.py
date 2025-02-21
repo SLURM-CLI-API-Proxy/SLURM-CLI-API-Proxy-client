@@ -101,7 +101,7 @@ def sbatch():
     except Exception as e:
         #TODO debug log
         print(e)
-        print(f"[SLURM_CLI_PROXY_ERROR] - Unexpected error:{e.message}")
+        print(f"[SLURM_CLI_PROXY_ERROR] - Unexpected error:{e}")
         return 1
 
 

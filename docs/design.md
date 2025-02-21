@@ -105,3 +105,8 @@ graph TD;
     
     slurmdbd --> Database["Slurm Accounting Database"];
 ```
+
+### open_api_client example
+```python
+--8<-- "docs/reference_code_snippets/sample_sbatch_v39.py"
+```

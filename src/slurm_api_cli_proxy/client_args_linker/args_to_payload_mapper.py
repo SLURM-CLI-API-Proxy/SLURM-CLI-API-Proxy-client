@@ -1,4 +1,5 @@
 import argparse
+from typing import Dict, Any
 from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
 import os
 
@@ -36,7 +37,7 @@ def args_to_sbatch_request_payload(script_content:str,cmd_args_dict:dict,sbatch_
     """    
     
 
-    request_payload = {}
+    request_payload:Dict[str,Any] = {}
     request_payload["job"]={}
     request_payload["script"] = script_content
 

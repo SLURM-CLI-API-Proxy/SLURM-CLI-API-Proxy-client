@@ -58,6 +58,9 @@ markdown_extensions:
 - admonition
 # https://facelessuser.github.io/pymdown-extensions
 - pymdownx.details
+- pymdownx.snippets:
+    check_paths: true
+    base_path: [docs/reference_code_snippets, "."]
 - pymdownx.highlight:
     anchor_linenums: true
     pygments_lang_class: true

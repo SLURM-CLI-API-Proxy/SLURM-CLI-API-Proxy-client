@@ -54,6 +54,32 @@ pip install .
 
 A virtual environment is *required* to install the the non-pypi dependencies. You can also use `conda` to manage python environments. If running from a shell terminal, the virtual environment where the package was installed must be active on it.
 
+### Testing
+
+#### Unit and integration tests
+
+```shell
+#Start a dockerized slurm cluster on localhost (works on Linux only)
+source src/tests/slurm_test_scripts/start_dockerized_slurm.sh
+
+#Run tests 
+pytest
+```
+
+#### Running unit tests only (doesn't require the dockerized slurm cluster)
+
+```shell
+# Run tests, excluding integration ones (which require the dockerized slurm cluster running on localhost)
+pytest -m "not integration"
+```
+
+#### Static type checking
+
+```shell
+#Static type checking with mypy. 
+mypy src --ignore-missing-imports --check-untyped-defs
+```
+
 ### Usage from a shell terminal
 
 1. Define the URI of the target SLURM API through the `PROXY_SLURM_API_URL` environment variable:

@@ -1,5 +1,6 @@
 from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SlurmAPIClientWrapper, SbatchResponse, SqueueResponse, ApiClientException
 from slurm_api_cli_proxy.client_args_linker.constants import slurm_statuses
+from openapi_client.models.v0039_error import V0039Error
 import openapi_client
 
 #sbatch related
@@ -34,16 +35,20 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
             json_req_string = json.dumps(request, indent=2)
 
             v0039_job_submission_instance = V0039JobSubmission.from_json(json_req_string)
+            if v0039_job_submission_instance is None:
+                raise ValueError(f"Creation of sbatch job submission payload form json returned None when using {json_req_string}")
+            
             try:
                 # submit the job
                 api_response = api_instance.slurm_v0039_submit_job(v0039_job_submission_instance)
                 
                 response = SbatchResponse(job_id=api_response.job_id,step_id=api_response.step_id)
                 
-                for err in api_response.errors:
-                    #Based on V0039Error type
-                    #TODO check if a template may be required
-                    response.errors.append(f"Error no:{err.error_number}:{err.error}. Source:{err.source}. Description:{err.description}")
+                if api_response.errors is not None:
+                    for err in api_response.errors:
+                        #Based on V0039Error type
+                        #TODO check if a template may be required
+                        response.errors.append(f"Error no:{err.error_number}:{err.error}. Source:{err.source}. Description:{err.description}")
                 
                 return response
 
@@ -55,9 +60,7 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
         #Based on the code snippet included on the documentation generated from the Slurm OpenAPI specification
         configuration = conf
         configuration.api_key['token'] = slurmrestd_token
-    
-        
-    
+            
         with openapi_client.ApiClient(configuration) as api_client:
             # Create an instance of the API class
             api_instance = openapi_client.SlurmApi(api_client)
@@ -65,11 +68,23 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
             try:
                 # get list of jobs
-                api_response = api_instance.slurm_v0039_get_jobs()
+                api_response:V0039JobsResponse = api_instance.slurm_v0039_get_jobs()
 
                 output = V39SlurmAPIClientWrapper.process_squeue_output(cli_arguments=cli_arguments,api_response=api_response)
 
-                return SqueueResponse(output,errors=api_response.errors,warnings=api_response.warnings)
+                if (api_response.errors is not None):
+                    #Transform list of list[V0039Error] to list[str] 
+                    errors:list[str] = list(map(lambda err: str(err), api_response.errors))
+                else:
+                    errors = []
+
+                if (api_response.warnings is not None):
+                    #Transform list of list[V0039Warning] to list[str] 
+                    warnings:list[str] = list(map(lambda err: str(err), api_response.warnings))
+                else:
+                    warnings = []
+
+                return SqueueResponse(output,errors=errors,warnings=warnings)
         
             except Exception as e:       
                 raise ApiClientException(f'Unexpected error while performing a GET request for the squeue command:{e}') from e                
@@ -99,25 +114,34 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
         
         else:
 
-            user_filter:str = None
+            user_filter:str|None = None
 
             if "--user" in cli_arguments:
                 user_filter = cli_arguments["--user"] 
                         
             jobs = api_response.jobs        
-                    
+            
+            if (jobs is None):
+                raise ValueError("A list of jobs was expected from the requests to the job resource. A None value was received instead.")
+
             output = "JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)\n"
 
             if user_filter == None:
-                for job in jobs:                            
-                    job_resources:V0039JobRes = job.job_resources                          
-                    output += format_squeue_job(job,job_resources)
+                for job in jobs:
+                    if job.job_resources is None:
+                        raise ValueError(f"Unexpected 'None' value for job {job} resources")                                     
+                    else:
+                        job_resources:V0039JobRes = job.job_resources                          
+                        output += format_squeue_job(job,job_resources)
 
             else:
-                for job in jobs:
-                    if job.user_name == user_filter:
-                        job_resources:V0039JobRes = job.job_resources                                                      
-                        output += format_squeue_job(job,job_resources)
+                for job in jobs:                    
+                    if job.job_resources is None:
+                        raise ValueError(f"Unexpected 'None' value for job {job} resources")                                     
+                    else:
+                        if job.user_name == user_filter:
+                            job_resources = job.job_resources                                                      
+                            output += format_squeue_job(job,job_resources)
 
 
             return output
@@ -125,9 +149,27 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
 def format_squeue_job(job:V0039JobInfo,job_resources:V0039JobRes):
     timestamp = int(time.time())
-    elapsed_time = str(seconds_to_hhmm(timestamp-job.start_time)) if job.job_state == "RUNNING" else "00:00"
-    return f"{str(job.job_id)[:5]:5} {str(job.partition)[:9]:9} {str(job.name)[:8]:8} {job.user_name[:8]:8} {slurm_statuses[job.job_state][:8]:8} {elapsed_time[:5]:5} {str(job_resources.allocated_hosts)[:5]:5} {job_resources.nodes}\n"
-        
+    if job.job_state is None:
+        job_status:str = "??"
+    else:
+        job_status = slurm_statuses[job.job_state]
+
+
+    if job.start_time is None:
+        elapsed_time:str = "00:00"
+    else:        
+        elapsed_time = str(seconds_to_hhmm(timestamp-job.start_time)) if job.job_state == "RUNNING" else "00:00"
+    return (
+        f"{str(job.job_id)[:5]:5} "
+        f"{str(job.partition)[:9]:9} "
+        f"{str(job.name)[:8]:8} "
+        f"{str(job.user_name)[:8]:8} "
+        f"{job_status[:8]:8} "
+        f"{elapsed_time[:5]:5} "
+        f"{str(job_resources.allocated_hosts)[:5]:5} "
+        f"{job_resources.nodes}\n"
+    )
+
 def seconds_to_hhmm(seconds):
     """
     Convert seconds to HH:MM format.
