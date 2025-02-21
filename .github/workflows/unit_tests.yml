@@ -2,12 +2,11 @@ name: Launching a test Slurm cluster, running unit tests, and performing a Sonar
 on:
   push:
     branches:
-      - main
-      - fix/enabling_slurm_tests
-    paths:
-      - 'src/**'
-      - '.github/workflows/**'
-  
+    - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+    - main
 
 jobs:
   test:
