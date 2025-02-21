@@ -1,0 +1,48 @@
+name: Launching a test Slurm cluster and running unit tests 
+on:
+  push:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+            
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+          pip install pytest
+
+      - name: Start Slurm Container
+        run: |
+          echo "Starting slurm test container"
+          nohup docker run -p 10022:22  -p 6821:6820 --name testslurm --privileged  ghcr.io/xenon-middleware/slurm:23 -d &
+          pid=$!
+          
+          # Wait for container to become healthy
+          while ! docker exec testslurm scontrol ping > /dev/null 2>&1; do
+            echo \"Waiting for Slurm to initialize...\"
+            sleep 5
+          done
+          
+          # Get and export token
+          TEST_CLUSTER_TOKEN=$(docker exec testslurm scontrol token)
+          export $TEST_CLUSTER_TOKEN
+
+          # Run tests
+          pytest
+          
+          # Cleanup
+          echo "KILLING $pid"
+          kill -9 $pid
+          
+          # Remove container
+          docker stop testslurm
+          docker rm testslurm
