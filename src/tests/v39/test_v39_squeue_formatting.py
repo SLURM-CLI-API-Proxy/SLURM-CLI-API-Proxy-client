@@ -23,6 +23,9 @@ def test_format_squeue_job_fields():
     assert "30:00" in result  # 30 min elapsed
     assert "node1" in result
 
+# TODO We might also want to test if the field content truncation behaviour
+# is consistent with the SLURM CLI
+
 def test_format_squeue_job_alignment():
     job_info = V0039JobInfo(
         job_id=123,
