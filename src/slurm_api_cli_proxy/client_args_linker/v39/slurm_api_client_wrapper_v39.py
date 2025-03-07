@@ -160,13 +160,13 @@ def format_squeue_job(job:V0039JobInfo,job_resources:V0039JobRes):
     else:        
         elapsed_time = str(seconds_to_hhmm(timestamp-job.start_time)) if job.job_state == "RUNNING" else "00:00"
     return (
-        f"{str(job.job_id)[:5]:5} "
-        f"{str(job.partition)[:9]:9} "
-        f"{str(job.name)[:8]:8} "
-        f"{str(job.user_name)[:8]:8} "
-        f"{job_status[:8]:8} "
-        f"{elapsed_time[:5]:5} "
-        f"{str(job_resources.allocated_hosts)[:5]:5} "
+        f"{str(job.job_id)[:5]:>5} "
+        f"{str(job.partition)[:9]:>9} "
+        f"{str(job.name)[:8]:>8} "
+        f"{str(job.user_name)[:8]:>8} "
+        f"{job_status[:8]:>8} "
+        f"{elapsed_time[:5]:>5} "
+        f"{str(job_resources.allocated_hosts)[:5]:>5} "
         f"{job_resources.nodes}\n"
     )
 
