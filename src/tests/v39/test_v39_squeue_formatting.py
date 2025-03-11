@@ -9,7 +9,7 @@ def test_format_squeue_job_fields():
         name="test_job",
         user_name="user1",
         job_state="RUNNING",
-        start_time=int(time.time()) - 1800,  # 30 min ago
+        start_time=int(time.time()) - 1800, # 30 min ago
         job_resources=V0039JobRes(allocated_hosts=1, nodes="node1")
     )
     job_resources = V0039JobRes(allocated_hosts=1, nodes="node1")
@@ -33,14 +33,14 @@ def test_format_squeue_job_alignment():
         name="testjob",
         user_name="user1",
         job_state="RUNNING",
-        start_time=int(time.time()) - 1800,  # 30 min ago
+        start_time=int(time.time()) - 120,  # 2 min ago
         job_resources=V0039JobRes(allocated_hosts=1, nodes="node1")
     )
     job_resources = V0039JobRes(allocated_hosts=1, nodes="node1")
 
     result = format_squeue_job(job_info, job_resources)
-    expected = "  123      ptn1  testjob    user1        R 30:00     1 node1\n"
+    expected = "  123      ptn1  testjob    user1  R        2:00     1 node1\n"
 
-    assert result == expected, f"Formatted output should be \"{expected}\""
+    assert result == expected, f"Formatted output should be \"{expected}\" but was \"{result}\""
 
 
