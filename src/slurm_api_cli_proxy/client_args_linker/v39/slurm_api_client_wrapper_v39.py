@@ -154,8 +154,6 @@ def format_squeue_job(job:V0039JobInfo,job_resources:V0039JobRes):
     else:
         job_status = slurm_statuses[job.job_state].rjust(2, ' ')
 
-    print("===", "\njob.job_state:", job.job_state, "\njob_status", job_status)
-
     if job.start_time is None:
         elapsed_time:str = " 0:00"
     else:        
