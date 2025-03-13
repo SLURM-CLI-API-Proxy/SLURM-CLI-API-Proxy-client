@@ -152,21 +152,20 @@ def format_squeue_job(job:V0039JobInfo,job_resources:V0039JobRes):
     if job.job_state is None:
         job_status:str = "??"
     else:
-        job_status = slurm_statuses[job.job_state]
-
+        job_status = slurm_statuses[job.job_state].rjust(2, ' ')
 
     if job.start_time is None:
-        elapsed_time:str = "00:00"
+        elapsed_time:str = " 0:00"
     else:        
-        elapsed_time = str(seconds_to_hhmm(timestamp-job.start_time)) if job.job_state == "RUNNING" else "00:00"
+        elapsed_time = str(seconds_to_hhmm(timestamp-job.start_time)) if job.job_state == "RUNNING" else " 0:00"
     return (
-        f"{str(job.job_id)[:5]:5} "
-        f"{str(job.partition)[:9]:9} "
-        f"{str(job.name)[:8]:8} "
-        f"{str(job.user_name)[:8]:8} "
-        f"{job_status[:8]:8} "
-        f"{elapsed_time[:5]:5} "
-        f"{str(job_resources.allocated_hosts)[:5]:5} "
+        f"{str(job.job_id)[:5]:>5} "
+        f"{str(job.partition)[:9]:>9} "
+        f"{str(job.name)[:8]:>8} "
+        f"{str(job.user_name)[:8]:>8} "
+        f"{job_status[:8]:7} "
+        f"{elapsed_time[:5]:>6} "
+        f"{str(job_resources.allocated_hosts)[:5]:>5} "
         f"{job_resources.nodes}\n"
     )
 
@@ -183,4 +182,4 @@ def seconds_to_hhmm(seconds):
     """
     minutes = seconds // 60
     remaining_seconds = seconds % 60
-    return f"{minutes:02d}:{remaining_seconds:02d}"
+    return f"{minutes:2d}:{remaining_seconds:02d}"
