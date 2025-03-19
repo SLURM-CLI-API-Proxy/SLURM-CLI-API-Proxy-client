@@ -19,3 +19,4 @@ types-PyYAML==6.0.12.20241230
 typing_extensions==4.12.2
 urllib3==2.2.3
 userpath==1.9.2
+jsonpath-python==1.0.6
