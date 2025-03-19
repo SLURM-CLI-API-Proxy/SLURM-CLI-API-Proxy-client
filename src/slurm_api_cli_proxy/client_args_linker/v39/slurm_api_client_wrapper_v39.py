@@ -40,8 +40,10 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
     def __init__(self):
         super().__init__()
-        squeue_format_mappings_path = pkg_resources.resource_filename(__name__, 'mappings/squeue_format_mappings_r23.11_v0.0.39.yaml')
-        V39SlurmAPIClientWrapper.__squeue_format_mappings = yaml.safe_load(squeue_format_mappings_path)
+        # TODO: there is probably a better way to define the path ... ?
+        squeue_format_mappings_path = pkg_resources.resource_filename(__name__, '../../mappings/squeue_format_mappings_r23.11_v0.0.39.yaml')
+        # /home/cschelp2/SLURM-CLI-API-Proxy-client/src/slurm_api_cli_proxy/mappings/squeue_mappings_r23.11_v0.0.39.yaml
+        V39SlurmAPIClientWrapper.__squeue_format_mappings = yaml.safe_load(open(squeue_format_mappings_path))
 
         all_type_keys = list(V39SlurmAPIClientWrapper.__squeue_format_mappings.keys())
         types_matcher = '|'.join(all_type_keys)
@@ -169,7 +171,7 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
                 squeue_format = V39SlurmAPIClientWrapper.__default_squeue_format
 
             table_layout = V39SlurmAPIClientWrapper.parse_format_string(squeue_format)
-            squeue_output = V39SlurmAPIClientWrapper.apply_table_layout(jobs, user_filter, table_layout)
+            squeue_output = V39SlurmAPIClientWrapper.apply_table_layout(jobs, table_layout, user_filter)
 
             return squeue_output
         
@@ -203,11 +205,13 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
         return table_layout
     
     @staticmethod
-    def apply_table_layout(jobs, table_layout):
+    def apply_table_layout(jobs, table_layout, user_filter):
         output = V39SlurmAPIClientWrapper.write_header(table_layout)
         for job in jobs:
             if job.job_resources is None:
-                raise ValueError(f"Unexpected 'None' value for job {job} resources")                                     
+                raise ValueError(f"Unexpected 'None' value for job {job} resources")
+            if user_filter and job.user_name != user_filter:
+                continue
 
             job_row = ''
             for column in table_layout:
@@ -231,7 +235,23 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
             output += job_row + "\n"
 
-        return output    
+        return output
+
+    def write_header(table_layout):
+        header = ''
+        for column in table_layout:
+            if not column['width']:
+                header += column['head']
+            elif column['align_right']:
+            # align (=pad) right and/or truncate
+                header += column['head'].rjust(column['width'])[:column['width']]
+            else:
+                # align (=pad) left and/or truncate
+                header += column['head'].ljust(column['width'])[:column['width']]
+
+            header += column['suffix'] + column['spacer']
+
+        return header + "\n"    
 
     @staticmethod
     def get_D_format_value(job):
