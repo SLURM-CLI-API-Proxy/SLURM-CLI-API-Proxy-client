@@ -36,19 +36,22 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
     __squeue_format_re = ''
     __squeue_format_method_map = {}
 
-
+    # TODO: Once you get started with static methods, you are stuck with them, it seems.
+    # Their number keeps growing while the functionality evolves.
+    # They also force us to work with a lot of static class methods. Is this desireable?
 
     def __init__(self):
         super().__init__()
-        # TODO: there is probably a better way to define the path ... ?
+        # TODO: there is probably a better way to define the path, here ... ?
         squeue_format_mappings_path = pkg_resources.resource_filename(__name__, '../../mappings/squeue_format_mappings_r23.11_v0.0.39.yaml')
-        # /home/cschelp2/SLURM-CLI-API-Proxy-client/src/slurm_api_cli_proxy/mappings/squeue_mappings_r23.11_v0.0.39.yaml
+
         V39SlurmAPIClientWrapper.__squeue_format_mappings = yaml.safe_load(open(squeue_format_mappings_path))
 
         all_type_keys = list(V39SlurmAPIClientWrapper.__squeue_format_mappings.keys())
         types_matcher = '|'.join(all_type_keys)
         V39SlurmAPIClientWrapper.__squeue_format_re = f"(\\.?)(\\d*)({types_matcher})(\\w*)(\\W*)"
 
+        # TODO: Discuss whether all or at least most of the knowledge about format types should be moved to the squeue respones object.
         V39SlurmAPIClientWrapper.__squeue_format_method_map = {
             'get_D_format_value': V39SlurmAPIClientWrapper.get_D_format_value,
             'get_l_format_value': V39SlurmAPIClientWrapper.get_l_format_value,
@@ -177,6 +180,16 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
         
     @staticmethod
     def parse_format_string(format):
+        """
+        Takes an squeue format string according to https://slurm.schedmd.com/squeue.html and
+        parses it to a list of column-info dictionaries for table-formatting.
+
+        Args:
+            format: format string.
+            The string can be explicitly defined by the user or one of the presets ("default", "long", "steps") 
+        Returns:
+            list: A list of dictionaries with column-info ("table-layout")  
+        """
         tokens = [token for token in format.split('%') if len(token)>0]
         table_layout = []
         for token in tokens:
@@ -206,6 +219,17 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
     
     @staticmethod
     def apply_table_layout(jobs, table_layout, user_filter):
+        """
+        Takes a list of job objects as returned by the jobs (or squeue) call and extracts the table header and job content and format according to the given table-layout.
+        Filters on the user_filter, if provided.
+
+        Args:
+            jobs: list of job objects from the response object
+            table-layout: list of column-info dictionaries to extract content from job objects and format it.
+            user_filter: if set, string with the user name the jobs to display must match.
+        Returns:
+            string: The content of the formatted output table.
+        """
         output = V39SlurmAPIClientWrapper.write_header(table_layout)
         for job in jobs:
             if job.job_resources is None:
@@ -238,6 +262,14 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
         return output
 
     def write_header(table_layout):
+        """
+        Creates the output table header with the necessary column heads, alignment and width.
+
+        Args:
+          table_layout: a list of column-info dictionaries
+        Returns:
+          str: the header of the output table
+        """
         header = ''
         for column in table_layout:
             if not column['width']:
@@ -255,15 +287,39 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
     @staticmethod
     def get_D_format_value(job):
+        """
+        Retrieve the value for the %D format type from the given job-object.
+
+        Args:
+          job: a job object from the squeue response.
+        Returns:
+          str: the value to display in the table
+        """
         return job.job_resources.allocated_hosts
 
     @staticmethod
     def get_l_format_value(job):
+        """
+        Retrieve the value for the %l format type from the given job-object.
+
+        Args:
+          job: a job object from the squeue response.
+        Returns:
+          str: the value to display in the table
+        """
         time_limit_info = job['time_limit']
         return V39SlurmAPIClientWrapper._get_num_value(time_limit_info)
 
     @staticmethod
     def get_M_format_value(job):
+        """
+        Retrieve the value for the %M format type from the given job-object.
+
+        Args:
+          job: a job object from the squeue response.
+        Returns:
+          str: the value to display in the table
+        """
         start_time_info = job['start_time']
         start_time = V39SlurmAPIClientWrapper._get_num_value(start_time_info)
         end_time_info = job['end_time']
@@ -275,21 +331,53 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
     @staticmethod
     def get_Q_format_value(job):
+        """
+        Retrieve the value for the %Q format type from the given job-object.
+
+        Args:
+          job: a job object from the squeue response.
+        Returns:
+          str: the value to display in the table
+        """
         prio_info = job['priority']
         return V39SlurmAPIClientWrapper._get_num_value(prio_info)
 
     @staticmethod
     def get_R_format_value(job):
+        """
+        Retrieve the value for the %R format type from the given job-object.
+
+        Args:
+          job: a job object from the squeue response.
+        Returns:
+          str: the value to display in the table
+        """
         return job.job_resources.nodes
     
     @staticmethod
     def get_t_format_value(job):
+        """
+        Retrieve the value for the %t format type from the given job-object.
+
+        Args:
+          job: a job object from the squeue response.
+        Returns:
+          str: the value to display in the table
+        """
         state_description = job['job_state'][0]
         # TODO: add the actual mapping 
         return state_description[:2]
     
     @staticmethod
     def _get_num_value(num_info):
+        """
+        Extract the value represented by the given number object.        
+
+        Args:
+          num_info: a number info object from a job object.
+        Returns:
+          str: the value to display in the table
+        """
         if not num_info['set']:
             return "NOT_SET"
         if num_info['infinite']:
@@ -299,6 +387,13 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
     @staticmethod
     def _format_duration(timed):
+        """
+        Format the duration in slurm-style:
+        days (if any at all) without leading zeros.
+        hours (if any at all) without a leading zero.
+        minutes without a leading zero.
+        seconds with a leading zero.
+        """
         days, remainder = divmod(int(timed.total_seconds()), 24 * 3600)
         hours, remainder = divmod(remainder, 3600,)
         minutes, seconds = divmod(remainder, 60)
@@ -317,40 +412,3 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
         result += f"{seconds:02}"
 
         return result
-
-# def format_squeue_job(job:V0039JobInfo,job_resources:V0039JobRes):
-#     timestamp = int(time.time())
-#     if job.job_state is None:
-#         job_status:str = "??"
-#     else:
-#         job_status = slurm_statuses[job.job_state].rjust(2, ' ')
-
-#     if job.start_time is None:
-#         elapsed_time:str = " 0:00"
-#     else:        
-#         elapsed_time = str(seconds_to_hhmm(timestamp-job.start_time)) if job.job_state == "RUNNING" else " 0:00"
-#     return (
-#         f"{str(job.job_id)[:5]:>5} "
-#         f"{str(job.partition)[:9]:>9} "
-#         f"{str(job.name)[:8]:>8} "
-#         f"{str(job.user_name)[:8]:>8} "
-#         f"{job_status[:8]:7} "
-#         f"{elapsed_time[:5]:>6} "
-#         f"{str(job_resources.allocated_hosts)[:5]:>5} "
-#         f"{job_resources.nodes}\n"
-#     )
-
-# def seconds_to_hhmm(seconds):
-#     """
-#     Convert seconds to HH:MM format.
-    
-#     Args:
-#         seconds (int): Number of seconds to convert
-        
-#     Returns:
-#         str: Time in HH:MM format
-        
-#     """
-#     minutes = seconds // 60
-#     remaining_seconds = seconds % 60
-#     return f"{minutes:2d}:{remaining_seconds:02d}"
