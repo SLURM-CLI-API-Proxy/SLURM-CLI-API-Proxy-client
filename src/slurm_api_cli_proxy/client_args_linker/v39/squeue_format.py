@@ -1,5 +1,4 @@
 import re
-from jsonpath import JSONPath as JP
 import slurm_api_cli_proxy.client_args_linker.v39.squeue_format_types as ft
 
 default = "%.18i %.9P %.8j %.8u %.2t %.10M %.6D %R" 
@@ -38,7 +37,7 @@ def _parse_format_string(format):
             raise ValueError(f"No alignment ('.') without width allowed: '{token}'.")
         
         # resolve type-info from mapping
-        type_info = ft.types_map[coltype]
+        type_info = ft.type_map[coltype]
         column = type_info.copy()
 
         column.pop('descr')
@@ -72,20 +71,14 @@ def _apply_table_layout(jobs, table_layout, user_filter):
 
         job_row = ''
         for column in table_layout:
-            if 'json_path' in column:
-                value = str(JP("$."+column['json_path']).parse(job)[0])
-            else:
-                method_key = column['method']
-                method = ft.types_map[method_key]
-                value = str(method(job))
-
+            value = str(column['method'](job))
             if not column['width']:
                 job_row += value
             elif column['align_right']:
-                # align (=pad) right and/or truncate
+                # align (=pad) right or truncate
                 job_row += value.rjust(column['width'])[:column['width']]
             else:
-                # align (=pad) left and/or truncate
+                # align (=pad) left or truncate
                 job_row += value.ljust(column['width'])[:column['width']]
 
             job_row += column['suffix'] + column['spacer']
