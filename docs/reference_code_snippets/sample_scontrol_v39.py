@@ -33,7 +33,7 @@ configuration.api_key['token'] = os.environ["SLURM_JWT"]
 with openapi_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = openapi_client.SlurmApi(api_client)
-    job_id = 'job_id_example' # str | Slurm Job ID
+    job_id = '203' # str | Slurm Job ID
 
     # scontrol hold/release 
     # hold: Optional[StrictBool] = Field(default=None, description="Hold (True) or release (False) job")
@@ -53,62 +53,29 @@ with openapi_client.ApiClient(configuration) as api_client:
     #Based on:
     #https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/V0039JobDescMsg.md
     
-    #"priority": 1000,
 
-    job_desc = {
-        "job": {
-            "environment": ["PATH=/bin/:/usr/bin/:/sbin/"],
-        },
-        "environment": ["PATH=/bin/:/usr/bin/:/sbin/"],
-        "job_id": 201,        
-        "nice":1,
-        "dependency":"aaaaa",
-        "minimum_cpus_per_node":1,
-        "hold": True,
-    }
-    
-
-    
-
-
-    #json_job_desc = json.dumps(job_m, indent=2)
-
-    #print(json_job_desc)
-
-
-    #v0039_job_desc_msg = V0039JobDescMsg().from_json(json_job_desc) # V0039JobDescMsg | update job
-
-
-    job3 = V0039JobDescMsg(environment = [''])
-
-    dict = job3.to_dict()
-
-    json_job_desc = json.dumps(dict, indent=2)
-
-    print(json_job_desc)
-
-
-    V0039JobDescMsg.from_json(json_job_desc)
-
-    V0039JobDescMsg.from_json('{"environment": [""]}')
 
     job_m = {"environment": ['']}
 
-    V0039JobDescMsg.from_json(json.dumps(job_m))
+    job_desc = {
+        "environment": ["PATH=/bin/:/usr/bin/:/sbin/"],
+        #"nice":1, <- crashes slurmrestd
+        "dependency":"singleton",
+        "minimum_cpus_per_node":1,
+        "hold": True,
+    }
 
-    V0039JobDescMsg.from_dict(dict)
 
-    print(">>>>",dict)
+    job_obj = V0039JobDescMsg.from_json(json.dumps(job_desc))
     
+    print(job_obj)
 
     try:
         # update job (scontrol update)
 
-
-
         #api_response = api_instance.slurm_v0039_update_job(job_id, v0039_job_desc_msg)
 
-        api_response = api_instance.slurm_v0039_update_job(job_id, job3)
+        api_response = api_instance.slurm_v0039_update_job(job_id, job_obj)
 
         print("The response of SlurmApi->slurm_v0039_update_job:\n")
         pprint(api_response)
