@@ -1,4 +1,6 @@
 import openapi_client
+import os
+import json
 from openapi_client.models.v0039_job_desc_msg import V0039JobDescMsg
 from openapi_client.models.v0039_job_update_response import V0039JobUpdateResponse
 from openapi_client.rest import ApiException
@@ -7,7 +9,7 @@ from pprint import pprint
 # Defining the host is optional and defaults to http://localhost
 # See configuration.py for a list of all supported configuration parameters.
 configuration = openapi_client.Configuration(
-    host = "http://localhost"
+    host = "http://slurm-controller:6820"
 )
 
 # The client must configure the authentication and authorization parameters
@@ -16,13 +18,13 @@ configuration = openapi_client.Configuration(
 # satisfies your auth use case.
 
 # Configure API key authorization: user
-configuration.api_key['user'] = os.environ["API_KEY"]
+configuration.api_key['token'] = os.environ["SLURM_JWT"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['user'] = 'Bearer'
 
 # Configure API key authorization: token
-configuration.api_key['token'] = os.environ["API_KEY"]
+#configuration.api_key['token'] = os.environ["API_KEY"]
 
 # Uncomment below to setup prefix (e.g. Bearer) for API key, if needed
 # configuration.api_key_prefix['token'] = 'Bearer'
@@ -34,17 +36,80 @@ with openapi_client.ApiClient(configuration) as api_client:
     job_id = 'job_id_example' # str | Slurm Job ID
 
     # scontrol hold/release 
-    # hold: Optional[StrictBool] = Field(default=None, description="Hold (true) or release (false) job")
+    # hold: Optional[StrictBool] = Field(default=None, description="Hold (True) or release (False) job")
+
+    """"
+        scontrol update JobId=<jobid> Priority=<value>
+    scontrol update JobId=<jobid> Nice=<adjustment>
+    scontrol update JobId=<jobid> Dependency=<dependency-spec>
+
+    # Resource allocation
+    scontrol update JobId=<jobid> MinMemoryNode=<MB>
+    scontrol update JobId=<jobid> MinCPUsNode=<count>
+    
+
+    """
+
+    #Based on:
+    #https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/V0039JobDescMsg.md
+    
+    #"priority": 1000,
+
+    job_desc = {
+        "job": {
+            "environment": ["PATH=/bin/:/usr/bin/:/sbin/"],
+        },
+        "environment": ["PATH=/bin/:/usr/bin/:/sbin/"],
+        "job_id": 201,        
+        "nice":1,
+        "dependency":"aaaaa",
+        "minimum_cpus_per_node":1,
+        "hold": True,
+    }
+    
+
+    
 
 
-    v0039_job_desc_msg = openapi_client.V0039JobDescMsg() # V0039JobDescMsg | update job
+    #json_job_desc = json.dumps(job_m, indent=2)
+
+    #print(json_job_desc)
+
+
+    #v0039_job_desc_msg = V0039JobDescMsg().from_json(json_job_desc) # V0039JobDescMsg | update job
+
+
+    job3 = V0039JobDescMsg(environment = [''])
+
+    dict = job3.to_dict()
+
+    json_job_desc = json.dumps(dict, indent=2)
+
+    print(json_job_desc)
+
+
+    V0039JobDescMsg.from_json(json_job_desc)
+
+    V0039JobDescMsg.from_json('{"environment": [""]}')
+
+    job_m = {"environment": ['']}
+
+    V0039JobDescMsg.from_json(json.dumps(job_m))
+
+    V0039JobDescMsg.from_dict(dict)
+
+    print(">>>>",dict)
+    
 
     try:
         # update job (scontrol update)
 
 
 
-        api_response = api_instance.slurm_v0039_update_job(job_id, v0039_job_desc_msg)
+        #api_response = api_instance.slurm_v0039_update_job(job_id, v0039_job_desc_msg)
+
+        api_response = api_instance.slurm_v0039_update_job(job_id, job3)
+
         print("The response of SlurmApi->slurm_v0039_update_job:\n")
         pprint(api_response)
     except Exception as e:
