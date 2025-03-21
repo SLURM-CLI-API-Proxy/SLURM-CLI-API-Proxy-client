@@ -35,6 +35,8 @@
     scontrol update JobId=<jobid> TRES=<tres-spec>
     # Example: TRES=cpu=5,mem=8192M,gres/gpu:1
 
+
+
     # Not supported:
 
     # State management
@@ -67,6 +69,18 @@
 
     # State management
     scontrol update PartitionName=<name> State={UP|DOWN}
+    ```
+
+
+    ## Note: updating 'nice' through the API may cuase the slurmrestd daemon to crash
+
+        
+    ```
+    2025-03-21T10:47:16.990319+00:00 slurm-controller slurmrestd[985]: slurmrestd: fatal: parsing of DATA_PARSER_NICE is not implemented
+    2025-03-21T10:47:16.990345+00:00 slurm-controller slurmrestd[985]: fatal: parsing of DATA_PARSER_NICE is not implemented
+    2025-03-21T10:47:17.100309+00:00 slurm-controller systemd[1]: slurmrestd.service: Main process exited, code=dumped, status=6/ABRT
+    2025-03-21T10:47:17.100400+00:00 slurm-controller systemd[1]: slurmrestd.service: Failed with result 'core-dump'.
+    2025-03-21T10:49:04.152128+00:00 slurm-controller tailscaled[682]: Received error: PollNetMap: unexpected EOF
     ```
 
 
