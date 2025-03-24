@@ -1,4 +1,3 @@
-import pytest
 from datetime import timedelta
 
 from slurm_api_cli_proxy.client_args_linker.v39.squeue_format_types import format_duration

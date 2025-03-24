@@ -1,7 +1,5 @@
-import pytest
 from slurm_api_cli_proxy.client_args_linker.v39.slurm_api_client_wrapper_v39 import V0039JobInfo, V0039JobRes
 import time
-# import slurm_api_cli_proxy.client_args_linker.v39.squeue_format as squeue_format
 from slurm_api_cli_proxy.client_args_linker.v39.squeue_format import default, format_squeue_output, _parse_format_string
 
 def test_format_squeue_output():
