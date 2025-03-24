@@ -26,3 +26,8 @@ parameters:
     is_mandatory: false
     data_type: bool
 
+  - name: --format
+    abbreviation: -o
+    is_mandatory: false
+    data_type: str
+
