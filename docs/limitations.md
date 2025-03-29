@@ -16,6 +16,10 @@
 
 - `scontrol`: only job updates can be implemented. Node, partition and reservation resources are immutable in the api (only GET method):
 
+    Only one job can be updated at a time (only '/job/{job_id}' endpoint available)
+
+    No interactive mode
+
     ```shell
 
     #Supported: 

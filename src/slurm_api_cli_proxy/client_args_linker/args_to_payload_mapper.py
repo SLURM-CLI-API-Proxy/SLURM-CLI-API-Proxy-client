@@ -117,6 +117,39 @@ def args_to_squeue_parameters_dict(squeue_args_dict:dict)->dict:
     return squeue_request_params
 
 
+
+def args_to_scontrol_request_payload(cmd_args_dict:dict,scontrol_mappings:CliToJsonPayloadMappings)->dict:
+
+    request_payload:Dict[str,Any] = {}
+
+    #MinCPUsNode=<count> -> "minimum_cpus_per_node":1
+    #jobid -> job_id
+
+    # Subcommand received from the CLI
+    subcommand = cmd_args_dict['subcommand']
+
+    # Arguments/settings given to the sub-command
+    subcommand_args_dict:dict = __parse_sub_command_args(cmd_args_dict['subcommand_args'],subcommand)
+
+    # Arguments settings that are accepted according to the YML config
+    accepted_subcommand_args:dict = scontrol_mappings.arguments_dict[subcommand]['subcommand_specs']
+
+    for subcommand_arg in subcommand_args_dict.keys():
+        if (subcommand_arg in accepted_subcommand_args.keys()):
+            
+            #Get the property name used on the payload (defined on the YAML)
+            pname = accepted_subcommand_args[subcommand_arg]['api_mapping']
+
+            #Get the value set on the CLI
+            svalue=subcommand_args_dict[subcommand_arg]
+
+            request_payload[pname] = svalue
+        else:
+            raise UnsuportedArgumentException(f"Invalid or unsupported specification of the {subcommand} command:{subcommand_arg}",subcommand_arg)
+
+    return request_payload
+
+
 def __add_nested_path(dictionary:dict, path:str, value=None):
     """Add nested properties to dictionary based on a dotted path."""
     parts = path.split('.')
@@ -130,3 +163,23 @@ def __add_nested_path(dictionary:dict, path:str, value=None):
     current[parts[-1]] = value
     
     return dictionary
+
+
+def __parse_sub_command_args(pairs: list[str],command:str) -> dict[str, str]:
+    """
+    Converts a list of strings in the form 'a=x' into a dictionary.
+
+    Args:
+        pairs (list[str]): A list of strings in the form 'a=x'.
+
+    Returns:
+        dict[str, str]: A dictionary where the key is 'a' and the value is 'x'.
+    """
+    result = {}
+    for pair in pairs:
+        if '=' in pair:
+            key, value = pair.split('=', 1)  # Split into key and value at the first '='
+            result[key] = value
+        else:
+            raise ValueError(f"Invalid format for the {command} command specification: {pair}. Expected 'key=value'.")
+    return result

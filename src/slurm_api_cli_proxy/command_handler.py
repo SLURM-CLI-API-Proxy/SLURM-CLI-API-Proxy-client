@@ -9,7 +9,7 @@ import traceback
 from typing import Tuple
 from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
 from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import get_slurm_api_client_wrapper,ApiClientException
-from slurm_api_cli_proxy.client_args_linker.args_to_payload_mapper import args_to_sbatch_request_payload,args_to_squeue_parameters_dict,UnsuportedArgumentException
+from slurm_api_cli_proxy.client_args_linker.args_to_payload_mapper import args_to_sbatch_request_payload,args_to_squeue_parameters_dict,args_to_scontrol_request_payload,UnsuportedArgumentException
 from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SbatchResponse
 import openapi_client
 import logging
@@ -163,15 +163,17 @@ def scontrol():
     #Sbatch has an error code = 130 when aborted (ctrl-c) (codes 129-192 indicate jobs terminated by Linux signals) 
     signal.signal(signal.SIGINT, lambda signum,frame : sys.exit(130))
 
-    squeue_mappings_file_path = pkg_resources.resource_filename(__name__, 'mappings/scontrol_mappings_r23.11_v0.0.39.yaml')
+    scontrol_mappings_file_path:str = pkg_resources.resource_filename(__name__, 'mappings/scontrol_mappings_r23.11_v0.0.39.yaml')
 
-    cli_to_json_mappings = CliToJsonPayloadMappings(yaml_config_path=squeue_mappings_file_path)
+    cli_to_json_mappings = CliToJsonPayloadMappings(yaml_config_path=scontrol_mappings_file_path)
 
     cli_param_parser = build_parser(cli_to_json_mappings)
 
     cli_args = cli_param_parser.parse_args()
 
-    print(cli_args)
+    request_args:dict = args_to_scontrol_request_payload(cmd_args_dict=vars(cli_args),scontrol_mappings=cli_to_json_mappings)
+
+    print(">>>>",request_args)
 
     #dictionary with the arguments/values given to the squeue command
     #request_args = args_to_squeue_parameters_dict(squeue_args_dict=vars(cli_args))

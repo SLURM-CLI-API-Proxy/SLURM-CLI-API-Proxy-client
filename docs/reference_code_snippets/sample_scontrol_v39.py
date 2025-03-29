@@ -44,8 +44,9 @@ with openapi_client.ApiClient(configuration) as api_client:
     scontrol update JobId=<jobid> Dependency=<dependency-spec>
 
     # Resource allocation
-    scontrol update JobId=<jobid> MinMemoryNode=<MB>
     scontrol update JobId=<jobid> MinCPUsNode=<count>
+    scontrol update JobId=<jobid> MinMemoryNode=<MB>
+    
     
 
     """
@@ -55,7 +56,7 @@ with openapi_client.ApiClient(configuration) as api_client:
     
 
 
-    job_m = {"environment": ['']}
+    #job_m = {"environment": ['']}
 
     job_desc = {
         "environment": ["PATH=/bin/:/usr/bin/:/sbin/"],
