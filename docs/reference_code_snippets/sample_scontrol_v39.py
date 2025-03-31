@@ -58,12 +58,24 @@ with openapi_client.ApiClient(configuration) as api_client:
 
     #job_m = {"environment": ['']}
 
+    # job_desc = {
+    #     "environment": ["PATH=/bin/:/usr/bin/:/sbin/"],
+    #     #"nice":1, <- crashes slurmrestd
+    #     "dependency":"singleton",
+    #     "minimum_cpus_per_node":1,
+    #     "hold": True,
+    # }
+
+    # job_desc = {
+    #     "environment": ["PATH=/bin/:/usr/bin/:/sbin/"],
+    #     "minimum_cpus_per_node": 1
+    # }
+
     job_desc = {
-        "environment": ["PATH=/bin/:/usr/bin/:/sbin/"],
-        #"nice":1, <- crashes slurmrestd
-        "dependency":"singleton",
-        "minimum_cpus_per_node":1,
-        "hold": True,
+        "environment": [
+            "ALL"
+        ],
+        "minimum_cpus_per_node": 1
     }
 
 

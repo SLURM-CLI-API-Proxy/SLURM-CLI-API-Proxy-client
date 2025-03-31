@@ -26,8 +26,10 @@ parameters:
     subcommand_specs:
       JobId:
         api_mapping: job_id
+        data_type: int
       MinCPUsNode:
         api_mapping: minimum_cpus_per_node
+        data_type: int
 
   - name: hold
     abbreviation: hold

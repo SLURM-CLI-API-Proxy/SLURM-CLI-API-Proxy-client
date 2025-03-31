@@ -145,6 +145,8 @@ def args_to_scontrol_request_payload(cmd_args_dict:dict,scontrol_mappings:CliToJ
 
     request_payload:Dict[str,Any] = {}
 
+    # Payload properties required by default
+    request_payload["environment"]=["ALL"]
     
     # Subcommand received from the CLI
     subcommand = cmd_args_dict['subcommand']
@@ -172,15 +174,21 @@ def args_to_scontrol_request_payload(cmd_args_dict:dict,scontrol_mappings:CliToJ
                 
                 #Get the property name used on the payload (defined on the YAML)
                 pname = accepted_subcommand_args[subcommand_arg]['api_mapping']
+                ptype = accepted_subcommand_args[subcommand_arg]['data_type']
 
                 #Get the value set on the CLI
                 svalue=subcommand_args_dict[subcommand_arg]
 
-                request_payload[pname] = svalue
+                if (ptype == "int"):
+                    request_payload[pname] = int(svalue)
+                elif (ptype == "str"):
+                    request_payload[pname] = str(svalue)
+                else:
+                    raise Exception(f"[SLURM_CLI_PROXY_ERROR] Scontrol - Internal misconfiguration error: {ptype} is not supported for command's key-value properties")
+                
             else:
                 raise UnsuportedArgumentException(f"Invalid or unsupported specification of the {subcommand} command:{subcommand_arg}",subcommand_arg)
 
-    #t
     else:
         print(">>>",cmd_args_dict['subcommand_args'])
 
