@@ -12,9 +12,8 @@ class InternalConfigurationException(Exception):
 class UnsuportedArgumentException(Exception):
     argument:str
 
-    def __init__(self, message, argument=None):
+    def __init__(self, message):
         self.message = message
-        self.argument = argument
         super().__init__(self.message)
 
 def args_to_sbatch_request_payload(script_content:str,cmd_args_dict:dict,sbatch_mappings:CliToJsonPayloadMappings)->dict:
@@ -86,7 +85,7 @@ def args_to_sbatch_request_payload(script_content:str,cmd_args_dict:dict,sbatch_
                 __add_nested_path(request_payload,doc_path,arg_value)
                 
             else:
-                raise UnsuportedArgumentException("Command argument not supported or not yet implemented in the CLI Proxy",original_arg_name)
+                raise UnsuportedArgumentException(f"Command argument not supported or not yet implemented in the CLI Proxy:{original_arg_name}")
 
     return request_payload
 
@@ -202,7 +201,7 @@ def args_to_scontrol_request_payload(cmd_args_dict:dict,scontrol_mappings:CliToJ
                     raise UnsuportedArgumentException(f"Scontrol - an {ptype} value is expected for {subcommand_arg} key-value argument")                    
 
             else:
-                raise UnsuportedArgumentException(f"Invalid or unsupported specification of the {subcommand} command:{subcommand_arg}",subcommand_arg)
+                raise UnsuportedArgumentException(f"Invalid or unsupported specification of the {subcommand} command:{subcommand_arg}")
 
         # if the job_id was set by one of the commands specifications, remove it from the payload
         # and use it as the target job id.
