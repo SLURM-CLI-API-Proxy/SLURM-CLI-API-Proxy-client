@@ -35,6 +35,8 @@ parameters:
     abbreviation: hold
     is_mandatory: false
     data_type: subcommand
+    subcommand_arg:
+      data_type: int
     request_property_value:
       hold: true      
 
@@ -42,6 +44,8 @@ parameters:
     abbreviation: release
     is_mandatory: false
     data_type: subcommand
+    subcommand_arg:
+      data_type: int
     request_property_value:
       hold: false
       

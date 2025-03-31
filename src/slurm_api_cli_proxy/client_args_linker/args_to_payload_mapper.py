@@ -3,6 +3,12 @@ from typing import Dict, Any, Tuple
 from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
 import os
 
+class InternalConfigurationException(Exception):
+    def __init__(self, message):
+        self.message = message        
+        super().__init__(self.message)
+
+
 class UnsuportedArgumentException(Exception):
     argument:str
 
@@ -142,7 +148,9 @@ def args_to_scontrol_request_payload(cmd_args_dict:dict,scontrol_mappings:CliToJ
             - If an unsupported or invalid argument is provided for the subcommand.
     """
 
+    target_job_id:str
 
+    # Payload to be returned (the one to be used on the API request)
     request_payload:Dict[str,Any] = {}
 
     # Payload properties required by default
@@ -151,16 +159,20 @@ def args_to_scontrol_request_payload(cmd_args_dict:dict,scontrol_mappings:CliToJ
     # Subcommand received from the CLI
     subcommand = cmd_args_dict['subcommand']
 
+    # scontrol works in interactive mode if no command is given. This is not supported by the proxy
     if (subcommand == None):
         raise UnsuportedArgumentException(f"scontrol: interactive mode is not supported - a command is required.")
 
-    # The subcommand has a default value to be included in the payload (regardless of its arguments)
+    # Some subcommands of 'scontrol' have implicit payload properties that need to be included
+    # regardless of the arguments given. e.g., scontrol relase requires including 'hold=false'. 
+    # These are defined on the optional request_property_value of the 'subcommand' entries.
     if 'request_property_value' in scontrol_mappings.arguments_dict[subcommand]:
         default_payload_entries:dict = scontrol_mappings.arguments_dict[subcommand]['request_property_value']
         for default_payload_entry in default_payload_entries.keys():
             request_payload[default_payload_entry] = default_payload_entries[default_payload_entry]
 
-    # the subcommand has arguments (specifications) with the form key=value
+    # Some subcommands of scontrol have 'specifications' in the form of a series of key-value entries. These
+    # are defined in the 'subcommand_specs' in the corresponding YAML file
     if 'subcommand_specs' in scontrol_mappings.arguments_dict[subcommand]:
 
         # Arguments settings that are accepted according to the YML config
@@ -179,21 +191,38 @@ def args_to_scontrol_request_payload(cmd_args_dict:dict,scontrol_mappings:CliToJ
                 #Get the value set on the CLI
                 svalue=subcommand_args_dict[subcommand_arg]
 
-                if (ptype == "int"):
-                    request_payload[pname] = int(svalue)
-                elif (ptype == "str"):
-                    request_payload[pname] = str(svalue)
-                else:
-                    raise Exception(f"[SLURM_CLI_PROXY_ERROR] Scontrol - Internal misconfiguration error: {ptype} is not supported for command's key-value properties")
-                
+                try:                    
+                    if (ptype == "int"):
+                        request_payload[pname] = int(svalue)
+                    elif (ptype == "str"):
+                        request_payload[pname] = str(svalue)
+                    else:
+                        raise InternalConfigurationException(f"[SLURM_CLI_PROXY_ERROR] Scontrol - Internal misconfiguration error: type {ptype} is not supported for command's key-value properties")
+                except ValueError as e:
+                    raise UnsuportedArgumentException(f"Scontrol - an {ptype} value is expected for {subcommand_arg} key-value argument")                    
+
             else:
                 raise UnsuportedArgumentException(f"Invalid or unsupported specification of the {subcommand} command:{subcommand_arg}",subcommand_arg)
 
-    else:
-        print(">>>",cmd_args_dict['subcommand_args'])
+        # if the job_id was set by one of the commands specifications, remove it from the payload
+        # and use it as the target job id.
+        if ("job_id" in request_payload):
+            target_job_id = request_payload.pop("job_id")
+        else:
+            raise UnsuportedArgumentException(f"No jobid was provided to the scrontrol command:  {subcommand}")
+    
+    # The given subcommand requires a single argument. 
+    # Note: this implementation only supports scontrol 'commands' with the jobid as their only argument
+    elif 'subcommand_arg' in scontrol_mappings.arguments_dict[subcommand]:
+        num_args = len(cmd_args_dict['subcommand_args'])
+        if num_args == 0:
+            raise UnsuportedArgumentException(f"Too few arguments for {subcommand}")
+        elif num_args > 1:
+            raise UnsuportedArgumentException(f"Only one argument is supported for {subcommand}")
+        else:
+            target_job_id = cmd_args_dict['subcommand_args'][0]            
 
-
-    return request_payload, "12345"
+    return request_payload, target_job_id
 
 
 def __add_nested_path(dictionary:dict, path:str, value=None):

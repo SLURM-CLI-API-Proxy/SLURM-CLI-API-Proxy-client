@@ -175,9 +175,7 @@ def scontrol():
     target_job_id: str
 
     request_args, target_job_id = args_to_scontrol_request_payload(cmd_args_dict=vars(cli_args),scontrol_mappings=cli_to_json_mappings)
-
-    request_args.pop("job_id")
-
+    
     try:
         #Getting an appropriate SlurmCliWrapper based on the SLURM API Version required        
         slurm_cli_wrapper = get_slurm_api_client_wrapper(cli_to_json_mappings)
