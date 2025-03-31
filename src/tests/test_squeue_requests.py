@@ -41,7 +41,6 @@ class ApiRequestsTest(unittest.TestCase):
         ]        
     }
 
-    @pytest.mark.integration
     def test_squeue_get_request(self):
                 
         configuration = openapi_client.Configuration(
@@ -63,6 +62,7 @@ class ApiRequestsTest(unittest.TestCase):
         
         response = slurm_cli_wrapper.squeue_get_request(request_args, configuration,slurm_jwt)
 
-        assert response.pre_processed_output.startswith("JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)")
-        
+        assert response.pre_processed_output.lstrip().startswith("JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)")
+
+
         
