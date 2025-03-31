@@ -2,11 +2,12 @@ import pytest
 import json
 from slurm_api_cli_proxy.client_args_linker.v39.slurm_api_client_wrapper_v39 import V39SlurmAPIClientWrapper
 from openapi_client.models.v0039_job_res import V0039JobRes
+from openapi_client.models.v0039_jobs_response import V0039JobsResponse
 from openapi_client.models.v0039_job_info import V0039JobInfo
 import slurm_api_cli_proxy.client_args_linker.v39.squeue_format as squeue_format
 
-class MockJobsResponse(V0039JobRes):
-    mock_to_json_output:str = None
+class MockJobsResponse(V0039JobsResponse):
+    mock_to_json_output:str|None = None
     jobs:list[V0039JobInfo] = []
 
     def to_json(self):
@@ -36,11 +37,11 @@ def test_process_squeue_output_user_filter():
    response = MockJobsResponse()
    my_job = V0039JobInfo()
    my_job.user_name = "one-user"
-   my_job.job_resources = {}
+   my_job.job_resources = V0039JobRes()
 
    other_job = V0039JobInfo()
    other_job.user_name = "other-user"
-   other_job.job_resources = {}
+   other_job.job_resources = V0039JobRes()
 
    response.jobs = [my_job, other_job]
 
