@@ -18,7 +18,7 @@ class SbatchResponse():
 class ScontrolResponse():
     def __init__(self):
         self.errors = []                
-
+        self.warnings = []
 
 class SqueueResponse():
     def __init__(self,output_text:str,errors:list[str] = [], warnings:list[str] = []):

@@ -222,7 +222,7 @@ def args_to_scontrol_request_payload(cmd_args_dict:dict,scontrol_mappings:CliToJ
         else:
             target_job_id = cmd_args_dict['subcommand_args'][0]            
 
-    return request_payload, target_job_id
+    return request_payload, str(target_job_id)
 
 
 def __add_nested_path(dictionary:dict, path:str, value=None):

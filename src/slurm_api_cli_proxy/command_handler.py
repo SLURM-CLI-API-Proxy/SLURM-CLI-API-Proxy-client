@@ -189,6 +189,15 @@ def scontrol():
 
         response = slurm_cli_wrapper.scontrol_update_request(target_job_id=target_job_id,request=request_args,conf=configuration,slurmrestd_token=slurm_jwt)
 
+        if (len(response.errors)>0):
+            for error in response.errors:
+                print(error)
+            return 1
+        #else:
+        #    print(response.pre_processed_output)
+        #    return 0
+
+
     #Errors catched while building the request
     except MissingEnvironmentVar as e:
         print(f"[SLURM_CLI_PROXY_ERROR]: Missing environment variable:{e.missing_var}")
@@ -199,6 +208,7 @@ def scontrol():
     except ApiClientException as e:
         #TODO debug log
         print(f"[SLURM_CLI_PROXY_ERROR]: API client exception:{e}")
+        print(type(e))
         return 1
 
 
