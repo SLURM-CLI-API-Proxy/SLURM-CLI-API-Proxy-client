@@ -1,6 +1,7 @@
 from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SlurmAPIClientWrapper, SbatchResponse, SqueueResponse, ScontrolResponse, ApiClientException
 from slurm_api_cli_proxy.client_args_linker.constants import slurm_statuses
 from openapi_client.models.v0039_error import V0039Error
+from typing import List
 import openapi_client
 
 #sbatch related
@@ -97,20 +98,27 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
             #Capturing and encapsulating errors resported as a service exception
             except ServiceException as se:
-                exception_body = json.loads(se.body)
-                exception_errors = exception_body['errors']
-                for err in exception_errors:
-                    response.errors.append(f"{err['description']}:{err['error']}")
-                return response
+                if (se.body):
+                    exception_body = json.loads(se.body)
+                    se_errors:List[dict] = exception_body['errors']
+                    for ex_err in se_errors:
+                        response.errors.append(f"{ex_err['description']}:{ex_err['error']}")
+                    return response
+                else:
+                    raise ApiClientException(f'Unexpected error while performing an UPDATE request for the scontrol command:{se}') from se                
             
             #Capturing and encapsulating errors related to invalid job_ids, reported by the
             # client as exceptions
             except NotFoundException as ne:
-                exception_body = json.loads(ne.body)
-                exception_errors = exception_body['errors']
-                for err in exception_errors:
-                    response.errors.append(f"{err['description']}:{err['error']}")
-                return response
+                if (ne.body):
+                    exception_body = json.loads(ne.body)
+                    ne_errors:List[dict] = exception_body['errors']
+                    for ex_err in ne_errors:
+                        response.errors.append(f"{ex_err['description']}:{ex_err['error']}")
+                    return response
+                else:
+                    raise ApiClientException(f'Unexpected error while performing an UPDATE request for the scontrol command:{ne}') from ne                
+                
 
             #Any other error would be reported as an unexpected one
             except Exception as e:                
