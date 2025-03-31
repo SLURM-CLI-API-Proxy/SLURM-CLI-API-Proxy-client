@@ -7,7 +7,7 @@ from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMapping
 
 def build_parser(mappings:CliToJsonPayloadMappings):
 
-    args_type_to_python_type_map = {"str":str,"int":int,"bool":bool}
+    args_type_to_python_type_map = {"str":str,"int":int,"bool":bool,"list":list}
 
     #local_path = Path(__file__).resolve().parent
     #sbatch_args_metadata = yaml.safe_load(open(config_path))
