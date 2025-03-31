@@ -77,7 +77,7 @@ pytest -m "not integration"
 
 ```shell
 #Static type checking with mypy. 
-mypy src --ignore-missing-imports --check-untyped-defs
+mypy src --check-untyped-defs
 ```
 
 ### Usage from a shell terminal
