@@ -16,13 +16,15 @@ parameters:
     abbreviation: -u
     is_mandatory: false
     data_type: str
+    api_mapping:
+      request_property: user_id
 
   - name: update
     abbreviation: update
     is_mandatory: false
     data_type: subcommand
     subcommand_specs:
-      jobid:
+      JobId:
         api_mapping: job_id
       MinCPUsNode:
         api_mapping: minimum_cpus_per_node
@@ -32,12 +34,7 @@ parameters:
     is_mandatory: false
     data_type: subcommand
     request_property_value:
-      hold: true
-    subcommand_specs:
-      jobid:
-        api_mapping: job_id
-      MinCPUsNode:
-        api_mapping: minimum_cpus_per_node
+      hold: true      
 
   - name: release
     abbreviation: release
@@ -45,7 +42,5 @@ parameters:
     data_type: subcommand
     request_property_value:
       hold: false
-    subcommand_specs:
-      jobid:
-        api_mapping: job_id
+      
 

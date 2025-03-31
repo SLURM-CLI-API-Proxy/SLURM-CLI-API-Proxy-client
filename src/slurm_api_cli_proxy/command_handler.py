@@ -171,7 +171,7 @@ def scontrol():
 
     cli_args = cli_param_parser.parse_args()
 
-    request_args:dict = args_to_scontrol_request_payload(cmd_args_dict=vars(cli_args),scontrol_mappings=cli_to_json_mappings)
+    request_args, target_job_id = args_to_scontrol_request_payload(cmd_args_dict=vars(cli_args),scontrol_mappings=cli_to_json_mappings)
 
     print(">>>>",request_args)
 

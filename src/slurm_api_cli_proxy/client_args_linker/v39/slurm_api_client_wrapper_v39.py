@@ -1,4 +1,4 @@
-from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SlurmAPIClientWrapper, SbatchResponse, SqueueResponse, ApiClientException
+from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SlurmAPIClientWrapper, SbatchResponse, SqueueResponse, ScontrolResponse, ApiClientException
 from slurm_api_cli_proxy.client_args_linker.constants import slurm_statuses
 from openapi_client.models.v0039_error import V0039Error
 import openapi_client
@@ -6,13 +6,17 @@ import openapi_client
 #sbatch related
 from openapi_client.models.v0039_job_submission import V0039JobSubmission
 from openapi_client.models.v0039_job_submission_response import V0039JobSubmissionResponse
-from openapi_client.rest import ApiException
 
 #squeue related
 from openapi_client.models.v0039_jobs_response import V0039JobsResponse
 from openapi_client.models.v0039_job_info import V0039JobInfo
 from openapi_client.models.v0039_job_res import V0039JobRes
 
+#scontrol related
+from openapi_client.models.v0039_job_desc_msg import V0039JobDescMsg
+from openapi_client.models.v0039_job_update_response import V0039JobUpdateResponse
+
+from openapi_client.rest import ApiException
 import os
 import json
 import time
@@ -54,6 +58,43 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
             except Exception as e:
                 raise ApiClientException(f'Unexpected error while performing a POST request for the sbatch command:{e}') from e                
+
+
+
+    def scontrol_update_request(self,target_job_id:str,request:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> ScontrolResponse:
+
+        configuration = conf
+        configuration.api_key['token'] = slurmrestd_token
+
+        with openapi_client.ApiClient(configuration) as api_client:
+            # Create an instance of the API class
+            
+            api_instance = openapi_client.SlurmApi(api_client)
+
+            # Convert the dictionary to a JSON string
+            json_req_string = json.dumps(request, indent=2)
+
+            v0039_job_update_payload = V0039JobDescMsg.from_json(json_req_string)
+
+            if v0039_job_update_payload is None:
+                raise ValueError(f"Creation of scontrol job submission payload form json returned None when using {json_req_string}")
+            
+            try:
+                #submit the update request
+                api_response = api_instance.slurm_v0039_update_job(target_job_id, v0039_job_update_payload)
+
+                response = ScontrolResponse()                
+                
+                if api_response.errors is not None:
+                     for err in api_response.errors:
+                         #Based on V0039Error type
+                         response.errors.append(f"Error no:{err.error_number}:{err.error}. Source:{err.source}. Description:{err.description}")
+                
+                return response
+
+            except Exception as e:
+                raise ApiClientException(f'Unexpected error while performing an UPDATE request for the scontrol command:{e}') from e                
+
 
 
     def squeue_get_request(self,cli_arguments:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SqueueResponse:    
