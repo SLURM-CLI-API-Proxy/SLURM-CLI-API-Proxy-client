@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/</loc>
+         <lastmod>2025-04-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/design/</loc>
+         <lastmod>2025-04-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/devprocess/</loc>
+         <lastmod>2025-04-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/limitations/</loc>
+         <lastmod>2025-04-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/setup/</loc>
+         <lastmod>2025-04-01</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+</urlset>
