@@ -1,0 +1,52 @@
+# Proxy mapping configuration for the SLURM WLM release 23.11 and slumrestd API version 0.0.39
+# the api_mapping/request_property entries must correspond with one of the the "v0.0.39_job_desc_msg" object
+# properties defined on the OpenAPI specification.
+# https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/V0039JobDescMsg.md
+
+mapping_meta:
+  command: scontrol
+  api_version: 0.0.39
+  wlm_release: 23.11
+  wrapper_package: slurm_api_cli_proxy.client_args_linker.v39.slurm_api_client_wrapper_v39
+  wrapper_class: V39SlurmAPIClientWrapper
+
+parameters:
+
+  - name: --uid
+    abbreviation: -u
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: user_id
+
+  - name: update
+    abbreviation: update
+    is_mandatory: false
+    data_type: subcommand
+    subcommand_specs:
+      JobId:
+        api_mapping: job_id
+        data_type: int
+      MinCPUsNode:
+        api_mapping: minimum_cpus_per_node
+        data_type: int
+
+  - name: hold
+    abbreviation: hold
+    is_mandatory: false
+    data_type: subcommand
+    subcommand_arg:
+      data_type: int
+    request_property_value:
+      hold: true      
+
+  - name: release
+    abbreviation: release
+    is_mandatory: false
+    data_type: subcommand
+    subcommand_arg:
+      data_type: int
+    request_property_value:
+      hold: false
+      
+

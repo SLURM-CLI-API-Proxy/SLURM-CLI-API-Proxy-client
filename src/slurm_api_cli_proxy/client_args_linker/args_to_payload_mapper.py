@@ -1,14 +1,19 @@
 import argparse
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
 import os
+
+class InternalConfigurationException(Exception):
+    def __init__(self, message):
+        self.message = message        
+        super().__init__(self.message)
+
 
 class UnsuportedArgumentException(Exception):
     argument:str
 
-    def __init__(self, message, argument):
+    def __init__(self, message):
         self.message = message
-        self.argument = argument
         super().__init__(self.message)
 
 def args_to_sbatch_request_payload(script_content:str,cmd_args_dict:dict,sbatch_mappings:CliToJsonPayloadMappings)->dict:
@@ -80,7 +85,7 @@ def args_to_sbatch_request_payload(script_content:str,cmd_args_dict:dict,sbatch_
                 __add_nested_path(request_payload,doc_path,arg_value)
                 
             else:
-                raise UnsuportedArgumentException("Command argument not supported or not yet implemented in the CLI Proxy",original_arg_name)
+                raise UnsuportedArgumentException(f"Command argument not supported or not yet implemented in the CLI Proxy:{original_arg_name}")
 
     return request_payload
 
@@ -117,6 +122,108 @@ def args_to_squeue_parameters_dict(squeue_args_dict:dict)->dict:
     return squeue_request_params
 
 
+
+def args_to_scontrol_request_payload(cmd_args_dict:dict,scontrol_mappings:CliToJsonPayloadMappings)->Tuple[dict,str]:
+    """
+    Maps command-line arguments to a payload structure for an `scontrol` request.
+    This function processes the command-line arguments provided in `cmd_args_dict` and maps them to a 
+    structured payload dictionary based on the mappings defined in `scontrol_mappings`. It supports 
+    subcommands and their respective arguments, validating them against the accepted configurations.
+    Args:
+        cmd_args_dict (dict) <- what was received as arguments from the CLI 
+            A dictionary containing the command-line arguments. It must include:
+            - 'subcommand': The subcommand to be executed.
+            - 'subcommand_args': A list of arguments for the subcommand in the form of key=value pairs.
+        scontrol_mappings (CliToJsonPayloadMappings): <- the mapping configuration (how the arguments should
+                be transformed into an API request JSON payload)
+            An object containing the mappings from CLI arguments to JSON payload properties. 
+    Returns:
+        Tuple[dict, int]: 
+            - A dictionary representing the request payload to be sent to the API.
+            - The target job ID captured through the CLI 
+    Raises:
+        UnsuportedArgumentException: 
+            - If no subcommand is provided in `cmd_args_dict`.
+            - If an unsupported or invalid argument is provided for the subcommand.
+    """
+
+    target_job_id:str
+
+    # Payload to be returned (the one to be used on the API request)
+    request_payload:Dict[str,Any] = {}
+
+    # Payload properties required by default
+    request_payload["environment"]=["ALL"]
+    
+    # Subcommand received from the CLI
+    subcommand = cmd_args_dict['subcommand']
+
+    # scontrol works in interactive mode if no command is given. This is not supported by the proxy
+    if (subcommand == None):
+        raise UnsuportedArgumentException(f"scontrol: interactive mode is not supported - a command is required.")
+
+    # Some subcommands of 'scontrol' have implicit payload properties that need to be included
+    # regardless of the arguments given. e.g., scontrol relase requires including 'hold=false'. 
+    # These are defined on the optional request_property_value of the 'subcommand' entries.
+    if 'request_property_value' in scontrol_mappings.arguments_dict[subcommand]:
+        default_payload_entries:dict = scontrol_mappings.arguments_dict[subcommand]['request_property_value']
+        for default_payload_entry in default_payload_entries.keys():
+            request_payload[default_payload_entry] = default_payload_entries[default_payload_entry]
+
+    # Some subcommands of scontrol have 'specifications' in the form of a series of key-value entries. These
+    # are defined in the 'subcommand_specs' in the corresponding YAML file
+    if 'subcommand_specs' in scontrol_mappings.arguments_dict[subcommand]:
+
+        # Arguments settings that are accepted according to the YML config
+        accepted_subcommand_args:dict = scontrol_mappings.arguments_dict[subcommand]['subcommand_specs']
+
+        # Arguments/settings given to the sub-command
+        subcommand_args_dict:dict[str,str] = __parse_sub_command_specs(cmd_args_dict['subcommand_args'],subcommand)
+
+        for subcommand_arg in subcommand_args_dict.keys():
+            if (subcommand_arg in accepted_subcommand_args.keys()):
+                
+                #Get the property name used on the payload (defined on the YAML)
+                pname = accepted_subcommand_args[subcommand_arg]['api_mapping']
+                ptype = accepted_subcommand_args[subcommand_arg]['data_type']
+
+                #Get the value set on the CLI
+                svalue=subcommand_args_dict[subcommand_arg]
+
+                try:                    
+                    if (ptype == "int"):
+                        request_payload[pname] = int(svalue)
+                    elif (ptype == "str"):
+                        request_payload[pname] = str(svalue)
+                    else:
+                        raise InternalConfigurationException(f"[SLURM_CLI_PROXY_ERROR] Scontrol - Internal misconfiguration error: type {ptype} is not supported for command's key-value properties")
+                except ValueError as e:
+                    raise UnsuportedArgumentException(f"Scontrol - an {ptype} value is expected for {subcommand_arg} key-value argument")                    
+
+            else:
+                raise UnsuportedArgumentException(f"Invalid or unsupported specification of the {subcommand} command:{subcommand_arg}")
+
+        # if the job_id was set by one of the commands specifications, remove it from the payload
+        # and use it as the target job id.
+        if ("job_id" in request_payload):
+            target_job_id = request_payload.pop("job_id")
+        else:
+            raise UnsuportedArgumentException(f"No jobid was provided to the scrontrol command:  {subcommand}")
+    
+    # The given subcommand requires a single argument. 
+    # Note: this implementation only supports scontrol 'commands' with the jobid as their only argument
+    elif 'subcommand_arg' in scontrol_mappings.arguments_dict[subcommand]:
+        num_args = len(cmd_args_dict['subcommand_args'])
+        if num_args == 0:
+            raise UnsuportedArgumentException(f"Too few arguments for {subcommand}")
+        elif num_args > 1:
+            raise UnsuportedArgumentException(f"Only one argument is supported for {subcommand}")
+        else:
+            target_job_id = cmd_args_dict['subcommand_args'][0]            
+
+    return request_payload, str(target_job_id)
+
+
 def __add_nested_path(dictionary:dict, path:str, value=None):
     """Add nested properties to dictionary based on a dotted path."""
     parts = path.split('.')
@@ -130,3 +237,23 @@ def __add_nested_path(dictionary:dict, path:str, value=None):
     current[parts[-1]] = value
     
     return dictionary
+
+
+def __parse_sub_command_specs(pairs: list[str],command:str) -> dict[str, str]:
+    """
+    Converts a list of strings in the form 'a=x' into a dictionary.
+
+    Args:
+        pairs (list[str]): A list of strings in the form 'a=x'.
+
+    Returns:
+        dict[str, str]: A dictionary where the key is 'a' and the value is 'x'.
+    """
+    result = {}
+    for pair in pairs:
+        if '=' in pair:
+            key, value = pair.split('=', 1)  # Split into key and value at the first '='
+            result[key] = value
+        else:
+            raise ValueError(f"Invalid format for the {command} command specification: {pair}. Expected 'key=value' or an int value.")
+    return result

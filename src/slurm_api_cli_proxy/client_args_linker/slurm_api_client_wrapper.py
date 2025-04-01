@@ -15,6 +15,10 @@ class SbatchResponse():
     def __str__(self):
         return f"Job {self.job_id} - {len(self.errors)} errors:{self.errors}"
 
+class ScontrolResponse():
+    def __init__(self):
+        self.errors = []                
+        self.warnings = []
 
 class SqueueResponse():
     def __init__(self,output_text:str,errors:list[str] = [], warnings:list[str] = []):
@@ -54,6 +58,7 @@ class SlurmAPIClientWrapper(ABC):
         """
         pass
 
+
     @abstractmethod
     def squeue_get_request(self,cli_arguments:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SqueueResponse:
         """
@@ -74,6 +79,25 @@ class SlurmAPIClientWrapper(ABC):
         """
         pass
 
+
+    @abstractmethod
+    def scontrol_update_request(self,target_job_id:str,request:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> ScontrolResponse: 
+        """
+        Sends a UPDATE request to the job endpoint.
+
+        Args:
+            request (dict): The request payload to be sent to the sbatch endpoint. It must
+                match the expected JSON structure if the request.
+            conf (openapi_client.Configuration): The configuration object for the API client.
+
+        Returns:
+            
+
+        Raises:
+            ApiClientException: If there is an error on the proxy, different from the errors returned
+            by the SLURM API            
+        """
+        pass
 
 
 
