@@ -4,7 +4,6 @@ import openapi_client
 import importlib
 
 
-
 class SbatchResponse():
     def __init__(self,job_id,step_id):
         self.errors = []        
@@ -21,6 +20,12 @@ class ScontrolResponse():
         self.warnings = []
 
 class SqueueResponse():
+    def __init__(self,output_text:str,errors:list[str] = [], warnings:list[str] = []):
+        self.slurm_errors:list[str] = errors
+        self.slurm_warnings:list[str] = warnings
+        self.pre_processed_output:str  = output_text
+
+class SinfoResponse():
     def __init__(self,output_text:str,errors:list[str] = [], warnings:list[str] = []):
         self.slurm_errors:list[str] = errors
         self.slurm_warnings:list[str] = warnings
@@ -61,6 +66,27 @@ class SlurmAPIClientWrapper(ABC):
 
     @abstractmethod
     def squeue_get_request(self,cli_arguments:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SqueueResponse:
+        """
+        Sends a GET request to the job endpoint.
+
+        Args:
+            cli_arguments (dict): a dictionary with the arguments (and values) given to the squee command
+            conf (openapi_client.Configuration): The configuration object for the API client.
+            slurmrestd_token (str): The authentication token for the SLURM REST API.
+
+        Returns:
+            str: The processed response (ready to be sent to STDOUT)
+
+        Raises:
+            ApiClientException: If there is an error on the proxy, different from the errors returned
+            by the SLURM API            
+
+        """
+        pass
+
+
+    @abstractmethod
+    def sinfo_get_request(self,cli_arguments:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SinfoResponse:
         """
         Sends a GET request to the job endpoint.
 

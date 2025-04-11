@@ -213,6 +213,82 @@ def scontrol():
         return 1
 
 
+def proc_command():
+    try:
+
+    #Errors catched while building the request
+    except MissingEnvironmentVar as e:
+        print(f"[SLURM_CLI_PROXY_ERROR]: Missing environment variable:{e.missing_var}")
+        return 1
+    except UnsuportedArgumentException as e:
+        print(f"[SLURM_CLI_PROXY_ERROR]: Unsupported argument (or not yet implemented):{e.message}")
+        return 1
+    except ApiClientException as e:
+        #TODO debug log
+        print(f"[SLURM_CLI_PROXY_ERROR]: API client exception:{e}")
+        return 1
+
+
+
+def sinfo():
+
+    try:
+
+        #Command setup (general)
+
+        #To handle a clean SIGINT (no python runtime stack trace) as the original sbatch.
+        #Sbatch has an error code = 130 when aborted (ctrl-c) (codes 129-192 indicate jobs terminated by Linux signals) 
+        signal.signal(signal.SIGINT, lambda signum,frame : sys.exit(130))
+
+        squeue_mappings_file_path = pkg_resources.resource_filename(__name__, 'mappings/squeue_mappings_r23.11_v0.0.39.yaml')
+
+        cli_to_json_mappings = CliToJsonPayloadMappings(yaml_config_path=squeue_mappings_file_path)
+
+        #Getting an appropriate SlurmCliWrapper based on the SLURM API Version required        
+        slurm_cli_wrapper = get_slurm_api_client_wrapper(cli_to_json_mappings)
+
+        cli_param_parser = build_parser(cli_to_json_mappings)
+
+        cli_args = cli_param_parser.parse_args()
+
+        api_host, slurm_jwt = __get_env_vars()
+
+        #API client basic configuratin
+        configuration = openapi_client.Configuration(
+            host = api_host
+        )
+
+        #Performing the request (specific)
+
+        #dictionary with the arguments/values given to the squeue command
+        request_args = args_to_squeue_parameters_dict(squeue_args_dict=vars(cli_args))
+
+        response = slurm_cli_wrapper.squeue_get_request(request_args, configuration,slurm_jwt)
+
+        if (len(response.slurm_errors)>0):
+            print(response.slurm_errors)
+            #TODO check if special error codes are required
+            return 1
+        else:
+            print(response.pre_processed_output)
+            return 0
+
+        #Error handling (general)
+
+    #Errors catched while building the request
+    except MissingEnvironmentVar as e:
+        print(f"[SLURM_CLI_PROXY_ERROR]: Missing environment variable:{e.missing_var}")
+        return 1
+    except UnsuportedArgumentException as e:
+        print(f"[SLURM_CLI_PROXY_ERROR]: Unsupported argument (or not yet implemented):{e.message}")
+        return 1
+    except ApiClientException as e:
+        #TODO debug log
+        print(f"[SLURM_CLI_PROXY_ERROR]: API client exception:{e}")
+        return 1
+
+
+
 
 
 def __get_env_vars()->Tuple[str, str]:

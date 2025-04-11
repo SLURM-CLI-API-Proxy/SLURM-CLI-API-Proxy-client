@@ -1,4 +1,4 @@
-from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SlurmAPIClientWrapper, SbatchResponse, SqueueResponse, ScontrolResponse, ApiClientException
+from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SlurmAPIClientWrapper, SbatchResponse, SqueueResponse, SinfoResponse, ApiClientException
 from slurm_api_cli_proxy.client_args_linker.constants import slurm_statuses
 from openapi_client.models.v0039_error import V0039Error
 from typing import List
@@ -157,6 +157,36 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
         
             except Exception as e:       
                 raise ApiClientException(f'Unexpected error while performing a GET request for the squeue command:{e}') from e                
+
+
+    def sinfo_get_request(self,cli_arguments:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SinfoResponse:
+        
+        configuration = conf
+        configuration.api_key['token'] = slurmrestd_token
+
+        with openapi_client.ApiClient(conf) as api_client:    
+            api_instance = openapi_client.SlurmApi(api_client)
+
+            try:
+                # get all partition info
+                api_response = api_instance.slurm_v0039_get_partitions()
+
+                if (api_response.errors is not None):
+                    #Transform list of list[V0039Error] to list[str] 
+                    errors:list[str] = list(map(lambda err: str(err), api_response.errors))
+                else:
+                    errors = []
+
+                if (api_response.warnings is not None):
+                    #Transform list of list[V0039Warning] to list[str] 
+                    warnings:list[str] = list(map(lambda err: str(err), api_response.warnings))
+                else:
+                    warnings = []
+
+                return SinfoResponse(output_text=str(api_response),errors=errors,warnings=warnings)
+            
+            except Exception as e:
+                raise ApiClientException(f'Unexpected error while performing a GET request for the squeue command:{e}') from e 
 
 
 
