@@ -6,7 +6,7 @@ from argparse import Namespace
 
 
 from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import get_slurm_api_client_wrapper
-from slurm_api_cli_proxy.client_args_linker.args_to_payload_mapper import args_to_squeue_parameters_dict
+from slurm_api_cli_proxy.client_args_linker.args_to_payload_mapper import args_to_parameters_dict
 from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
 
 class ApiRequestsTest(unittest.TestCase):
@@ -54,7 +54,7 @@ class ApiRequestsTest(unittest.TestCase):
             user=None, name=None, json=False
         )
 
-        request_args = args_to_squeue_parameters_dict(squeue_args_dict=vars(cli_args))
+        request_args = args_to_parameters_dict(command_args_dict=vars(cli_args))
 
         slurm_cli_wrapper = get_slurm_api_client_wrapper(cli_to_json_mappings)
 

@@ -91,7 +91,7 @@ def args_to_sbatch_request_payload(script_content:str,cmd_args_dict:dict,sbatch_
 
 
 
-def args_to_squeue_parameters_dict(squeue_args_dict:dict)->dict:
+def args_to_parameters_dict(command_args_dict:dict)->dict:
     """
     Get a dictionary with the arguments given in the CLI
 
@@ -104,10 +104,10 @@ def args_to_squeue_parameters_dict(squeue_args_dict:dict)->dict:
 
     squeue_request_params = {}
 
-    for cmd_arg in squeue_args_dict:
+    for cmd_arg in command_args_dict:
         
         # Only checking arguments with an assigned value
-        if squeue_args_dict[cmd_arg] != None:            
+        if command_args_dict[cmd_arg] != None:            
             # argument name using argparse naming conventions (e.g, arg_x)
             arg_name = cmd_arg
 
@@ -115,7 +115,7 @@ def args_to_squeue_parameters_dict(squeue_args_dict:dict)->dict:
             original_arg_name = f"--{arg_name.replace('_','-')}"
 
             # value given to the argument            
-            arg_value = squeue_args_dict[cmd_arg]
+            arg_value = command_args_dict[cmd_arg]
             
             squeue_request_params[original_arg_name]=arg_value
 

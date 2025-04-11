@@ -10,7 +10,7 @@ import traceback
 from typing import Tuple
 from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
 from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SlurmCommandResponse, get_slurm_api_client_wrapper,ApiClientException
-from slurm_api_cli_proxy.client_args_linker.args_to_payload_mapper import args_to_sbatch_request_payload,args_to_squeue_parameters_dict,args_to_scontrol_request_payload,UnsuportedArgumentException
+from slurm_api_cli_proxy.client_args_linker.args_to_payload_mapper import args_to_sbatch_request_payload,args_to_parameters_dict,args_to_scontrol_request_payload,UnsuportedArgumentException
 from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SbatchResponse, SlurmAPIClientWrapper
 import openapi_client
 import logging
@@ -39,6 +39,8 @@ class CommandEvaluator(ABC):
         This method, when implemented on a concrete class, must process the given arguments (cli_args)
         so that these can be used by the corresponding method, on the slurm_cli_wrapper, that
         performs the required request to the SLURM API.
+
+        This method is not intended to be invoked directly. 
 
         Args:
             slurm_cli_wrapper (SlurmAPIClientWrapper): An instance of the SLURM API client wrapper 
@@ -170,7 +172,7 @@ class SqueueEvaluator(CommandEvaluator):
     def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:  
 
         #dictionary with the arguments/values given to the squeue command
-        request_args = args_to_squeue_parameters_dict(squeue_args_dict=vars(cli_args))
+        request_args = args_to_parameters_dict(command_args_dict=vars(cli_args))
 
         response = slurm_cli_wrapper.squeue_get_request(request_args, configuration,slurm_jwt)
 
@@ -190,7 +192,7 @@ class SinfoEvaluator(CommandEvaluator):
     def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:    
 
         #dictionary with the arguments/values given to the squeue command
-        request_args = args_to_squeue_parameters_dict(squeue_args_dict=vars(cli_args))
+        request_args = args_to_parameters_dict(command_args_dict=vars(cli_args))
 
         response = slurm_cli_wrapper.sinfo_get_request(request_args, configuration,slurm_jwt)
 
