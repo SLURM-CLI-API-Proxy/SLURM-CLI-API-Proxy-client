@@ -29,21 +29,23 @@ class MissingEnvironmentVar(Exception):
         super().__init__(self.message)
 
 
-
 class CommandEvaluator(ABC):
 
     input_file_argument_name = 'proxy_cli_input_file'
 
     @abstractmethod
-    def process(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:
+    def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:
         """
-        Processes the SLURM CLI command by interacting with the SLURM API client wrapper.
+        This method, when implemented on a concrete class, must process the given arguments (cli_args)
+        so that these can be used by the corresponding method, on the slurm_cli_wrapper, that
+        performs the required request to the SLURM API.
+
         Args:
             slurm_cli_wrapper (SlurmAPIClientWrapper): An instance of the SLURM API client wrapper 
                 used to interact with the SLURM system.
             cli_args: the dictionary given by argparse
             command_mappings_config: the mapping configuration (loaded form the command's YAML file)
-            configuration : The open_api client configuration, required to create a client
+            configuration : The open_api client configuration, required to create the API client
             slurm_jwt : the JSON Web Token (JWT) used for authentication with the SLURM API.
         Returns:
             A command response, error code to return
@@ -52,7 +54,7 @@ class CommandEvaluator(ABC):
         pass
 
 
-    def setup(self,config_file_path:str,include_input_file_arg:bool=False):
+    def eval_command(self,config_file_path:str,include_input_file_arg:bool=False):
         try:
             #Command setup (general)
 
@@ -82,7 +84,7 @@ class CommandEvaluator(ABC):
             )
 
             # use the concrete method
-            response:SlurmCommandResponse = self.process(
+            response:SlurmCommandResponse = self.process_command_args(
                 cli_args=cli_args,
                 slurm_cli_wrapper=slurm_cli_wrapper,
                 command_mappings_config=command_mappings_config,
@@ -137,7 +139,7 @@ class CommandEvaluator(ABC):
 
 
 class SbatchEvaluator(CommandEvaluator):
-    def process(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:
+    def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:
 
         input_script = None
 
@@ -165,13 +167,10 @@ class SbatchEvaluator(CommandEvaluator):
 
 
 class SqueueEvaluator(CommandEvaluator):
-    def process(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:  
+    def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:  
 
         #dictionary with the arguments/values given to the squeue command
         request_args = args_to_squeue_parameters_dict(squeue_args_dict=vars(cli_args))
-
-        #Getting an appropriate SlurmCliWrapper based on the SLURM API Version required        
-        slurm_cli_wrapper = get_slurm_api_client_wrapper(command_mappings_config)
 
         response = slurm_cli_wrapper.squeue_get_request(request_args, configuration,slurm_jwt)
 
@@ -179,14 +178,21 @@ class SqueueEvaluator(CommandEvaluator):
 
 
 class ScontrolEvaluator(CommandEvaluator):
-    def process(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:    
+    def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:    
 
         request_args, target_job_id = args_to_scontrol_request_payload(cmd_args_dict=vars(cli_args),scontrol_mappings=command_mappings_config)
 
-        #Getting an appropriate SlurmCliWrapper based on the SLURM API Version required        
-        slurm_cli_wrapper = get_slurm_api_client_wrapper(command_mappings_config)
-
         response = slurm_cli_wrapper.scontrol_update_request(target_job_id=target_job_id,request=request_args,conf=configuration,slurmrestd_token=slurm_jwt)
+
+        return response
+
+class SinfoEvaluator(CommandEvaluator):
+    def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:    
+
+        #dictionary with the arguments/values given to the squeue command
+        request_args = args_to_squeue_parameters_dict(squeue_args_dict=vars(cli_args))
+
+        response = slurm_cli_wrapper.sinfo_get_request(request_args, configuration,slurm_jwt)
 
         return response
 
@@ -194,78 +200,26 @@ class ScontrolEvaluator(CommandEvaluator):
 def sbatch():
 
     eval = SbatchEvaluator()
-    eval.setup(config_file_path='mappings/sbatch_mappings_r23.11_v0.0.39.yaml',include_input_file_arg=True)
+    eval.eval_command(config_file_path='mappings/sbatch_mappings_r23.11_v0.0.39.yaml',include_input_file_arg=True)
 
 
 def squeue():
 
     eval = SqueueEvaluator()
-    eval.setup(config_file_path='mappings/squeue_mappings_r23.11_v0.0.39.yaml')    
+    eval.eval_command(config_file_path='mappings/squeue_mappings_r23.11_v0.0.39.yaml')    
 
 
 def scontrol():
 
     eval = ScontrolEvaluator()
-    eval.setup(config_file_path='mappings/scontrol_mappings_r23.11_v0.0.39.yaml')    
-
+    eval.eval_command(config_file_path='mappings/scontrol_mappings_r23.11_v0.0.39.yaml')    
 
 
 def sinfo():
 
-    try:
-
-        #Command setup (general)
-
-        #To handle a clean SIGINT (no python runtime stack trace) as the original sbatch.
-        #Sbatch has an error code = 130 when aborted (ctrl-c) (codes 129-192 indicate jobs terminated by Linux signals) 
-        signal.signal(signal.SIGINT, lambda signum,frame : sys.exit(130))
-
-        squeue_mappings_file_path = pkg_resources.resource_filename(__name__, 'mappings/squeue_mappings_r23.11_v0.0.39.yaml')
-
-        cli_to_json_mappings = CliToJsonPayloadMappings(yaml_config_path=squeue_mappings_file_path)
-
-        #Getting an appropriate SlurmCliWrapper based on the SLURM API Version required        
-        slurm_cli_wrapper = get_slurm_api_client_wrapper(cli_to_json_mappings)
-
-        cli_param_parser = build_parser(cli_to_json_mappings)
-
-        cli_args = cli_param_parser.parse_args()
-
-        api_host, slurm_jwt = __get_env_vars()
-
-        #API client basic configuratin
-        configuration = openapi_client.Configuration(
-            host = api_host
-        )
-
-        #Performing the request (specific)
-
-        #dictionary with the arguments/values given to the squeue command
-        request_args = args_to_squeue_parameters_dict(squeue_args_dict=vars(cli_args))
-
-        response = slurm_cli_wrapper.squeue_get_request(request_args, configuration,slurm_jwt)
-
-        if (len(response.errors)>0):
-            print(response.errors)
-            #TODO check if special error codes are required
-            return 1
-        else:
-            print(response.output)
-            return 0
-
-        #Error handling (general)
-
-    #Errors catched while building the request
-    except MissingEnvironmentVar as e:
-        print(f"[SLURM_CLI_PROXY_ERROR]: Missing environment variable:{e.missing_var}")
-        return 1
-    except UnsuportedArgumentException as e:
-        print(f"[SLURM_CLI_PROXY_ERROR]: Unsupported argument (or not yet implemented):{e.message}")
-        return 1
-    except ApiClientException as e:
-        #TODO debug log
-        print(f"[SLURM_CLI_PROXY_ERROR]: API client exception:{e}")
-        return 1
+    eval = SinfoEvaluator()
+    eval.eval_command(config_file_path='mappings/sinfo_mappings_r23.11_v0.0.39.yaml')    
+    
 
 
 
