@@ -4,32 +4,34 @@ import openapi_client
 import importlib
 
 
-class SbatchResponse():
-    def __init__(self,job_id,step_id):
+class SlurmCommandResponse(ABC):
+    def __init__(self,errors:list[str] = [], warnings:list[str] = []):
         self.errors = []        
         self.warnings = []
+
+class SbatchResponse(SlurmCommandResponse):
+    def __init__(self,job_id,step_id,errors:list[str] = [], warnings:list[str] = []):
+        super().__init__(errors, warnings)
         self.job_id = job_id
         self.step_id = step_id
 
     def __str__(self):
         return f"Job {self.job_id} - {len(self.errors)} errors:{self.errors}"
 
-class ScontrolResponse():
-    def __init__(self):
-        self.errors = []                
-        self.warnings = []
+class ScontrolResponse(SlurmCommandResponse):
+    def __init__(self,errors:list[str] = [], warnings:list[str] = []):
+        super().__init__(errors, warnings)
 
-class SqueueResponse():
+class SqueueResponse(SlurmCommandResponse):
     def __init__(self,output_text:str,errors:list[str] = [], warnings:list[str] = []):
-        self.slurm_errors:list[str] = errors
-        self.slurm_warnings:list[str] = warnings
+        super().__init__(errors, warnings)
         self.pre_processed_output:str  = output_text
 
 class SinfoResponse():
     def __init__(self,output_text:str,errors:list[str] = [], warnings:list[str] = []):
-        self.slurm_errors:list[str] = errors
-        self.slurm_warnings:list[str] = warnings
+        super().__init__(errors, warnings)
         self.pre_processed_output:str  = output_text
+
 
 class ApiClientException(Exception):
     def __init__(self, message: str):
