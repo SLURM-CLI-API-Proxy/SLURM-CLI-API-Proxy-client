@@ -136,7 +136,6 @@ class CommandEvaluator(ABC):
 
 
 
-
 class SbatchEvaluator(CommandEvaluator):
     def process(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:
 
@@ -165,6 +164,33 @@ class SbatchEvaluator(CommandEvaluator):
         return response
 
 
+class SqueueEvaluator(CommandEvaluator):
+    def process(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:  
+
+        #dictionary with the arguments/values given to the squeue command
+        request_args = args_to_squeue_parameters_dict(squeue_args_dict=vars(cli_args))
+
+        #Getting an appropriate SlurmCliWrapper based on the SLURM API Version required        
+        slurm_cli_wrapper = get_slurm_api_client_wrapper(command_mappings_config)
+
+        response = slurm_cli_wrapper.squeue_get_request(request_args, configuration,slurm_jwt)
+
+        return response
+
+
+class ScontrolEvaluator(CommandEvaluator):
+    def process(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:    
+
+        request_args, target_job_id = args_to_scontrol_request_payload(cmd_args_dict=vars(cli_args),scontrol_mappings=command_mappings_config)
+
+        #Getting an appropriate SlurmCliWrapper based on the SLURM API Version required        
+        slurm_cli_wrapper = get_slurm_api_client_wrapper(command_mappings_config)
+
+        response = slurm_cli_wrapper.scontrol_update_request(target_job_id=target_job_id,request=request_args,conf=configuration,slurmrestd_token=slurm_jwt)
+
+        return response
+
+
 def sbatch():
 
     eval = SbatchEvaluator()
@@ -173,112 +199,14 @@ def sbatch():
 
 def squeue():
 
-    #To handle a clean SIGINT (no python runtime stack trace) as the original sbatch.
-    #Sbatch has an error code = 130 when aborted (ctrl-c) (codes 129-192 indicate jobs terminated by Linux signals) 
-    signal.signal(signal.SIGINT, lambda signum,frame : sys.exit(130))
-
-    squeue_mappings_file_path = pkg_resources.resource_filename(__name__, 'mappings/squeue_mappings_r23.11_v0.0.39.yaml')
-
-    cli_to_json_mappings = CliToJsonPayloadMappings(yaml_config_path=squeue_mappings_file_path)
-
-    cli_param_parser = build_parser(cli_to_json_mappings)
-
-    cli_args = cli_param_parser.parse_args()
-
-    try:
-
-        #dictionary with the arguments/values given to the squeue command
-        request_args = args_to_squeue_parameters_dict(squeue_args_dict=vars(cli_args))
-
-        #Getting an appropriate SlurmCliWrapper based on the SLURM API Version required        
-        slurm_cli_wrapper = get_slurm_api_client_wrapper(cli_to_json_mappings)
-
-        api_host, slurm_jwt = __get_env_vars()
-
-        #API client basic configuratin
-        configuration = openapi_client.Configuration(
-            host = api_host
-        )
-
-        response = slurm_cli_wrapper.squeue_get_request(request_args, configuration,slurm_jwt)
-
-        if (len(response.errors)>0):
-            print(response.errors)
-            #TODO check if special error codes are required
-            return 1
-        else:
-            print(response.output)
-            return 0
-
-    #Errors catched while building the request
-    except MissingEnvironmentVar as e:
-        print(f"[SLURM_CLI_PROXY_ERROR]: Missing environment variable:{e.missing_var}")
-        return 1
-    except UnsuportedArgumentException as e:
-        print(f"[SLURM_CLI_PROXY_ERROR]: Unsupported argument (or not yet implemented):{e.message}")
-        return 1
-    except ApiClientException as e:
-        #TODO debug log
-        print(f"[SLURM_CLI_PROXY_ERROR]: API client exception:{e}")
-        return 1
+    eval = SqueueEvaluator()
+    eval.setup(config_file_path='mappings/squeue_mappings_r23.11_v0.0.39.yaml')    
 
 
 def scontrol():
 
-    #To handle a clean SIGINT (no python runtime stack trace) as the original sbatch.
-    #Sbatch has an error code = 130 when aborted (ctrl-c) (codes 129-192 indicate jobs terminated by Linux signals) 
-    signal.signal(signal.SIGINT, lambda signum,frame : sys.exit(130))
-
-    scontrol_mappings_file_path:str = pkg_resources.resource_filename(__name__, 'mappings/scontrol_mappings_r23.11_v0.0.39.yaml')
-
-    cli_to_json_mappings = CliToJsonPayloadMappings(yaml_config_path=scontrol_mappings_file_path)
-
-    cli_param_parser = build_parser(cli_to_json_mappings)
-
-    cli_args = cli_param_parser.parse_args()
-
-    request_args: dict
-    target_job_id: str
-    
-    try:
-
-        request_args, target_job_id = args_to_scontrol_request_payload(cmd_args_dict=vars(cli_args),scontrol_mappings=cli_to_json_mappings)
-
-        #Getting an appropriate SlurmCliWrapper based on the SLURM API Version required        
-        slurm_cli_wrapper = get_slurm_api_client_wrapper(cli_to_json_mappings)
-
-        api_host, slurm_jwt = __get_env_vars()
-
-        #API client basic configuratin
-        configuration = openapi_client.Configuration(
-            host = api_host
-        )
-
-        response = slurm_cli_wrapper.scontrol_update_request(target_job_id=target_job_id,request=request_args,conf=configuration,slurmrestd_token=slurm_jwt)
-
-        if (len(response.errors)>0):
-            for error in response.errors:
-                print(error)
-            return 1
-        #else:
-        #    print(response.pre_processed_output)
-        #    return 0
-
-
-    #Errors catched while building the request
-    except MissingEnvironmentVar as e:
-        print(f"[SLURM_CLI_PROXY_ERROR]: Missing environment variable:{e.missing_var}")
-        return 1
-    except UnsuportedArgumentException as e:
-        print(f"[SLURM_CLI_PROXY_ERROR]: Unsupported argument (or not yet implemented):{e.message}")
-        return 1
-    except ApiClientException as e:
-        #TODO debug log
-        print(f"[SLURM_CLI_PROXY_ERROR]: API client exception:{e}")
-        print(type(e))
-        return 1
-
-
+    eval = ScontrolEvaluator()
+    eval.setup(config_file_path='mappings/scontrol_mappings_r23.11_v0.0.39.yaml')    
 
 
 
