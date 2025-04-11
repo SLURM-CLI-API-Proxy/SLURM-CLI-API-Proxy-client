@@ -21,7 +21,7 @@ def args_to_sbatch_request_payload(script_content:str,cmd_args_dict:dict,sbatch_
     Converts sbatch command-line arguments into a payload dictionary for slurmrestd API requests.
     Args:
         script_content (str): The content of the script to be executed.
-        cmd_args : a dictionary with the arguments parsed from the CLI, using the
+        cmd_args_dict : a dictionary with the arguments parsed from the CLI, using the
             naming conventions of argparse (--job-name -> job_name). Eg:
             {'export': 'PATH=/bin/:/usr/bin/:/sbin/', 
              'job_name': 'jname', 
