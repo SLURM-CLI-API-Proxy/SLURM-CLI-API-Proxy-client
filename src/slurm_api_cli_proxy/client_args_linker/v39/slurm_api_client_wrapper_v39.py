@@ -1,4 +1,4 @@
-from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SlurmAPIClientWrapper, SbatchResponse, SqueueResponse, SinfoResponse, ApiClientException
+from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import ScontrolResponse, SlurmAPIClientWrapper, SbatchResponse, SqueueResponse, SinfoResponse, ApiClientException
 from slurm_api_cli_proxy.client_args_linker.constants import slurm_statuses
 from openapi_client.models.v0039_error import V0039Error
 from typing import List
@@ -153,7 +153,7 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
                 else:
                     warnings = []
 
-                return SqueueResponse(output,errors=errors,warnings=warnings)
+                return SqueueResponse(output=output,errors=errors,warnings=warnings)
         
             except Exception as e:       
                 raise ApiClientException(f'Unexpected error while performing a GET request for the squeue command:{e}') from e                
@@ -183,7 +183,7 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
                 else:
                     warnings = []
 
-                return SinfoResponse(output_text=str(api_response),errors=errors,warnings=warnings)
+                return SinfoResponse(output=str(api_response),errors=errors,warnings=warnings)
             
             except Exception as e:
                 raise ApiClientException(f'Unexpected error while performing a GET request for the squeue command:{e}') from e 

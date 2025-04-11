@@ -32,7 +32,7 @@ class MissingEnvironmentVar(Exception):
 class CommandEvaluator(ABC):
 
     @abstractmethod
-    def process(slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:
+    def process(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:
         """
         Processes the SLURM CLI command by interacting with the SLURM API client wrapper.
         Args:
@@ -81,12 +81,12 @@ class CommandEvaluator(ABC):
                 slurm_jwt=slurm_jwt
             )
 
-            if (len(response.slurm_errors)>0):
-                print(response.slurm_errors)
+            if (len(response.errors)>0):
+                print(response.errors)
                 #TODO check if special error codes are required
                 return 1
             else:
-                print(response.pre_processed_output)
+                print(response.output)
                 return 0
 
 
@@ -212,12 +212,12 @@ def squeue():
 
         response = slurm_cli_wrapper.squeue_get_request(request_args, configuration,slurm_jwt)
 
-        if (len(response.slurm_errors)>0):
-            print(response.slurm_errors)
+        if (len(response.errors)>0):
+            print(response.errors)
             #TODO check if special error codes are required
             return 1
         else:
-            print(response.pre_processed_output)
+            print(response.output)
             return 0
 
     #Errors catched while building the request
@@ -327,12 +327,12 @@ def sinfo():
 
         response = slurm_cli_wrapper.squeue_get_request(request_args, configuration,slurm_jwt)
 
-        if (len(response.slurm_errors)>0):
-            print(response.slurm_errors)
+        if (len(response.errors)>0):
+            print(response.errors)
             #TODO check if special error codes are required
             return 1
         else:
-            print(response.pre_processed_output)
+            print(response.output)
             return 0
 
         #Error handling (general)

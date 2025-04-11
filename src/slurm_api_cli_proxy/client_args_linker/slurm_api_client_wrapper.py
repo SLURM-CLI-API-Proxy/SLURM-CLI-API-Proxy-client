@@ -5,13 +5,14 @@ import importlib
 
 
 class SlurmCommandResponse(ABC):
-    def __init__(self,errors:list[str] = [], warnings:list[str] = []):
-        self.errors = []        
-        self.warnings = []
+    def __init__(self, errors: list[str] = [], warnings: list[str] = [], output: str = ""):
+        self.errors = errors
+        self.warnings = warnings
+        self.output = output
 
 class SbatchResponse(SlurmCommandResponse):
-    def __init__(self,job_id,step_id,errors:list[str] = [], warnings:list[str] = []):
-        super().__init__(errors, warnings)
+    def __init__(self, job_id, step_id, errors: list[str] = [], warnings: list[str] = [], output: str = ""):
+        super().__init__(errors, warnings, output)
         self.job_id = job_id
         self.step_id = step_id
 
@@ -19,19 +20,16 @@ class SbatchResponse(SlurmCommandResponse):
         return f"Job {self.job_id} - {len(self.errors)} errors:{self.errors}"
 
 class ScontrolResponse(SlurmCommandResponse):
-    def __init__(self,errors:list[str] = [], warnings:list[str] = []):
-        super().__init__(errors, warnings)
+    def __init__(self, errors: list[str] = [], warnings: list[str] = [], output: str = ""):
+        super().__init__(errors, warnings, output)
 
 class SqueueResponse(SlurmCommandResponse):
-    def __init__(self,output_text:str,errors:list[str] = [], warnings:list[str] = []):
-        super().__init__(errors, warnings)
-        self.pre_processed_output:str  = output_text
-
-class SinfoResponse():
-    def __init__(self,output_text:str,errors:list[str] = [], warnings:list[str] = []):
-        super().__init__(errors, warnings)
-        self.pre_processed_output:str  = output_text
-
+    def __init__(self, errors: list[str] = [], warnings: list[str] = [], output: str = ""):
+        super().__init__(errors, warnings, output)
+        
+class SinfoResponse(SlurmCommandResponse):
+    def __init__(self, errors: list[str] = [], warnings: list[str] = [], output: str = ""):
+        super().__init__(errors, warnings, output)
 
 class ApiClientException(Exception):
     def __init__(self, message: str):
