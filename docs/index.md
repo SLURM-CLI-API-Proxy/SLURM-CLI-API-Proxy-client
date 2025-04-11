@@ -1,9 +1,9 @@
 # Command-line interface proxy for SLURM REST API
 
 
-!!! warning "Under Development"
+!!! warning 
     
-    This tool is under active development. The documentation is not complete yet. If you have any 
+    This tool is under active development. The documentation may not be complete yet. If you have any 
     questions, please contact us via [GitHub Issues](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/issues)
 
 
@@ -15,3 +15,51 @@ For instance, on public HPC Systems like the Dutch Snellius supercomputer, the S
 
 While refactoring platforms like Arvados to make it use the SLURM REST API instead of the CLI is an option to address this connectivity challenge, the complexity and scale of its codebase make the SLURM CLI-API Proxy client a more cost-effective solution, as it enables the use of the API without requiring any modifications on the existing codebase.
 
+
+```mermaid
+graph TD;
+    
+
+    LocalScript --> sinfop
+    LocalScript --> sbatchp
+    LocalScript --> squeuep
+    LocalScript --> scontrolp
+
+    
+    Users -->|SSH| sinfo[sinfo];
+    Users -->|SSH| sbatch[sbatch];
+    Users -->|SSH| squeue[squeue];
+    Users -->|SSH| scontrol[scontrol];
+    Users --> sinfop
+    Users --> sbatchp
+    Users --> squeuep
+    Users --> scontrolp
+
+    sinfop[sinfo*] --> |HTTP Request| slurmrestd;
+    sbatchp[sbatch*] --> |HTTP Request| slurmrestd;
+    squeuep[squeue*] --> |HTTP Request| slurmrestd;
+    scontrolp[scontrolp*] --> |HTTP Request| slurmrestd;
+    
+
+    subgraph "Slurm controller"
+        slurmrestd --> slurmctld[slurmctld];
+        slurmctld --> slurmdbd[slurmdbd];
+        sinfo --> slurmctld;
+        sbatch --> slurmctld;
+        squeue --> slurmctld;
+        scontrol --> slurmctld;
+    end
+    
+    subgraph "Compute Node"
+        slurmd1[slurmd] 
+    end
+    
+    subgraph "Compute Node"
+        slurmd2[slurmd]
+    end
+    
+    slurmctld --> slurmd1;
+    slurmctld --> slurmd2;
+    
+    slurmdbd --> Database["Slurm Accounting Database"];
+```
