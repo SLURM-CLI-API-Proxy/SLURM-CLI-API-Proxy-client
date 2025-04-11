@@ -25,6 +25,9 @@ import json
 import time
 import pprint
 import slurm_api_cli_proxy.client_args_linker.v39.squeue_format as sqf
+from openapi_client.models.v0039_partition_info import V0039PartitionInfo
+from openapi_client.models.v0039_partition_info_nodes import V0039PartitionInfoNodes
+from openapi_client.models.v0039_partitions_response import V0039PartitionsResponse
 
 class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
@@ -169,7 +172,7 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
             try:
                 # get all partition info
-                api_response = api_instance.slurm_v0039_get_partitions()
+                api_response:V0039PartitionsResponse = api_instance.slurm_v0039_get_partitions()
 
                 if (api_response.errors is not None):
                     #Transform list of list[V0039Error] to list[str] 
@@ -183,10 +186,33 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
                 else:
                     warnings = []
 
-                return SinfoResponse(output=str(api_response),errors=errors,warnings=warnings)
+                output = V39SlurmAPIClientWrapper.process_sinfo_output(cli_arguments=cli_arguments,api_response=api_response)
+                
+                return SinfoResponse(output=output,errors=errors,warnings=warnings)
             
             except Exception as e:
                 raise ApiClientException(f'Unexpected error while performing a GET request for the squeue command:{e}') from e 
+
+
+    @staticmethod
+    def process_sinfo_output(cli_arguments:dict, api_response:V0039PartitionsResponse)->str:
+        #ref: https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/V0039PartitionInfo.md
+        partitions:List[V0039PartitionInfo] | None = api_response.partitions
+
+        if partitions != None:
+            table = "Partition Name\tTotal Nodes\n"
+            table += "-" * 30 + "\n"
+            for partition in partitions:
+                name = partition.name
+                nodes_info: V0039PartitionInfoNodes | None = partition.nodes
+                if nodes_info != None:
+                    total = nodes_info.total
+                else:
+                    total = -1
+                table += f"{name}\t{total}\n"
+            return table
+        else:
+            return ""
 
 
 
