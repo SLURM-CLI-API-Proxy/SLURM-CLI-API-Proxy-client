@@ -33,13 +33,33 @@ The current version of the tool provides proxies for the `sbatch`, `squeue` and 
     - name: 
         abbreviation: 
         is_mandatory: 
+        type:
         
     ```
 
-4. Add an abstract method to the *client wrapper* interface
+4. Create Add an abstract method to the *client wrapper* interface
+
+```mermaid
+---
+title: src
+---
+classDiagram
+
+    class SlurmCommandResponse {
+        - __init__(self, errors, warnings, output) None
+    }
+
+    class SinfoResponse {
+        - __init__(self, errors, warnings, output) None
+    }
+
+    SlurmCommandResponse <|--  SinfoResponse
+```
+
+
    
    
-5. V39SlurmAPIClientWrapper
+2. V39SlurmAPIClientWrapper
    
 
 (the implementation for v0.0.39)
