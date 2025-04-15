@@ -37,128 +37,124 @@ The current version of the tool provides proxies for the `sbatch`, `squeue` and 
         
     ```
 
-4. Create Add an abstract method to the *client wrapper* interface
+4. Add an abstract method for the new command to the *client wrapper* interface (`SlurmAPIClientWrapper`) that returns an `SlurmCommandResponse` object, and add its implementation on the `V39SlurmAPIClientWrapper`. This method is the one that make use of the API client to perform the required request, and hence can be based on the python example you created on step 1. This method should include as parameters, at least, an `openapi_client.Configuration` and the slurm API token. The method created for the `sinfo` command also includes a dictionary with the CLI arguments, so its output (returned within the `SlurmCommandResponse` object). Likewise, any exception catched within the method should be scaled as an `ApiClientException` so that they are properly handled by the application:
 
-```mermaid
----
-title: src
----
-classDiagram
+    ```python
+    def sinfo_get_request(self,cli_arguments:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SlurmCommandResponse:
+        configuration = conf
+        configuration.api_key['token'] = slurmrestd_token
 
-    class SlurmCommandResponse {
-        - __init__(self, errors, warnings, output) None
-    }
+        with openapi_client.ApiClient(conf) as api_client:    
+            api_instance = openapi_client.SlurmApi(api_client)
 
-    class SinfoResponse {
-        - __init__(self, errors, warnings, output) None
-    }
+            try:
 
-    SlurmCommandResponse <|--  SinfoResponse
-```
+                api_response:V0039PartitionsResponse = api_instance.slurm_v0039_get_partitions()
 
+                if (api_response.errors is not None):
+                    #Transform list of list[V0039Error] to list[str] 
+                    errors:list[str] = list(map(lambda err: str(err), api_response.errors))
+                else:
+                    errors = []
 
-   
-   
-2. V39SlurmAPIClientWrapper
-   
+                if (api_response.warnings is not None):
+                    #Transform list of list[V0039Warning] to list[str] 
+                    warnings:list[str] = list(map(lambda err: str(err), api_response.warnings))
+                else:
+                    warnings = []
 
-(the implementation for v0.0.39)
+                output = V39SlurmAPIClientWrapper.process_sinfo_output(cli_arguments=cli_arguments,api_response=api_response)
+                
+                return SlurmCommandResponse(output=output,errors=errors,warnings=warnings)
+            
+            except Exception as e:
+                raise ApiClientException(f'Unexpected error while performing a GET request for the squeue command:{e}') from e 
 
-def sinfo_get_request(self,cli_arguments:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SinfoResponse:
+    ```
 
+5. Create a subclass of the `slurm_api_cli_proxy.CommandEvaluator` abstract class and implement the `process_command_args` method. This  method has the following arguments:
 
+    ```python
+    class SinfoEvaluator(CommandEvaluator):
 
-5. the SlurmAPIClientWrapper interface and the V39 implementation. Use the code snipped as the baseline. 
+        def process_command_args(self,
+        #the wrapper defined on the YAML file will be set here
+        slurm_cli_wrapper:SlurmAPIClientWrapper,
+        #the dictionary with the CLI arguments given by argparse
+        cli_args,
+        #an object representation of the YAML configuration file
+        command_mappings_config:CliToJsonPayloadMappings,
+        #the configuration required to create an instance of the client
+        configuration:openapi_client.Configuration,
+        #the SLURM API web token
+        slurm_jwt:str)->SlurmCommandResponse:    
 
+    ```
 
-```mermaid
----
-title: src
----
-classDiagram
+    With these arguments the method is expected to:
 
-    class SlurmAPIClientWrapper {
-        + sbatch_post_request(self, request, conf, slurmrestd_token) SbatchResponse
-        + squeue_get_request(self, cli_arguments, conf, slurmrestd_token) SqueueResponse
-        + scontrol_update_request(self, target_job_id, request, conf, slurmrestd_token) ScontrolResponse
-    }
+    - Create the required payload from the `cli_args`
 
+    ```mermaid
+    ---
+    title: asds
+    ---
+    classDiagram
 
-    class V39SlurmAPIClientWrapper {
-        + sbatch_post_request(self, request, conf, slurmrestd_token) SbatchResponse
-        + scontrol_update_request(self, target_job_id, request, conf, slurmrestd_token) ScontrolResponse
-        + squeue_get_request(self, cli_arguments, conf, slurmrestd_token) SqueueResponse
-    }
+        class CommandEvaluator {
+            + (abstract) process_command_args(...) SlurmCommandResponse
+            + eval_command(self, config_file_path, include_input_file_arg)
+            - __get_env_vars(self) Tuple[str, str]
+        }
 
+        class SbatchEvaluator {
+            + process_command_args(...) SlurmCommandResponse
+        }
 
+        class SqueueEvaluator {
+            + process_command_args(...) SlurmCommandResponse
+        }
 
-    `SlurmAPIClientWrapper`   <|-- V39SlurmAPIClientWrapper
+        class ScontrolEvaluator {
+            + process_command_args(...) SlurmCommandResponse
+        }
 
-```
-
-To have a consistent behavior, scale the exceptions as ApiClientException.
-
-1. Create a type to encapsulate the request output. Include errors reported by the workload manager.
-
-2. There are two types of errors: the request could fail (ApiClientException), which should make the program fail. The other error: the request has a 202 status, but the response includes an error reported by slurm. To report this error 
-
-
-
-```mermaid
----
-title: asds
----
-classDiagram
-
-    class CommandEvaluator {
-        + (abstract) process_command_args(...) SlurmCommandResponse
-        + eval_command(self, config_file_path, include_input_file_arg)
-        - __get_env_vars(self) Tuple[str, str]
-    }
-
-    class SbatchEvaluator {
-        + process_command_args(...) SlurmCommandResponse
-    }
-
-    class SqueueEvaluator {
-        + process_command_args(...) SlurmCommandResponse
-    }
-
-    class ScontrolEvaluator {
-        + process_command_args(...) SlurmCommandResponse
-    }
-
-    CommandEvaluator <|-- SbatchEvaluator
-    CommandEvaluator <|-- SqueueEvaluator
-    CommandEvaluator <|-- ScontrolEvaluator
+        CommandEvaluator <|-- SbatchEvaluator
+        CommandEvaluator <|-- SqueueEvaluator
+        CommandEvaluator <|-- ScontrolEvaluator
 
 
-```
-
-Creating SinfoEvaluator class:
+    ```
 
 
+    ```python
 
-```python
+    class SinfoEvaluator(CommandEvaluator):
 
-class SinfoEvaluator(CommandEvaluator):
+        def process_command_args(self,
+        #the wrapper defined on the YAML file will be set here
+        slurm_cli_wrapper:SlurmAPIClientWrapper,
+        #the dictionary with the CLI arguments given by argparse
+        cli_args,
+        #an object representation of the YAML configuration file
+        command_mappings_config:CliToJsonPayloadMappings,
+        #the configuration required to create an instance of the client
+        configuration:openapi_client.Configuration,
+        #the SLURM API web token
+        slurm_jwt:str)->SlurmCommandResponse:    
 
-    def process_command_args(self,
-      slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,
-      command_mappings_config:CliToJsonPayloadMappings,
-      configuration:openapi_client.Configuration,
-      slurm_jwt:str)->SlurmCommandResponse:    
+            #dictionary with the arguments/values given to the squeue command
+            request_args = args_to_parameters_dict(command_args_dict=vars(cli_args))
 
-        #dictionary with the arguments/values given to the squeue command
-        request_args = args_to_parameters_dict(command_args_dict=vars(cli_args))
+            response = slurm_cli_wrapper.sinfo_get_request(request_args, 
+            configuration,slurm_jwt)
 
-        response = slurm_cli_wrapper.sinfo_get_request(request_args, 
-        configuration,slurm_jwt)
-
-        return response
+            return response
 
 
-```
+    ```
+
+
 
 
 Add the method to be used on the entry point
