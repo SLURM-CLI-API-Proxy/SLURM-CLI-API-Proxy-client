@@ -10,16 +10,6 @@ class SlurmCommandResponse():
         self.warnings = warnings
         self.output = output
 
-# class SbatchResponse(SlurmCommandResponse):
-#     def __init__(self, job_id, step_id, errors: list[str] = [], warnings: list[str] = [], output: str = ""):
-#         super().__init__(errors, warnings, output)
-#         self.job_id = job_id
-#         self.step_id = step_id
-
-#     def __str__(self):
-#         return f"Job {self.job_id} - {len(self.errors)} errors:{self.errors}"
-
-
 
 class ApiClientException(Exception):
     def __init__(self, message: str):
@@ -28,7 +18,6 @@ class ApiClientException(Exception):
 
     def __str__(self):
         return self.message
-
 
 
 
