@@ -64,7 +64,7 @@ class ApiRequestsTest(unittest.TestCase):
         ]
     }
 
-
+    @pytest.mark.integration
     def test_sbatch_post_request(self):
         
         

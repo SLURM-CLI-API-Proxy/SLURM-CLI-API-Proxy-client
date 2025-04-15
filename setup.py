@@ -21,6 +21,7 @@ setup(
         "console_scripts": [
             "sbatch=slurm_api_cli_proxy.command_handler:sbatch",
             "squeue=slurm_api_cli_proxy.command_handler:squeue",
+            "sinfo=slurm_api_cli_proxy.command_handler:sinfo",
             "scontrol=slurm_api_cli_proxy.command_handler:scontrol",
         ],
     },
