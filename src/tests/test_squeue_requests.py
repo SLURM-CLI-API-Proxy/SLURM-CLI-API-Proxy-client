@@ -41,6 +41,7 @@ class ApiRequestsTest(unittest.TestCase):
         ]        
     }
 
+    @pytest.mark.integration
     def test_squeue_get_request(self):
                 
         configuration = openapi_client.Configuration(

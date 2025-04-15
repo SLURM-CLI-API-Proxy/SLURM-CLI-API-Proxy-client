@@ -7,7 +7,7 @@
 | (2/5) license                      | [![github license badge](https://img.shields.io/github/license/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client)](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/LICENSE) |
 | (3/5) community registry           | [![RSD](https://img.shields.io/badge/rsd-slurm_api_cli_proxy-00a3e3.svg)](https://www.research-software.nl/software/slurm-cli-api-proxy) [![workflow pypi badge](https://img.shields.io/pypi/v/slurm_cli_api_proxy.svg?colorB=blue)](https://pypi.python.org/project/slurm_api_cli_proxy/) |
 | (4/5) citation                     | [![DOI](https://zenodo.org/badge/DOI/<replace-with-created-DOI>.svg)](https://doi.org/<replace-with-created-DOI>)|
-| (5/5) checklist                    | [![workflow cii badge](https://bestpractices.coreinfrastructure.org/projects/<replace-with-created-project-identifier>/badge)](https://bestpractices.coreinfrastructure.org/projects/<replace-with-created-project-identifier>) |
+| (5/5) checklist                    |  |
 | howfairis                          | [![fair-software badge](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow)](https://fair-software.eu) |
 | **Other best practices**           | &nbsp; |
 | Static analysis                    | [![workflow scq badge](https://sonarcloud.io/api/project_badges/measure?project=SLURM-CLI-API-Proxy_SLURM-CLI-API-Proxy-client&metric=alert_status)](https://sonarcloud.io/dashboard?id=SLURM-CLI-API-Proxy_SLURM-CLI-API-Proxy-client) |
@@ -127,7 +127,7 @@ scontrol release 209
 
 🚧 Release notice* 🚧
 
-Only `sbatch` and `squeue` and `scontrol` commands have been implemented, with a limited number of arguments. However, the tool is designed in a way that new arguments can be integrated as these are needed. This requires only to specify a mapping between the value given to the new argument and the property sent on the payload of the corresponding API request. More details on this will be available on the [developer's documentation](https://slurm-cli-api-proxy.github.io/SLURM-CLI-API-Proxy-client/) - currently a work in progress.
+Only `sbatch` and `squeue` and `scontrol` commands have been implemented, with a limited number of arguments. However, the tool is designed in a way that new arguments can be integrated as these are needed. This requires only to specify a mapping between the value given to the new argument and the property sent on the payload of the corresponding API request. More details on this will be available on the [developer's documentation](https://slurm-cli-api-proxy.github.io/SLURM-CLI-API-Proxy-client/).
 
 If you encounter issues or have feedback, please report them through the project's issue tracker.
 
