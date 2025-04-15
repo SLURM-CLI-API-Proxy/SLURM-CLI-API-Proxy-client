@@ -47,11 +47,11 @@ nav:
 - Developer documentation:
   - Introduction: index.md
   - Setup: setup.md
+  - Design principles: designprinciples.md
+  - Adding new arguments: addingargs.md
+  - Adding new commands: addingcommands.md
   - Known limitations: limitations.md  
-  - Extending the SLURM-CLI-API Proxy: maintinance.md
   - QA: devprocess.md
-  
-  
   
 
 markdown_extensions:

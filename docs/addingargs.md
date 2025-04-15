@@ -11,7 +11,7 @@ Given the design principles previously described, adding argument to a command, 
     | sbatch   | POST /slurm/v0.0.39/job/submit     | [slurm_v0039_submit_job](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/SlurmApi.md#slurm_v0039_submit_job) | [V0039JobSubmission](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/V0039JobSubmission.md), [V0039JobDescMsg](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/V0039JobDescMsg.md) (request payload) |
     | squeue   | GET /slurm/v0.0.39/jobs            | [slurm_v0039_get_jobs](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/SlurmApi.md#slurm_v0039_get_jobs) | [V0039JobsResponse](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/V0039JobsResponse.md) (request response) |
     | scontrol | UPDATE /slurm/v0.0.39/job/{job_id} | [slurm_v0039_update_job](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/SlurmApi.md#slurm_v0039_update_job) | [V0039JobDescMsg](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/V0039JobDescMsg.md) (request payload) |
-    | sinfo    | GET /slurm/v0.0.39/partitions      | [slurm_v0039_get_partitions](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/SlurmApi.md#slurm_v0039_get_partitions) | [V0039PartitionsResponse](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/V0039PartitionsResponse.md) (request response) |
+    | sinfo    | GET /slurm/v0.0.39/partitions, GET /slurm/v0.0.39/nodes      | [slurm_v0039_get_partitions](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/SlurmApi.md#slurm_v0039_get_partitions) | [V0039PartitionsResponse](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/V0039PartitionsResponse.md) (request response) |
 
 
 2. Check which property of the corresponding POST payload should be set to the value given to the argument. To this end, look at the documentation of the class used for creating the request's payload. For example, the POST payload structure required by the `/slurm/v0.0.39/job/submit` resource is defined by the [V0039JobDescMsg](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/V0039JobDescMsg.md) class. 
@@ -26,6 +26,9 @@ Given the design principles previously described, adding argument to a command, 
       api_mapping:
           request_property: job.current_working_directory
     ```
+
+    Keep in mind that the accepted values for *data_type* are *int*, *str* and *bool*. When using the latter, argparse uses it as a flag, so no value is captured for it. 
+
 
 4. And that's it! However, if the captured argument value needs to be pre-processed, you can include a lambda expression to do it if needed. For example, the `--export` argument (the environment variables to be exported), in the `sbatch` command receives a string with comma-separated values, but the [V0039JobDescMsg](https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/V0039JobDescMsg.md) class requires a list of strings (that is, each exported environment variable).
 
