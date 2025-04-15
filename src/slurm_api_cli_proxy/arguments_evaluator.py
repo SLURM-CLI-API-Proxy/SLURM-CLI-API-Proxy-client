@@ -49,10 +49,3 @@ def build_parser(mappings:CliToJsonPayloadMappings):
 
 
 
-
-# https://stackoverflow.com/questions/23032514/argparse-disable-same-argument-occurrences
-# class UniqueStore(argparse.Action):
-#     def __call__(self, parser, namespace, values, option_string):
-#         if getattr(namespace, self.dest, self.default) is not self.default:
-#             parser.error(option_string + " appears several times.")
-#         setattr(namespace, self.dest, values)
