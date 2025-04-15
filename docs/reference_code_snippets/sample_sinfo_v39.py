@@ -1,6 +1,7 @@
 import os
 import openapi_client
 from openapi_client.models.v0039_partitions_response import V0039PartitionsResponse
+from openapi_client.models.v0039_nodes_response import V0039NodesResponse
 from openapi_client.rest import ApiException
 from pprint import pprint
 
@@ -29,8 +30,15 @@ with openapi_client.ApiClient(configuration) as api_client:
 
     try:
         # get all partition info
-        api_response = api_instance.slurm_v0039_get_partitions(update_time=update_time)
+        partitions_response:V0039PartitionsResponse = api_instance.slurm_v0039_get_partitions()
+
+        nodes_response:V0039NodesResponse = api_instance.slurm_v0039_get_nodes()
+
+
         print("The response of SlurmApi->slurm_v0039_get_partitions:\n")
-        pprint(api_response)
+        pprint(partitions_response)
+        print("The response of SlurmApi->slurm_v0039_get_nodes:\n")
+        pprint(nodes_response)
+
     except Exception as e:
         print("Exception when calling SlurmApi->slurm_v0039_get_partitions: %s\n" % e)
