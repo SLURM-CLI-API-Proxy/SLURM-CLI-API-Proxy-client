@@ -11,7 +11,7 @@ from typing import Tuple
 from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
 from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SlurmCommandResponse, get_slurm_api_client_wrapper,ApiClientException
 from slurm_api_cli_proxy.client_args_linker.args_to_payload_mapper import args_to_sbatch_request_payload,args_to_parameters_dict,args_to_scontrol_request_payload,UnsuportedArgumentException
-from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SbatchResponse, SlurmAPIClientWrapper
+from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SlurmAPIClientWrapper
 import openapi_client
 import logging
 from .arguments_evaluator import build_parser
@@ -40,7 +40,8 @@ class CommandEvaluator(ABC):
         so that these can be used by the corresponding method, on the slurm_cli_wrapper, that
         performs the required request to the SLURM API.
 
-        This method is not intended to be invoked directly. 
+        This method is not intended to be invoked directly. It is indirectly invoked when using 
+        the eval_command method.
 
         Args:
             slurm_cli_wrapper (SlurmAPIClientWrapper): An instance of the SLURM API client wrapper 
@@ -153,7 +154,7 @@ class SbatchEvaluator(CommandEvaluator):
                 with open(cli_args.proxy_cli_input_file, 'r') as file:
                     input_script = file.read().strip()
             else:
-                return SbatchResponse(job_id=-1,step_id=-1,errors=[f"sbatch: error: Unable to open file {cli_args.proxy_cli_input_file}\n"])
+                return SlurmCommandResponse(errors=[f"sbatch: error: Unable to open file {cli_args.proxy_cli_input_file}\n"])
 
         #Removing the (provisional) argument used to capture the input file    
         cli_args_dict = vars(cli_args)
@@ -163,7 +164,7 @@ class SbatchEvaluator(CommandEvaluator):
         #with the structure required by the JSON file sent by the SLURM API client
         job_request = args_to_sbatch_request_payload(script_content=input_script,cmd_args_dict=cli_args_dict,sbatch_mappings=command_mappings_config)
 
-        response:SbatchResponse = slurm_cli_wrapper.sbatch_post_request(job_request, configuration,slurm_jwt)
+        response:SlurmCommandResponse = slurm_cli_wrapper.sbatch_post_request(job_request, configuration,slurm_jwt)
 
         return response
 
@@ -174,7 +175,7 @@ class SqueueEvaluator(CommandEvaluator):
         #dictionary with the arguments/values given to the squeue command
         request_args = args_to_parameters_dict(command_args_dict=vars(cli_args))
 
-        response = slurm_cli_wrapper.squeue_get_request(request_args, configuration,slurm_jwt)
+        response:SlurmCommandResponse = slurm_cli_wrapper.squeue_get_request(request_args, configuration,slurm_jwt)
 
         return response
 
@@ -184,7 +185,7 @@ class ScontrolEvaluator(CommandEvaluator):
 
         request_args, target_job_id = args_to_scontrol_request_payload(cmd_args_dict=vars(cli_args),scontrol_mappings=command_mappings_config)
 
-        response = slurm_cli_wrapper.scontrol_update_request(target_job_id=target_job_id,request=request_args,conf=configuration,slurmrestd_token=slurm_jwt)
+        response:SlurmCommandResponse = slurm_cli_wrapper.scontrol_update_request(target_job_id=target_job_id,request=request_args,conf=configuration,slurmrestd_token=slurm_jwt)
 
         return response
 
@@ -194,7 +195,7 @@ class SinfoEvaluator(CommandEvaluator):
         #dictionary with the arguments/values given to the squeue command
         request_args = args_to_parameters_dict(command_args_dict=vars(cli_args))
 
-        response = slurm_cli_wrapper.sinfo_get_request(request_args, configuration,slurm_jwt)
+        response:SlurmCommandResponse = slurm_cli_wrapper.sinfo_get_request(request_args, configuration,slurm_jwt)
 
         return response
 

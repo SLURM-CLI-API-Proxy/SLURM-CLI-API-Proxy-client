@@ -4,32 +4,12 @@ import openapi_client
 import importlib
 
 
-class SlurmCommandResponse(ABC):
+class SlurmCommandResponse():
     def __init__(self, errors: list[str] = [], warnings: list[str] = [], output: str = ""):
         self.errors = errors
         self.warnings = warnings
         self.output = output
 
-class SbatchResponse(SlurmCommandResponse):
-    def __init__(self, job_id, step_id, errors: list[str] = [], warnings: list[str] = [], output: str = ""):
-        super().__init__(errors, warnings, output)
-        self.job_id = job_id
-        self.step_id = step_id
-
-    def __str__(self):
-        return f"Job {self.job_id} - {len(self.errors)} errors:{self.errors}"
-
-class ScontrolResponse(SlurmCommandResponse):
-    def __init__(self, errors: list[str] = [], warnings: list[str] = [], output: str = ""):
-        super().__init__(errors, warnings, output)
-
-class SqueueResponse(SlurmCommandResponse):
-    def __init__(self, errors: list[str] = [], warnings: list[str] = [], output: str = ""):
-        super().__init__(errors, warnings, output)
-        
-class SinfoResponse(SlurmCommandResponse):
-    def __init__(self, errors: list[str] = [], warnings: list[str] = [], output: str = ""):
-        super().__init__(errors, warnings, output)
 
 class ApiClientException(Exception):
     def __init__(self, message: str):
@@ -41,11 +21,10 @@ class ApiClientException(Exception):
 
 
 
-
 class SlurmAPIClientWrapper(ABC):
 
     @abstractmethod
-    def sbatch_post_request(self,request:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SbatchResponse: 
+    def sbatch_post_request(self,request:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SlurmCommandResponse: 
         """
         Sends a POST request to the job endpoint.
 
@@ -65,7 +44,7 @@ class SlurmAPIClientWrapper(ABC):
 
 
     @abstractmethod
-    def squeue_get_request(self,cli_arguments:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SqueueResponse:
+    def squeue_get_request(self,cli_arguments:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SlurmCommandResponse:
         """
         Sends a GET request to the job endpoint.
 
@@ -86,7 +65,7 @@ class SlurmAPIClientWrapper(ABC):
 
 
     @abstractmethod
-    def sinfo_get_request(self,cli_arguments:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SinfoResponse:
+    def sinfo_get_request(self,cli_arguments:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SlurmCommandResponse:
         """
         Sends a GET request to the job endpoint.
 
@@ -107,7 +86,7 @@ class SlurmAPIClientWrapper(ABC):
 
 
     @abstractmethod
-    def scontrol_update_request(self,target_job_id:str,request:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> ScontrolResponse: 
+    def scontrol_update_request(self,target_job_id:str,request:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SlurmCommandResponse: 
         """
         Sends a UPDATE request to the job endpoint.
 

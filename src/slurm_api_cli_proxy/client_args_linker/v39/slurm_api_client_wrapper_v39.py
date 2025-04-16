@@ -1,4 +1,4 @@
-from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import ScontrolResponse, SlurmAPIClientWrapper, SbatchResponse, SqueueResponse, SinfoResponse, ApiClientException
+from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SlurmAPIClientWrapper, ApiClientException, SlurmCommandResponse
 from slurm_api_cli_proxy.client_args_linker.constants import slurm_statuses
 from openapi_client.models.v0039_error import V0039Error
 from typing import List
@@ -31,7 +31,7 @@ from openapi_client.models.v0039_partitions_response import V0039PartitionsRespo
 
 class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
-    def sbatch_post_request(self,request:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SbatchResponse:     
+    def sbatch_post_request(self,request:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SlurmCommandResponse:     
         #Based on the code snippet included on the documentation generated from the Slurm OpenAPI specification
         configuration = conf
         configuration.api_key['token'] = slurmrestd_token
@@ -51,12 +51,11 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
                 # submit the job
                 api_response = api_instance.slurm_v0039_submit_job(v0039_job_submission_instance)
                 
-                response = SbatchResponse(job_id=api_response.job_id,step_id=api_response.step_id)
+                response = SlurmCommandResponse()
                 
                 if api_response.errors is not None:
                     for err in api_response.errors:
                         #Based on V0039Error type
-                        #TODO check if a template may be required
                         response.errors.append(f"Error no:{err.error_number}:{err.error}. Source:{err.source}. Description:{err.description}")
                 
                 return response
@@ -66,7 +65,7 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
 
 
-    def scontrol_update_request(self,target_job_id:str,request:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> ScontrolResponse:
+    def scontrol_update_request(self,target_job_id:str,request:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SlurmCommandResponse:
 
         configuration = conf
         configuration.api_key['token'] = slurmrestd_token
@@ -84,7 +83,7 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
             if v0039_job_update_payload is None:
                 raise ValueError(f"Creation of scontrol job submission payload form json returned None when using {json_req_string}")
 
-            response = ScontrolResponse()                
+            response = SlurmCommandResponse()                
 
             try:
                 #submit the update request
@@ -128,7 +127,7 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
 
 
-    def squeue_get_request(self,cli_arguments:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SqueueResponse:    
+    def squeue_get_request(self,cli_arguments:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SlurmCommandResponse:    
         #Based on the code snippet included on the documentation generated from the Slurm OpenAPI specification
         configuration = conf
         configuration.api_key['token'] = slurmrestd_token
@@ -141,7 +140,7 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
             try:
                 # get list of jobs
                 api_response:V0039JobsResponse = api_instance.slurm_v0039_get_jobs()
-
+                
                 output = V39SlurmAPIClientWrapper.process_squeue_output(cli_arguments=cli_arguments,api_response=api_response)
 
                 if (api_response.errors is not None):
@@ -156,13 +155,13 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
                 else:
                     warnings = []
 
-                return SqueueResponse(output=output,errors=errors,warnings=warnings)
+                return SlurmCommandResponse(output=output,errors=errors,warnings=warnings)
         
             except Exception as e:       
                 raise ApiClientException(f'Unexpected error while performing a GET request for the squeue command:{e}') from e                
 
 
-    def sinfo_get_request(self,cli_arguments:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SinfoResponse:
+    def sinfo_get_request(self,cli_arguments:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SlurmCommandResponse:
         
         configuration = conf
         configuration.api_key['token'] = slurmrestd_token
@@ -188,7 +187,7 @@ class V39SlurmAPIClientWrapper(SlurmAPIClientWrapper):
 
                 output = V39SlurmAPIClientWrapper.process_sinfo_output(cli_arguments=cli_arguments,api_response=api_response)
                 
-                return SinfoResponse(output=output,errors=errors,warnings=warnings)
+                return SlurmCommandResponse(output=output,errors=errors,warnings=warnings)
             
             except Exception as e:
                 raise ApiClientException(f'Unexpected error while performing a GET request for the squeue command:{e}') from e 
