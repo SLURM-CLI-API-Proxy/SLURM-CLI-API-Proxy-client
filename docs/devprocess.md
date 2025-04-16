@@ -1,6 +1,30 @@
 # Continious integration
 
-This repository 
+
+#### Unit and integration tests
+
+```shell
+#Start a dockerized slurm cluster on localhost (works on Linux only)
+source src/tests/slurm_test_scripts/start_dockerized_slurm.sh
+
+#Run tests 
+pytest
+```
+
+#### Running unit tests only (doesn't require the dockerized slurm cluster)
+
+```shell
+# Run tests, excluding integration ones (which require the dockerized slurm cluster running on localhost)
+pytest -m "not integration"
+```
+
+#### Static type checking
+
+```shell
+#Static type checking with mypy. 
+mypy src --check-untyped-defs
+```
+
 
 
 # Version Management
