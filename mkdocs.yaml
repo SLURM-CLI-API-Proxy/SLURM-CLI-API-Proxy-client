@@ -50,6 +50,7 @@ nav:
   - Design principles: designprinciples.md
   - Adding new arguments: addingargs.md
   - Adding new commands: addingcommands.md
+  - Support for alternative API versions: alternateapiversion.md
   - Known limitations: limitations.md  
   - QA: devprocess.md
   
