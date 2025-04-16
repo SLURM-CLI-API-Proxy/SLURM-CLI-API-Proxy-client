@@ -37,7 +37,11 @@ The current version of the tool provides proxies for the `sbatch`, `squeue` and 
         
     ```
 
-4. Add an abstract method for the new command to the *client wrapper* interface (`SlurmAPIClientWrapper`) that returns an `SlurmCommandResponse` object, and add its implementation on the `V39SlurmAPIClientWrapper`. This method is the one that make use of the API client to perform the required request, and hence can be based on the python example you created on step 1. This method should include as parameters, at least, an `openapi_client.Configuration` and the slurm API token. The method created for the `sinfo` command also includes a dictionary with the CLI arguments, so its output (returned within the `SlurmCommandResponse` object). Likewise, any exception catched within the method should be scaled as an `ApiClientException` so that they are properly handled by the application:
+4. Now you need to create a new method on the *client wrapper* that performs the API request, for a given API version, required by the new proxy command. This method must return an `SlurmCommandResponse` object, which contains the command's output to be printed on STDOUT, along with the errors and warnings reported by SLURM in the process. As it will use the API client required for that particular API version, its implementation can be based on the python example you created on step 1. 
+    
+    Add an abstract method for the new command on the *client wrapper* interface (`SlurmAPIClientWrapper`), and add its implementation on the `V39SlurmAPIClientWrapper` (a class that implements the `SlurmAPIClientWrapper` interface). This method should include as parameters, at least, an `openapi_client.Configuration` and the slurm API token. The method created for the `sinfo` command also includes a dictionary with the CLI arguments, so its output can be properly formatted before including it on the returned `SlurmCommandResponse` object (other POST-based commands like `squeue` would also require a dictionary for creating the request's JSON payload).
+    
+    It is also important to consider that, by convention, any exception catched within the method should be scaled as an `ApiClientException` so that they are properly handled by the application:
 
     ```python
     def sinfo_get_request(self,cli_arguments:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> SlurmCommandResponse:
@@ -63,7 +67,13 @@ The current version of the tool provides proxies for the `sbatch`, `squeue` and 
                 else:
                     warnings = []
 
-                output = V39SlurmAPIClientWrapper.process_sinfo_output(cli_arguments=cli_arguments,api_response=api_response)
+                ################################
+                # Transform the request's response (api_response) into a string (output)
+                # that resembles the format used by the real SLURM commands, based on the
+                # arguments given in cli_arguments:
+                output = ...
+                #
+                #################################
                 
                 return SlurmCommandResponse(output=output,errors=errors,warnings=warnings)
             
@@ -72,28 +82,7 @@ The current version of the tool provides proxies for the `sbatch`, `squeue` and 
 
     ```
 
-5. Create a subclass of the `slurm_api_cli_proxy.CommandEvaluator` abstract class and implement the `process_command_args` method. This  method has the following arguments:
-
-    ```python
-    class SinfoEvaluator(CommandEvaluator):
-
-        def process_command_args(self,
-        #the wrapper defined on the YAML file will be set here
-        slurm_cli_wrapper:SlurmAPIClientWrapper,
-        #the dictionary with the CLI arguments given by argparse
-        cli_args,
-        #an object representation of the YAML configuration file
-        command_mappings_config:CliToJsonPayloadMappings,
-        #the configuration required to create an instance of the client
-        configuration:openapi_client.Configuration,
-        #the SLURM API web token
-        slurm_jwt:str)->SlurmCommandResponse:    
-
-    ```
-
-    With these arguments the method is expected to:
-
-    - Create the required payload from the `cli_args`
+5. Now that you have a *client wrapper* method for the command, it's time to implement what put everything together: a command evaluator which parses the arguments given through the CLI, prepares the request payload (if needed) based on such arguments and the settings given on the YAML configuration file, and uses this *client wrapper* to perform the request. Most of this is already implemented on the `slurm_api_cli_proxy.command_handler.CommandEvaluator` class, so for a new command only a subclass implementing the `process_command_args` method is required. 
 
     ```mermaid
     ---
@@ -125,8 +114,9 @@ The current version of the tool provides proxies for the `sbatch`, `squeue` and 
 
 
     ```
-
-
+   
+    The following example, for the `sinfo` command, describe the method's arguments, and how these can be used to perform the request base on the given arguments:
+   
     ```python
 
     class SinfoEvaluator(CommandEvaluator):
@@ -155,102 +145,29 @@ The current version of the tool provides proxies for the `sbatch`, `squeue` and 
     ```
 
 
+6. On the `command_handler` add the function that make use of the *Command Evaluator*, which can be used for linking it with the proxy command's entry point. As seen in the example, here you refer to the YAML configuration file originally created:
 
+    ```python
+    def sinfo():
 
-Add the method to be used on the entry point
-```python
-    #setup.py
-    ...
-    entry_points={
-        "console_scripts": [
-            "sbatch=slurm_api_cli_proxy.command_handler:sbatch",
-            "squeue=slurm_api_cli_proxy.command_handler:squeue",
-            "scontrol=slurm_api_cli_proxy.command_handler:scontrol",
-            "sinfo=slurm_api_cli_proxy.command_handler:sinfo",
-        ],
-    },
+        eval = SinfoEvaluator()
+        eval.eval_command(config_file_path='mappings/sinfo_mappings_r23.11_v0.0.39.yaml')    
 
-```
-```
-def sinfo():
+    ```
 
-    eval = SinfoEvaluator()
-    eval.eval_command(config_file_path='mappings/sinfo_mappings_r23.11_v0.0.39.yaml')    
+7. Link the method above to an entry point that corresponds to the original command name:
+    ```python
+        #setup.py
+        ...
+        entry_points={
+            "console_scripts": [
+                "sbatch=slurm_api_cli_proxy.command_handler:sbatch",
+                "squeue=slurm_api_cli_proxy.command_handler:squeue",
+                "scontrol=slurm_api_cli_proxy.command_handler:scontrol",
+                "sinfo=slurm_api_cli_proxy.command_handler:sinfo",
+            ],
+        },
 
-```
+    ```
 
-
-
-To see what the response to the request, for a GET request in particular look like, 
-
-The resource used for sinfo: a list of nodes:
-
-https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/V0039PartitionsResponse.md
-
-
-In general the method requires: cli_arguments:dict,conf:openapi_client.Configuration,slurmrestd_token:str)-> Response:
-
-
-
-
-1. Create a class SinfoResponse(): to encapsulate the output.
-
-2. Add a function on the slurm_api_cli_proxy.command_handler module.
-
-
-5. client_args_linker.args_to_payload_mapper
-
-
-
-Modify the SlurmAPIClientWrapper abstraction. Once it is complete enough, will be useful to provide support to different API versions.
-
-
-
-For a POST/UPDATE command (with a payload), returns a dictionary with the same structure as the JSON object required by the request (e.g., based on the extra metadata provided in the YAML file).
-
-For a GET command () -> a dictionary ready to be used to define how to present the output.
-
-For a
-
-Handler - 
-    sbatch()
-
-
-
-        args_to_request_payload(args): dict (to build the payload)
-
-
-
-    squeue()
-        args_to_squeue_parameters_dict (args): dict 
-
-
-
-SBATCH (request:dict)
-
-SQUEUE (cli_arguments:dict)
-
-
-
-
-### Commands with a complex request setup, and a simple output pre-processing
-
-sbatch, scontrol
-
-### Commands with a simple request setup, and a complex output pre-processing
-
-squeue, sinfo
-
-## Support for multiple API versions
-
-As previously discussed, the baseline design has this into consideration. A version selection mechanism should be define when the tool eventualy reach this point.
-
-1. Generating an additional slurm_api_client, if the target version is not supported by the current one.
-2. Creating a new client wrapper VXXSlurmAPIClientWrapper
-3. Create the correspondign YAML files (these could be based on the existing ones)
-4. Implement the methods accordingly
-
-
-
-args_to_payload_mapper -> pre-process the dictionary given by argparse. 
-
+8. After rebuilding the package (`pip install .`), the new command should now be available.
