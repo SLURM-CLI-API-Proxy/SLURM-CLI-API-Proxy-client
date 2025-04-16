@@ -40,7 +40,8 @@ class CommandEvaluator(ABC):
         so that these can be used by the corresponding method, on the slurm_cli_wrapper, that
         performs the required request to the SLURM API.
 
-        This method is not intended to be invoked directly. 
+        This method is not intended to be invoked directly. It is indirectly invoked when using 
+        the eval_command method.
 
         Args:
             slurm_cli_wrapper (SlurmAPIClientWrapper): An instance of the SLURM API client wrapper 
