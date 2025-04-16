@@ -24,7 +24,7 @@
 
 SLURM CLI-API Proxy client is a tool designed to bridge existing applications and scripts that rely on the SLURM CLI. The tool mimics a selection of SLURM CLI commands, translating them into REST API calls, enabling seamless integration of existing tools with external SLURM workload managers. 
 
-Due to the extensive range of optional SLURM command arguments, only a limited subset is supported. However, the tool is designed for flexibility—the support to new arguments can be easily enabled by mapping them to the corresponding API request parameters or payload properties. Additionally, the design prioritizes extensibility, allowing support for alternative SLURM API versions (currently working with v0.0.39). The [developers documentation](https://slurm-cli-api-proxy.github.io/SLURM-CLI-API-Proxy-client/) detailing these design elements is still a work in progress.
+Due to the extensive range of optional SLURM command arguments, only a limited subset is supported. However, the tool is designed for flexibility—the support to new arguments can be easily enabled by mapping them to the corresponding API request parameters or payload properties. Additionally, the design prioritizes extensibility, allowing support for alternative SLURM API versions (currently working with v0.0.39). The [developers documentation](https://slurm-cli-api-proxy.github.io/SLURM-CLI-API-Proxy-client/) provides further details on these design elements.
 
 
 
