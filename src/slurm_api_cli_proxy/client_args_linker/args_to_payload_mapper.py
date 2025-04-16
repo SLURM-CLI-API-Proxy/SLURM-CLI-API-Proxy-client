@@ -93,8 +93,10 @@ def args_to_sbatch_request_payload(script_content:str,cmd_args_dict:dict,sbatch_
 
 def args_to_parameters_dict(command_args_dict:dict)->dict:
     """
-    Get a dictionary with the arguments given in the CLI
-
+    Transform the dictionary created by argparse to one with the
+    original argument names (argparse removes the first two dashes and
+    replace the in-between ones with underscores).
+    
     Args:
         cmd_args_dict : a dictionary with the squeue arguments parsed from the CLI, using the
             naming conventions of argparse (--job-name -> job_name).    
