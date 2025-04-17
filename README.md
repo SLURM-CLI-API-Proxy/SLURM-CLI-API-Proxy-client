@@ -127,7 +127,7 @@ scontrol release 209
 
 🚧 Release notice* 🚧
 
-Only `sbatch` and `squeue` and `scontrol` commands have been implemented, with a limited number of arguments. However, the tool is designed in a way that new arguments can be integrated as these are needed. This requires only to specify a mapping between the value given to the new argument and the property sent on the payload of the corresponding API request. More details on this will be available on the [developer's documentation](https://slurm-cli-api-proxy.github.io/SLURM-CLI-API-Proxy-client/).
+Only `sbatch` and `squeue` and `scontrol` commands have been implemented, with a limited number of arguments. However, the tool is designed in a way that new arguments can be integrated as these are needed. This requires only to specify a mapping between the value given to the new argument and the property sent on the payload of the corresponding API request. More details on this are available on the [developer's documentation](https://slurm-cli-api-proxy.github.io/SLURM-CLI-API-Proxy-client/).
 
 If you encounter issues or have feedback, please report them through the project's issue tracker.
 
