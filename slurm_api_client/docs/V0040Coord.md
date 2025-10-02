@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**name** | **str** |  | 
-**direct** | **bool** |  | [optional] 
+**name** | **str** | User name | 
+**direct** | **bool** | Indicates whether the coordinator was directly assigned to this account | [optional] 
 
 ## Example
 

@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**time_end** | **int** |  | [optional] 
-**time_start** | **int** |  | [optional] 
+**time_end** | **int** | When the instance will end (UNIX timestamp) | [optional] 
+**time_start** | **int** | When the instance will start (UNIX timestamp) | [optional] 
 
 ## Example
 

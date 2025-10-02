@@ -1,6 +1,6 @@
 from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SlurmAPIClientWrapper, ApiClientException, SlurmCommandResponse
 from slurm_api_cli_proxy.client_args_linker.constants import slurm_statuses
-from openapi_client.models.v0039_error import V0039Error
+from openapi_client.models.v0043_openapi_error import V0043OpenapiError
 from typing import List
 import openapi_client
 

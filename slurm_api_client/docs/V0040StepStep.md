@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | **str** | Slurm Job StepId | [optional] 
-**name** | **str** |  | [optional] 
+**id** | **str** | Slurm Job Step ID | [optional] 
+**name** | **str** | Step name | [optional] 
 
 ## Example
 

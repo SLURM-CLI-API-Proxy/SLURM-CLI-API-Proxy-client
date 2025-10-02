@@ -203,25 +203,25 @@ class SinfoEvaluator(CommandEvaluator):
 def sbatch():
 
     eval = SbatchEvaluator()
-    eval.eval_command(config_file_path='mappings/sbatch_mappings_r23.11_v0.0.39.yaml',include_input_file_arg=True)
+    eval.eval_command(config_file_path='mappings/sbatch_mappings_r25.05_v0.0.43.yaml',include_input_file_arg=True)
 
 
 def squeue():
 
     eval = SqueueEvaluator()
-    eval.eval_command(config_file_path='mappings/squeue_mappings_r23.11_v0.0.39.yaml')    
+    eval.eval_command(config_file_path='mappings/squeue_mappings_r25.05_v0.0.43.yaml')    
 
 
 def scontrol():
 
     eval = ScontrolEvaluator()
-    eval.eval_command(config_file_path='mappings/scontrol_mappings_r23.11_v0.0.39.yaml')    
+    eval.eval_command(config_file_path='mappings/scontrol_mappings_r25.05_v0.0.43.yaml')    
 
 
 def sinfo():
 
     eval = SinfoEvaluator()
-    eval.eval_command(config_file_path='mappings/sinfo_mappings_r23.11_v0.0.39.yaml')    
+    eval.eval_command(config_file_path='mappings/sinfo_mappings_r25.05_v0.0.43.yaml')    
     
 
 

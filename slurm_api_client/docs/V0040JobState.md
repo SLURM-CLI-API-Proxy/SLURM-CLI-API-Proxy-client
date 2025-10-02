@@ -6,7 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **current** | **List[str]** |  | [optional] 
-**reason** | **str** |  | [optional] 
+**reason** | **str** | Reason for previous Pending or Failed state | [optional] 
 
 ## Example
 

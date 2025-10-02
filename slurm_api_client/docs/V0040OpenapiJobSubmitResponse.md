@@ -6,9 +6,9 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **result** | [**V0040JobSubmitResponseMsg**](V0040JobSubmitResponseMsg.md) |  | [optional] 
-**job_id** | **int** | submited JobId | [optional] 
-**step_id** | **str** | submited StepID | [optional] 
-**job_submit_user_msg** | **str** | job submision user message | [optional] 
+**job_id** | **int** | Submitted Job ID | [optional] 
+**step_id** | **str** | Submitted Step ID | [optional] 
+**job_submit_user_msg** | **str** | job submission user message | [optional] 
 **meta** | [**V0040OpenapiMeta**](V0040OpenapiMeta.md) |  | [optional] 
 **errors** | [**List[V0040OpenapiError]**](V0040OpenapiError.md) |  | [optional] 
 **warnings** | [**List[V0040OpenapiWarning]**](V0040OpenapiWarning.md) |  | [optional] 

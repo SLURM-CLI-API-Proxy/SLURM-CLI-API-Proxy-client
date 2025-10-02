@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**factor** | **float** | fairshare factor | [optional] 
-**level** | **float** | fairshare factor at this level. stored on an assoc as a long double, but that is not needed for display in sshare | [optional] 
+**factor** | **float** | Fairshare factor | [optional] 
+**level** | **float** | Fairshare factor at this level; stored on an assoc as a long double, but that is not needed for display in sshare | [optional] 
 
 ## Example
 

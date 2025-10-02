@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**hostname** | **str** |  | [optional] 
-**pinged** | **str** |  | [optional] 
-**latency** | **int** |  | [optional] 
-**mode** | **str** |  | [optional] 
+**hostname** | **str** | Target for ping | [optional] 
+**pinged** | **str** | Ping result | [optional] 
+**latency** | **int** | Number of microseconds it took to successfully ping or timeout | [optional] 
+**mode** | **str** | The operating mode of the responding slurmctld | [optional] 
 
 ## Example
 

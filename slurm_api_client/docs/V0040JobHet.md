@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**job_id** | **int** |  | [optional] 
+**job_id** | **int** | Heterogeneous job ID, if applicable | [optional] 
 **job_offset** | [**V0040Uint32NoVal**](V0040Uint32NoVal.md) |  | [optional] 
 
 ## Example

@@ -6,22 +6,22 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **accounting** | [**List[V0040Accounting]**](V0040Accounting.md) |  | [optional] 
-**account** | **str** |  | [optional] 
-**cluster** | **str** |  | [optional] 
-**comment** | **str** | comment for the association | [optional] 
-**default** | [**V0039AssocDefault**](V0039AssocDefault.md) |  | [optional] 
+**account** | **str** | Account | [optional] 
+**cluster** | **str** | Cluster name | [optional] 
+**comment** | **str** | Arbitrary comment | [optional] 
+**default** | [**V0040AssocDefault**](V0040AssocDefault.md) |  | [optional] 
 **flags** | **List[str]** |  | [optional] 
 **max** | [**V0040AssocMax**](V0040AssocMax.md) |  | [optional] 
 **id** | [**V0040AssocShort**](V0040AssocShort.md) |  | [optional] 
-**is_default** | **bool** |  | [optional] 
+**is_default** | **bool** | Is default association for user | [optional] 
 **lineage** | **str** | Complete path up the hierarchy to the root association | [optional] 
 **min** | [**V0040AssocMin**](V0040AssocMin.md) |  | [optional] 
-**parent_account** | **str** |  | [optional] 
-**partition** | **str** |  | [optional] 
+**parent_account** | **str** | Name of parent account | [optional] 
+**partition** | **str** | Partition name | [optional] 
 **priority** | [**V0040Uint32NoVal**](V0040Uint32NoVal.md) |  | [optional] 
 **qos** | **List[str]** | List of QOS names | [optional] 
-**shares_raw** | **int** |  | [optional] 
-**user** | **str** |  | 
+**shares_raw** | **int** | Allocated shares used for fairshare calculation | [optional] 
+**user** | **str** | User name | 
 
 ## Example
 

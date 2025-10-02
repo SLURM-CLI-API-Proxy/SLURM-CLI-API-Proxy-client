@@ -6,9 +6,9 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **results** | [**List[V0040JobArrayResponseMsgEntry]**](V0040JobArrayResponseMsgEntry.md) |  | [optional] 
-**job_id** | **str** | First updated JobId - Use results instead | [optional] 
-**step_id** | **str** | First updated StepID - Use results instead | [optional] 
-**job_submit_user_msg** | **str** | First updated Job submision user message - Use results instead | [optional] 
+**job_id** | **str** | First updated Job ID - Use results instead | [optional] 
+**step_id** | **str** | First updated Step ID - Use results instead | [optional] 
+**job_submit_user_msg** | **str** | First updated Job submission user message - Use results instead | [optional] 
 **meta** | [**V0040OpenapiMeta**](V0040OpenapiMeta.md) |  | [optional] 
 **errors** | [**List[V0040OpenapiError]**](V0040OpenapiError.md) |  | [optional] 
 **warnings** | [**List[V0040OpenapiWarning]**](V0040OpenapiWarning.md) |  | [optional] 

@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**adminlevel** | **List[str]** | Admin level of user.  Valid levels are None, Operator, and Admin. | [optional] 
-**defaultaccount** | **str** | Identify the default bank account name to be used for a job if none is specified at submission time. | [optional] 
-**defaultwckey** | **str** | Identify the default Workload Characterization Key. | [optional] 
+**adminlevel** | **List[str]** |  | [optional] 
+**defaultaccount** | **str** | Default account | [optional] 
+**defaultwckey** | **str** | Default WCKey | [optional] 
 
 ## Example
 

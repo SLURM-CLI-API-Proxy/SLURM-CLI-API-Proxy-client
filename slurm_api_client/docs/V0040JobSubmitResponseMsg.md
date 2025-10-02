@@ -5,11 +5,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**job_id** | **int** |  | [optional] 
-**step_id** | **str** |  | [optional] 
-**error_code** | **int** |  | [optional] 
-**error** | **str** |  | [optional] 
-**job_submit_user_msg** | **str** |  | [optional] 
+**job_id** | **int** | New job ID | [optional] 
+**step_id** | **str** | New job step ID | [optional] 
+**error_code** | **int** | Error code | [optional] 
+**error** | **str** | Error message | [optional] 
+**job_submit_user_msg** | **str** | Message to user from job_submit plugin | [optional] 
 
 ## Example
 

@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**count** | **int** |  | [optional] 
-**range** | **str** |  | [optional] 
+**count** | **int** | Number of nodes in the job step | [optional] 
+**range** | **str** | Node(s) allocated to the job step | [optional] 
 **list** | **List[str]** |  | [optional] 
 
 ## Example

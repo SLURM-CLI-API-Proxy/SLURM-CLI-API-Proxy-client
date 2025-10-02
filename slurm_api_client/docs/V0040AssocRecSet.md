@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**comment** | **str** | Comment for the association | [optional] 
-**defaultqos** | **str** | Which QOS id is this association default | [optional] 
+**comment** | **str** | Arbitrary comment | [optional] 
+**defaultqos** | **str** | Default QOS | [optional] 
 **grpjobs** | [**V0040Uint32NoVal**](V0040Uint32NoVal.md) |  | [optional] 
 **grpjobsaccrue** | [**V0040Uint32NoVal**](V0040Uint32NoVal.md) |  | [optional] 
 **grpsubmitjobs** | [**V0040Uint32NoVal**](V0040Uint32NoVal.md) |  | [optional] 
@@ -26,7 +26,7 @@ Name | Type | Description | Notes
 **parent** | **str** | Name of parent account | [optional] 
 **priority** | [**V0040Uint32NoVal**](V0040Uint32NoVal.md) |  | [optional] 
 **qoslevel** | **List[str]** | List of QOS names | [optional] 
-**fairshare** | **int** | Number of shares allocated to this association | [optional] 
+**fairshare** | **int** | Allocated shares used for fairshare calculation | [optional] 
 
 ## Example
 

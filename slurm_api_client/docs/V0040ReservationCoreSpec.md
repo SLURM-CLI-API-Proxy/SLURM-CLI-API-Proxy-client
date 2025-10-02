@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**node** | **str** |  | [optional] 
-**core** | **str** |  | [optional] 
+**node** | **str** | Name of reserved node | [optional] 
+**core** | **str** | IDs of reserved cores | [optional] 
 
 ## Example
 

@@ -6,7 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **requested_frequency** | [**V0040StepCPURequestedFrequency**](V0040StepCPURequestedFrequency.md) |  | [optional] 
-**governor** | **str** |  | [optional] 
+**governor** | **str** | Requested CPU frequency governor in kHz | [optional] 
 
 ## Example
 

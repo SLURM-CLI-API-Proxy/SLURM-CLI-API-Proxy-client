@@ -5,11 +5,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**account** | **str** | Association account (if assigned) | [optional] 
-**cluster** | **str** | Association cluster (if assigned) | [optional] 
-**partition** | **str** | Association partition (if assigned) | [optional] 
-**user** | **str** | Assocation user (if assigned) | 
-**id** | **int** | Numeric Association ID (if known) | [optional] 
+**account** | **str** | Account | [optional] 
+**cluster** | **str** | Cluster | [optional] 
+**partition** | **str** | Partition | [optional] 
+**user** | **str** | User name | 
+**id** | **int** | Numeric association ID | [optional] 
 
 ## Example
 
