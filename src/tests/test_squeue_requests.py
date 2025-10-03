@@ -14,10 +14,10 @@ class ApiRequestsTest(unittest.TestCase):
     squeue_test_param_mappings = {
         "mapping_meta": {
             "command": "squeue",
-            "api_version": "0.0.39",
-            "wlm_release": "23.11",
-            "wrapper_package": "slurm_api_cli_proxy.client_args_linker.v39.slurm_api_client_wrapper_v39",
-            "wrapper_class": "V39SlurmAPIClientWrapper"
+            "api_version": "0.0.43",
+            "wlm_release": "25.05",
+            "wrapper_package": "slurm_api_cli_proxy.client_args_linker.v43.slurm_api_client_wrapper_v43",
+            "wrapper_class": "V43SlurmAPIClientWrapper"
         },
         "parameters": [
             {

@@ -16,7 +16,6 @@ def test_format_squeue_output():
         end_time= V0043Uint64NoValStruct(number=now),
         job_resources=V0043JobRes(
             nodes=V0043JobResNodes(count=1, list="node1"))
-
     )
 
     result = format_squeue_output([job_info], default, user_filter=None)

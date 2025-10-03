@@ -14,7 +14,7 @@ def get_M_format_value(job):
     end_time = job.end_time
 
     if end_time and start_time:
-        duration = timedelta(seconds=int(end_time - start_time))
+        duration = timedelta(seconds=int(end_time.number - start_time.number))
         return format_duration(duration)
     else:
         return ''
@@ -57,7 +57,7 @@ type_map = {
   "D": {
     "descr": "Number of nodes allocated to the job or the minimum number of nodes required by a pending job.",
     "head": "NODES",
-    "method": lambda job: job.job_resources.allocated_hosts,
+    "method": lambda job: job.job_resources.nodes.count,
   },
   "i": {
     "descr": "Job id. Here, synonymous with %A.",
@@ -102,12 +102,12 @@ type_map = {
   "R": {
     "descr": "For pending jobs. The reason a job has not been started by the scheduler is printed within parenthesis.",
     "head": "NODELIST(REASON)",
-    "method": lambda job: job.job_resources.nodes,
+    "method": lambda job: job.job_resources.nodes.list,
   },
   "t": {
     "descr": "Job state in compact form. (Valid for jobs only)",
     "head": "ST",
-    "method": lambda job: slurm_statuses[job.job_state].rjust(2),
+    "method": lambda job: slurm_statuses[job.job_state[0]].rjust(2),
   },
   "T": {
     "descr": "Job state in extended form. (Valid for jobs only)",
