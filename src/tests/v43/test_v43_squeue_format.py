@@ -11,11 +11,15 @@ def test_format_squeue_output():
         partition="partition1",
         name="test_job",
         user_name="user1",
-        job_state="RUNNING",
+        job_state=["RUNNING"],
         start_time= V0043Uint64NoValStruct(number=(now - 1800)), # 30 min ago
         end_time= V0043Uint64NoValStruct(number=now),
         job_resources=V0043JobRes(
-            nodes=V0043JobResNodes(count=1, list="node1"))
+            nodes=V0043JobResNodes(count=1, list="node1"),
+            select_type=["CPU"],
+            cpus=int(1),
+            threads_per_core=V0043Uint16NoValStruct(number=1)
+        )
     )
 
     result = format_squeue_output([job_info], default, user_filter=None)
@@ -70,7 +74,7 @@ def test_parse_default_format_string():
   assert table_layout[0]['suffix'] == '', "First column should have empty suffix"
   assert table_layout[0]['spacer'] == ' ', "First column should have one space as a spacer"
 
-  assert table_layout[7]['head'] == 'NODELIST(REASON)', f"Last column name should be JOBID"
+  assert table_layout[7]['head'] == 'NODELIST(REASON)', f"Last column name should be NODELIST(REASON)"
   assert table_layout[7]['align_right'] == False, "Last column should not align to the right"
   assert table_layout[7]['width'] == 0, "Last column should define a column-width of 0"
   assert table_layout[7]['suffix'] == '', "Last column should have empty suffix"

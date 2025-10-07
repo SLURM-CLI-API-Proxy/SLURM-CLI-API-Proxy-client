@@ -1,7 +1,7 @@
 import pytest
 import json
-from slurm_api_cli_proxy.client_args_linker.v43.slurm_api_client_wrapper_v43 import V43SlurmAPIClientWrapper
-from openapi_client.models.v0043_job_res import V0043JobRes
+from slurm_api_cli_proxy.client_args_linker.v43.slurm_api_client_wrapper_v43 import V43SlurmAPIClientWrapper, V0043Uint16NoValStruct, V0043Uint64NoValStruct
+from openapi_client.models.v0043_job_res import V0043JobRes, V0043JobResNodes
 from openapi_client.models.v0043_openapi_job_info_resp import V0043OpenapiJobInfoResp
 from openapi_client.models.v0043_job_info import V0043JobInfo
 import slurm_api_cli_proxy.client_args_linker.v43.squeue_format as squeue_format
@@ -9,6 +9,8 @@ import slurm_api_cli_proxy.client_args_linker.v43.squeue_format as squeue_format
 class MockJobsResponse(V0043OpenapiJobInfoResp):
     mock_to_json_output:str|None = None
     jobs:list[V0043JobInfo] = []
+    last_backfill:V0043Uint64NoValStruct = V0043Uint64NoValStruct(number=2, set=True, infinite=False)
+    last_update:V0043Uint64NoValStruct = V0043Uint64NoValStruct(number=60, set=True, infinite=False)
 
     def to_json(self):
         return self.mock_to_json_output
@@ -29,28 +31,37 @@ def test_process_squeue_output_json():
         pytest.fail("Remaining response should still be valid json.")
 
 def test_process_squeue_output_user_filter():
-   cli_params = {
-      "--user": "one-user",
-      "--json": False,
-      "--format": "%u"
-   }
-   response = MockJobsResponse()
-   my_job = V0043JobInfo()
-   my_job.user_name = "one-user"
-   my_job.job_resources = V0043JobRes()
+    cli_params = {
+        "--user": "one-user",
+        "--json": False,
+        "--format": "%u"
+    }
+    response = MockJobsResponse()
+    my_job = V0043JobInfo()
+    my_job.user_name = "one-user"
+    my_job.job_resources = V0043JobRes(
+        nodes=V0043JobResNodes(count=1, list="node1"),
+        select_type=["CPU"],
+        cpus=int(1),
+        threads_per_core=V0043Uint16NoValStruct(number=1)
+    )
 
-   other_job = V0043JobInfo()
-   other_job.user_name = "other-user"
-   other_job.job_resources = V0043JobRes()
+    other_job = V0043JobInfo()
+    other_job.user_name = "other-user"
+    other_job.job_resources = V0043JobRes(
+        nodes=V0043JobResNodes(count=1, list="node2"),
+        select_type=["CPU"],
+        cpus=int(1),
+        threads_per_core=V0043Uint16NoValStruct(number=1)
+    )
+    response.jobs = [my_job, other_job]
 
-   response.jobs = [my_job, other_job]
+    result = V43SlurmAPIClientWrapper.process_squeue_output(cli_params, response)
+    lines = result.split("\n")
 
-   result = V43SlurmAPIClientWrapper.process_squeue_output(cli_params, response)
-   lines = result.split("\n")
-
-   assert len([line for line in lines if len(line)>0]) == 2, "Should contain 2 lines: the table header and one job info line."
-   info_line = lines[1]
-   assert "one-user" in info_line, "The job in the output should be of the give user, not the other one."
+    assert len([line for line in lines if len(line)>0]) == 2, "Should contain 2 lines: the table header and one job info line."
+    info_line = lines[1]
+    assert "one-user" in info_line, "The job in the output should be of the give user, not the other one."
 
 
 def test_process_squeue_output_format_default():
@@ -91,6 +102,7 @@ def test_process_squeue_output_format_steps():
         "--json": False,
     }
     response = MockJobsResponse()
+
     result = V43SlurmAPIClientWrapper.process_squeue_output(cli_params, response)
     assert "JOBID" in result, "Steps format should contain job id."
     assert "NAME" in result, "Steps format should contain job name."
@@ -106,6 +118,7 @@ def test_process_squeue_output_format_galaxy():
         "--json": False,
     }
     response = MockJobsResponse()
+
     result = V43SlurmAPIClientWrapper.process_squeue_output(cli_params, response)
     assert "JOBID" in result, "Galaxy Pulsar format should contain job id."
     assert "ST" in result, "Galaxy Pulsar format should contain short state."
@@ -117,6 +130,7 @@ def test_process_squeue_output_format_arvados():
         "--json": False,
     }
     response = MockJobsResponse()
+
     result = V43SlurmAPIClientWrapper.process_squeue_output(cli_params, response)
     assert "NAME" in result, "Galaxy Pulsar format should contain job name."
     assert "NICE" in result, "Galaxy Pulsar format should contain nice priority."

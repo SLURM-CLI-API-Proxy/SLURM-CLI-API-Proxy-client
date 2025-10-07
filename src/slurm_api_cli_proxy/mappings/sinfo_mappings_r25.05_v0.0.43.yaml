@@ -1,6 +1,6 @@
 # squeue proxy mapping configuration for the SLURM WLM release 25.05 and slumrestd API version 0.0.43
 # the api_mapping/request_property entries must correspond with the arguments of the
-# slurmdb_v0039_get_jobs function generated from the OpenAPI specification.
+# slurmdb_v0043_get_jobs function generated from the OpenAPI specification.
 
 mapping_meta:
   command: sinfo
