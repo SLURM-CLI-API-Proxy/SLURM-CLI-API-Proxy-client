@@ -28,6 +28,7 @@ import time
 import pprint
 import slurm_api_cli_proxy.client_args_linker.v43.squeue_format as sqf
 from openapi_client.models.v0043_openapi_partition_resp import V0043OpenapiPartitionResp
+from openapi_client.models.v0043_partition_info import V0043PartitionInfo
 from openapi_client.models.v0043_partition_info_nodes import V0043PartitionInfoNodes
 from openapi_client.models.v0043_openapi_partition_resp import V0043OpenapiPartitionResp
 
