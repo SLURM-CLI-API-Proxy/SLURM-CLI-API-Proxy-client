@@ -33,7 +33,7 @@ jobs:
       - name: Start Slurm Container and run pytest
         run: |
           echo "Starting slurm test container"
-          nohup docker run -p 10022:22  -p 6821:6820 --name testslurm --privileged  ghcr.io/xenon-middleware/slurm:24 -d &
+          nohup docker run -p 10022:22  -p 6821:6820 --name testslurm --privileged  ghcr.io/xenon-middleware/slurm:25 -d &
           pid=$!
           
           # Wait for container to become healthy
