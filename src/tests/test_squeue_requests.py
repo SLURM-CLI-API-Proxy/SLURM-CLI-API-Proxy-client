@@ -45,7 +45,7 @@ class ApiRequestsTest(unittest.TestCase):
     def test_squeue_get_request(self):
                 
         configuration = openapi_client.Configuration(
-            host = "http://localhost:6821"
+            host = "http://localhost:6820"
         )
 
         cli_to_json_mappings = CliToJsonPayloadMappings(config_mapping_dict=self.squeue_test_param_mappings)
@@ -61,7 +61,7 @@ class ApiRequestsTest(unittest.TestCase):
 
         slurm_jwt = os.environ["SLURM_JWT"]
         
-        response = slurm_cli_wrapper.squeue_get_request(request_args, configuration,slurm_jwt)
+        response = slurm_cli_wrapper.squeue_get_request(request_args, configuration, slurm_jwt)
 
         assert response.output.lstrip().startswith("JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)")
 

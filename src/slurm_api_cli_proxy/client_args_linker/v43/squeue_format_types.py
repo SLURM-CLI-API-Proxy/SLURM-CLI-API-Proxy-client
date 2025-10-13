@@ -57,7 +57,7 @@ type_map = {
   "D": {
     "descr": "Number of nodes allocated to the job or the minimum number of nodes required by a pending job.",
     "head": "NODES",
-    "method": lambda job: job.job_resources.nodes.count,
+    "method": lambda job: job.job_resources.nodes.count if job.job_resources else '',
   },
   "i": {
     "descr": "Job id. Here, synonymous with %A.",
@@ -82,7 +82,7 @@ type_map = {
   "N": {
     "descr": "List of nodes allocated to the job or job step.",
     "head": "NODELIST",
-    "method": lambda job: job.job_resources.nodes.list,
+    "method": lambda job: job.job_resources.nodes.list if job.job_resources else '',
   },
   "P": {
     "descr": "Partition of the job or job step.",
@@ -102,7 +102,7 @@ type_map = {
   "R": {
     "descr": "For pending jobs. The reason a job has not been started by the scheduler is printed within parenthesis.",
     "head": "NODELIST(REASON)",
-    "method": lambda job: job.job_resources.nodes.list,
+    "method": lambda job: job.job_resources.nodes.list if job.job_resources else '',
   },
   "t": {
     "descr": "Job state in compact form. (Valid for jobs only)",

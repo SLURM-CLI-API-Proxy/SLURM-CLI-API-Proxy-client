@@ -66,8 +66,6 @@ def _apply_table_layout(jobs, table_layout, user_filter):
     for job in jobs:
         if user_filter and job.user_name != user_filter:
             continue
-        if job.job_resources is None:
-            raise ValueError(f"Unexpected 'None' value for job {job} resources")
 
         job_row = ''
         for column in table_layout:

@@ -14,7 +14,7 @@ if [ -n "$CONTAINER_ID" ]; then
 else
     echo "Starting slurm test container"
     #Dockerized slurm server from the xenon-middleware project.
-    docker run -p 10022:22  -p 6821:6820 --name testslurm --privileged  ghcr.io/xenon-middleware/slurm:23 -d &
+    docker run -p 10022:22  -p 6821:6820 --name testslurm --privileged  ghcr.io/xenon-middleware/slurm:25 -d &
 
     # Wait for container to become healthy
     while ! docker exec testslurm scontrol ping > /dev/null 2>&1; do

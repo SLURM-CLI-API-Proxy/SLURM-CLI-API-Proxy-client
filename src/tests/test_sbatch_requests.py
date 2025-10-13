@@ -69,7 +69,7 @@ class ApiRequestsTest(unittest.TestCase):
         
         
         configuration = openapi_client.Configuration(
-            host = "http://localhost:6821"
+            host = "http://localhost:6820"
         )
 
         job_request = {
