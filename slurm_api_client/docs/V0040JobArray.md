@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**job_id** | **int** |  | [optional] 
-**limits** | [**V0039JobArrayLimits**](V0039JobArrayLimits.md) |  | [optional] 
+**job_id** | **int** | Job ID of job array, or 0 if N/A | [optional] 
+**limits** | [**V0040JobArrayLimits**](V0040JobArrayLimits.md) |  | [optional] 
 **task_id** | [**V0040Uint32NoVal**](V0040Uint32NoVal.md) |  | [optional] 
-**task** | **str** |  | [optional] 
+**task** | **str** | String expression of task IDs in this record | [optional] 
 
 ## Example
 

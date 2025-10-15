@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**time_start** | **int** |  | [optional] 
-**rollups** | [**List[V0039RollupStatsInner]**](V0039RollupStatsInner.md) | list of recorded rollup statistics | [optional] 
+**time_start** | **int** | When data collection started (UNIX timestamp) | [optional] 
+**rollups** | [**List[V0040RollupStatsInner]**](V0040RollupStatsInner.md) | list of recorded rollup statistics | [optional] 
 **rpcs** | [**List[V0040StatsRpc]**](V0040StatsRpc.md) |  | [optional] 
 **users** | [**List[V0040StatsUser]**](V0040StatsUser.md) |  | [optional] 
 

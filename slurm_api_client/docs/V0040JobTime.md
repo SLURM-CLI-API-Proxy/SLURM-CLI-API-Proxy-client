@@ -5,16 +5,16 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**elapsed** | **int** |  | [optional] 
-**eligible** | **int** |  | [optional] 
-**end** | **int** |  | [optional] 
-**start** | **int** |  | [optional] 
-**submission** | **int** |  | [optional] 
-**suspended** | **int** |  | [optional] 
-**system** | [**V0039JobTimeSystem**](V0039JobTimeSystem.md) |  | [optional] 
+**elapsed** | **int** | Elapsed time in seconds | [optional] 
+**eligible** | **int** | Time when the job became eligible to run (UNIX timestamp) | [optional] 
+**end** | **int** | End time (UNIX timestamp) | [optional] 
+**start** | **int** | Time execution began (UNIX timestamp) | [optional] 
+**submission** | **int** | Time when the job was submitted (UNIX timestamp) | [optional] 
+**suspended** | **int** | Total time in suspended state in seconds | [optional] 
+**system** | [**V0040JobTimeSystem**](V0040JobTimeSystem.md) |  | [optional] 
 **limit** | [**V0040Uint32NoVal**](V0040Uint32NoVal.md) |  | [optional] 
-**total** | [**V0039JobTimeSystem**](V0039JobTimeSystem.md) |  | [optional] 
-**user** | [**V0039JobTimeSystem**](V0039JobTimeSystem.md) |  | [optional] 
+**total** | [**V0040JobTimeTotal**](V0040JobTimeTotal.md) |  | [optional] 
+**user** | [**V0040JobTimeUser**](V0040JobTimeUser.md) |  | [optional] 
 
 ## Example
 

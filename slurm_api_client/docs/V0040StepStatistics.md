@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**cpu** | [**V0039StepStatisticsCPU**](V0039StepStatisticsCPU.md) |  | [optional] 
+**cpu** | [**V0040StepStatisticsCPU**](V0040StepStatisticsCPU.md) |  | [optional] 
 **energy** | [**V0040StepStatisticsEnergy**](V0040StepStatisticsEnergy.md) |  | [optional] 
 
 ## Example

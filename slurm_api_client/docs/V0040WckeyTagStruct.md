@@ -6,7 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **wckey** | **str** | WCKey name | 
-**flags** | **List[str]** | Active flags | 
+**flags** | **List[str]** |  | 
 
 ## Example
 

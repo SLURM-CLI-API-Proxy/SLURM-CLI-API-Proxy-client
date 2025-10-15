@@ -5,18 +5,18 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**comment** | **str** | arbitrary comment | [optional] 
-**cpu_bind** | **int** | default CPU binding type | [optional] 
-**extra** | **str** | arbitrary string | [optional] 
+**comment** | **str** | Arbitrary comment | [optional] 
+**cpu_bind** | **int** | Default method for binding tasks to allocated CPUs | [optional] 
+**extra** | **str** | Arbitrary string used for node filtering if extra constraints are enabled | [optional] 
 **features** | **List[str]** |  | [optional] 
 **features_act** | **List[str]** |  | [optional] 
-**gres** | **str** | new generic resources for node | [optional] 
+**gres** | **str** | Generic resources | [optional] 
 **address** | **List[str]** |  | [optional] 
 **hostname** | **List[str]** |  | [optional] 
 **name** | **List[str]** |  | [optional] 
-**state** | **List[str]** | assign new node state | [optional] 
-**reason** | **str** | reason for node being DOWN or DRAINING | [optional] 
-**reason_uid** | **str** | user ID of sending (needed if user root is sending message) | [optional] 
+**state** | **List[str]** |  | [optional] 
+**reason** | **str** | Reason for node being DOWN or DRAINING | [optional] 
+**reason_uid** | **str** | User ID to associate with the reason (needed if user root is sending message) | [optional] 
 **resume_after** | [**V0040Uint32NoVal**](V0040Uint32NoVal.md) |  | [optional] 
 **weight** | [**V0040Uint32NoVal**](V0040Uint32NoVal.md) |  | [optional] 
 

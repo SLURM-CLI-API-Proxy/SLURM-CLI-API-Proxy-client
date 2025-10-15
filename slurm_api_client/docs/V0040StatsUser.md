@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**user** | **str** |  | [optional] 
-**count** | **int** |  | [optional] 
-**time** | [**V0039StatsRpcTime**](V0039StatsRpcTime.md) |  | [optional] 
+**user** | **str** | User ID | [optional] 
+**count** | **int** | Number of RPCs processed | [optional] 
+**time** | [**V0040StatsRpcTime**](V0040StatsRpcTime.md) |  | [optional] 
 
 ## Example
 

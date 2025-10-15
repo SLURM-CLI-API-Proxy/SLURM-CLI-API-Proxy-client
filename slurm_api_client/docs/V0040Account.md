@@ -7,9 +7,9 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **associations** | [**List[V0040AssocShort]**](V0040AssocShort.md) |  | [optional] 
 **coordinators** | [**List[V0040Coord]**](V0040Coord.md) |  | [optional] 
-**description** | **str** |  | 
-**name** | **str** |  | 
-**organization** | **str** |  | 
+**description** | **str** | Arbitrary string describing the account | 
+**name** | **str** | Account name | 
+**organization** | **str** | Organization to which the account belongs | 
 **flags** | **List[str]** |  | [optional] 
 
 ## Example

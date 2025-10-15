@@ -5,13 +5,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**controller** | [**V0039ClusterRecController**](V0039ClusterRecController.md) |  | [optional] 
+**controller** | [**V0040ClusterRecController**](V0040ClusterRecController.md) |  | [optional] 
 **flags** | **List[str]** |  | [optional] 
-**name** | **str** |  | [optional] 
-**nodes** | **str** |  | [optional] 
+**name** | **str** | ClusterName | [optional] 
+**nodes** | **str** | Node names | [optional] 
 **select_plugin** | **str** |  | [optional] 
 **associations** | [**V0040ClusterRecAssociations**](V0040ClusterRecAssociations.md) |  | [optional] 
-**rpc_version** | **int** |  | [optional] 
+**rpc_version** | **int** | RPC version used in the cluster | [optional] 
 **tres** | [**List[V0040Tres]**](V0040Tres.md) |  | [optional] 
 
 ## Example

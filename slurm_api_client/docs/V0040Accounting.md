@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**allocated** | [**V0039AccountingAllocated**](V0039AccountingAllocated.md) |  | [optional] 
-**id** | **int** |  | [optional] 
-**start** | **int** |  | [optional] 
+**allocated** | [**V0040AccountingAllocated**](V0040AccountingAllocated.md) |  | [optional] 
+**id** | **int** | Association ID or Workload characterization key ID | [optional] 
+**start** | **int** | When the record was started | [optional] 
 **tres** | [**V0040Tres**](V0040Tres.md) |  | [optional] 
 
 ## Example

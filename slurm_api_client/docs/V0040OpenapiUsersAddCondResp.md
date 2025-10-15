@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**association_condition** | [**V0040UsersAddCond**](V0040UsersAddCond.md) |  | [optional] 
-**user** | [**V0040UserShort**](V0040UserShort.md) |  | [optional] 
+**association_condition** | [**V0040UsersAddCond**](V0040UsersAddCond.md) |  | 
+**user** | [**V0040UserShort**](V0040UserShort.md) |  | 
 **meta** | [**V0040OpenapiMeta**](V0040OpenapiMeta.md) |  | [optional] 
 **errors** | [**List[V0040OpenapiError]**](V0040OpenapiError.md) |  | [optional] 
 **warnings** | [**List[V0040OpenapiWarning]**](V0040OpenapiWarning.md) |  | [optional] 

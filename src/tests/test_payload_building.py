@@ -13,11 +13,11 @@ class PayloadBuildTest(unittest.TestCase):
     sbatch_test_param_mappings = {
         "mapping_meta": {
             "command": "sbatch",
-            "api_version": "0.0.39",
-            "api_client_payload_class": "V0039JobSubmission",
-            "wlm_release": "23.11",
-            "wrapper_package": "slurm_api_cli_proxy.client_args_linker.v39.slurm_api_client_wrapper_v39",
-            "wrapper_class": "V39SlurmAPIClientWrapper"
+            "api_version": "0.0.43",
+            "api_client_payload_class": "V0043JobSubmitReq",
+            "wlm_release": "25.05",
+            "wrapper_package": "slurm_api_cli_proxy.client_args_linker.v43.slurm_api_client_wrapper_v43",
+            "wrapper_class": "V43SlurmAPIClientWrapper"
         },
         "parameters": [
             {

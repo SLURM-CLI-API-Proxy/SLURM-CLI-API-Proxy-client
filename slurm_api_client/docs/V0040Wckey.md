@@ -6,10 +6,10 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **accounting** | [**List[V0040Accounting]**](V0040Accounting.md) |  | [optional] 
-**cluster** | **str** |  | 
-**id** | **int** |  | [optional] 
-**name** | **str** |  | 
-**user** | **str** |  | 
+**cluster** | **str** | Cluster name | 
+**id** | **int** | Unique ID for this user-cluster-wckey combination | [optional] 
+**name** | **str** | WCKey name | 
+**user** | **str** | User name | 
 **flags** | **List[str]** |  | [optional] 
 
 ## Example

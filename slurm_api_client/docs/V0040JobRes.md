@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**nodes** | **str** |  | [optional] 
-**allocated_cores** | **int** |  | [optional] 
-**allocated_cpus** | **int** |  | [optional] 
-**allocated_hosts** | **int** |  | [optional] 
+**nodes** | **str** | Node(s) allocated to the job | [optional] 
+**allocated_cores** | **int** | Number of allocated cores | [optional] 
+**allocated_cpus** | **int** | Number of allocated CPUs | [optional] 
+**allocated_hosts** | **int** | Number of allocated hosts | [optional] 
 **allocated_nodes** | **List[object]** | job node resources | [optional] 
 
 ## Example

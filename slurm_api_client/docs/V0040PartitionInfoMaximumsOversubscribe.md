@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**jobs** | **int** |  | [optional] 
+**jobs** | **int** | Maximum number of jobs allowed to oversubscribe resources | [optional] 
 **flags** | **List[str]** |  | [optional] 
 
 ## Example

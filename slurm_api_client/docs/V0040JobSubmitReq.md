@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**script** | **str** | batch job script | [optional] 
+**script** | **str** | Batch job script; must be specified in first component of jobs or in job if this field is not populated | [optional] 
 **jobs** | [**List[V0040JobDescMsg]**](V0040JobDescMsg.md) |  | [optional] 
 **job** | [**V0040JobDescMsg**](V0040JobDescMsg.md) |  | [optional] 
 

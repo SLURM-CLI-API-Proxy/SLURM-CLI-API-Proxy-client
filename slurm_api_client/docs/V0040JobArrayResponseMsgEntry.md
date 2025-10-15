@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**job_id** | **int** | JobId for updated Job | [optional] 
-**step_id** | **str** | StepId for updated Job | [optional] 
+**job_id** | **int** | Job ID for updated Job | [optional] 
+**step_id** | **str** | Step ID for updated Job | [optional] 
 **error** | **str** | Verbose update status or error | [optional] 
 **error_code** | **int** | Verbose update status or error | [optional] 
 **why** | **str** | Update response message | [optional] 

@@ -1,7 +1,7 @@
 # Limitations & mismatches between the local CLI and the Proxy CLI
 
 
-## sbatch (v0.0.39)
+## sbatch (v0.0.39, v0.0.43)
 
 
 - The real `sbatch` command validates the input script for inconsistencies (e.g., the first line not starting with start with #!) and prevent the job to be started. When using the sbatch proxy, the content of the script is submitted as part of the corresponding API request. Therefore, when inconsistent slurm scripts are used with the proxy, a new job will be started, and eventually fail once the slurmctld process it.
@@ -12,7 +12,7 @@
     sbatch --job-name dajob --chdir /home/hcadavid  tests/slurm_test_scripts/slurm_write_job.sh
     ```
 
-## scontrol  (v0.0.39)
+## scontrol  (v0.0.39, v0.0.43)
 
 - Only job updates are supported. Node, partition and reservation resources are immutable in the SLURM API (only GET method).
 - Only one job can be updated at a time: only the '/job/{job_id}' endpoint (for a single job) is available.

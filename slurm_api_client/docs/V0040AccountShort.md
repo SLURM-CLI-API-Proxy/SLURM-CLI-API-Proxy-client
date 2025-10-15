@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**description** | **str** | An arbitrary string describing an account | [optional] 
+**description** | **str** | Arbitrary string describing the account | [optional] 
 **organization** | **str** | Organization to which the account belongs | [optional] 
 
 ## Example

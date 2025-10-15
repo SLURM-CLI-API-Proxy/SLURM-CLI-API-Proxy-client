@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**flags** | **List[str]** |  | [optional] 
+**flags** | **List[object]** | removed field | [optional] 
 
 ## Example
 

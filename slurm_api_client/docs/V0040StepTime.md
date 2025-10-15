@@ -5,13 +5,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**elapsed** | **int** |  | [optional] 
+**elapsed** | **int** | Elapsed time in seconds | [optional] 
 **end** | [**V0040Uint64NoVal**](V0040Uint64NoVal.md) |  | [optional] 
 **start** | [**V0040Uint64NoVal**](V0040Uint64NoVal.md) |  | [optional] 
-**suspended** | **int** |  | [optional] 
-**system** | [**V0039StepTimeSystem**](V0039StepTimeSystem.md) |  | [optional] 
-**total** | [**V0039StepTimeSystem**](V0039StepTimeSystem.md) |  | [optional] 
-**user** | [**V0039StepTimeSystem**](V0039StepTimeSystem.md) |  | [optional] 
+**suspended** | **int** | Time in suspended state in seconds | [optional] 
+**system** | [**V0040StepTimeSystem**](V0040StepTimeSystem.md) |  | [optional] 
+**total** | [**V0040StepTimeTotal**](V0040StepTimeTotal.md) |  | [optional] 
+**user** | [**V0040StepTimeUser**](V0040StepTimeUser.md) |  | [optional] 
 
 ## Example
 

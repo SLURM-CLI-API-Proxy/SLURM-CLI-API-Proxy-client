@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**status** | **List[str]** | Status given by return code | [optional] 
+**status** | **List[str]** |  | [optional] 
 **return_code** | [**V0040Uint32NoVal**](V0040Uint32NoVal.md) |  | [optional] 
 **signal** | [**V0040ProcessExitCodeVerboseSignal**](V0040ProcessExitCodeVerboseSignal.md) |  | [optional] 
 
