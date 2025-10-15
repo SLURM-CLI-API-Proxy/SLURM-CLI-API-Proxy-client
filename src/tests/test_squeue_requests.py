@@ -45,7 +45,7 @@ class ApiRequestsTest(unittest.TestCase):
     def test_squeue_get_request(self):
                 
         configuration = openapi_client.Configuration(
-            host = "http://localhost:6820"
+            host = "http://localhost:6821"
         )
 
         cli_to_json_mappings = CliToJsonPayloadMappings(config_mapping_dict=self.squeue_test_param_mappings)
