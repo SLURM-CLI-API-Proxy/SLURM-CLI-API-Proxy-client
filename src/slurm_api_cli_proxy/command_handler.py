@@ -5,7 +5,8 @@ import yaml
 import os
 import signal
 from pathlib import Path
-import pkg_resources
+# import pkg_resources
+from importlib import resources as importlib_resources
 import traceback
 from typing import Tuple
 from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
@@ -65,9 +66,14 @@ class CommandEvaluator(ABC):
             #Sbatch has an error code = 130 when aborted (ctrl-c) (codes 129-192 indicate jobs terminated by Linux signals) 
             signal.signal(signal.SIGINT, lambda signum,frame : sys.exit(130))
 
-            squeue_mappings_file_path = pkg_resources.resource_filename(__name__, config_file_path)
+            # OLD version with pkg_resources
+            # squeue_mappings_file_path = pkg_resources.resource_filename(__name__, config_file_path)
+            # command_mappings_config = CliToJsonPayloadMappings(yaml_config_path=squeue_mappings_file_path)
 
-            command_mappings_config = CliToJsonPayloadMappings(yaml_config_path=squeue_mappings_file_path)
+            # NEW version with importlib:
+            reference = importlib_resources.files(__name__) / config_file_path
+            with importlib_resources.as_file(reference) as squeue_mappings_file_path:
+              command_mappings_config = CliToJsonPayloadMappings(yaml_config_path=squeue_mappings_file_path)
 
             #Getting an appropriate SlurmCliWrapper based on the SLURM API Version required        
             slurm_cli_wrapper = get_slurm_api_client_wrapper(command_mappings_config)
