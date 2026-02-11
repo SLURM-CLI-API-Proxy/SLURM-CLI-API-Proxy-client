@@ -6,7 +6,7 @@ import os
 import signal
 from pathlib import Path
 # import pkg_resources
-from importlib import resources as importlib_resources
+from importlib import resources
 import traceback
 from typing import Tuple
 from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
@@ -35,7 +35,7 @@ class CommandEvaluator(ABC):
     input_file_argument_name = 'proxy_cli_input_file'
 
     @abstractmethod
-    def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:
+    def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str,slurm_user:str)->SlurmCommandResponse:
         """
         This method, when implemented on a concrete class, must process the given arguments (cli_args)
         so that these can be used by the corresponding method, on the slurm_cli_wrapper, that
@@ -66,13 +66,8 @@ class CommandEvaluator(ABC):
             #Sbatch has an error code = 130 when aborted (ctrl-c) (codes 129-192 indicate jobs terminated by Linux signals) 
             signal.signal(signal.SIGINT, lambda signum,frame : sys.exit(130))
 
-            # OLD version with pkg_resources
-            # squeue_mappings_file_path = pkg_resources.resource_filename(__name__, config_file_path)
-            # command_mappings_config = CliToJsonPayloadMappings(yaml_config_path=squeue_mappings_file_path)
-
-            # NEW version with importlib:
-            reference = importlib_resources.files(__name__) / config_file_path
-            with importlib_resources.as_file(reference) as squeue_mappings_file_path:
+            reference = resources.files(__name__) / config_file_path
+            with resources.as_file(reference) as squeue_mappings_file_path:
               command_mappings_config = CliToJsonPayloadMappings(yaml_config_path=squeue_mappings_file_path)
 
             #Getting an appropriate SlurmCliWrapper based on the SLURM API Version required        
@@ -85,7 +80,7 @@ class CommandEvaluator(ABC):
 
             cli_args = cli_param_parser.parse_args()
 
-            api_host, slurm_jwt = self.__get_env_vars()
+            api_host, slurm_jwt, slurm_user = self.__get_env_vars()
 
             #API client basic configuratin
             configuration = openapi_client.Configuration(
@@ -98,7 +93,8 @@ class CommandEvaluator(ABC):
                 slurm_cli_wrapper=slurm_cli_wrapper,
                 command_mappings_config=command_mappings_config,
                 configuration=configuration,
-                slurm_jwt=slurm_jwt
+                slurm_jwt=slurm_jwt,
+                slurm_user=slurm_user
             )
 
             if (len(response.errors)>0):
@@ -142,13 +138,16 @@ class CommandEvaluator(ABC):
         if "PROXY_SLURM_API_URL" not in os.environ:
             raise MissingEnvironmentVar(missing_var="PROXY_SLURM_API_URL")
 
-        return os.environ["PROXY_SLURM_API_URL"],os.environ["SLURM_JWT"]
+        if "SLURM_USER" not in os.environ:
+            raise MissingEnvironmentVar(missing_var="SLURM_USER")
+
+        return os.environ["PROXY_SLURM_API_URL"],os.environ["SLURM_JWT"],os.environ["SLURM_USER"]
 
 
 
 
 class SbatchEvaluator(CommandEvaluator):
-    def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:
+    def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str,slurm_user:str)->SlurmCommandResponse:
 
         input_script = None
 
@@ -166,6 +165,9 @@ class SbatchEvaluator(CommandEvaluator):
         cli_args_dict = vars(cli_args)
         cli_args_dict.pop(self.input_file_argument_name)
 
+        if "chdir" not in cli_args_dict:
+            cli_args_dict["chdir"] = f"/home/{slurm_user}/"
+
         #transforms the values given to the parameters and the script file into a dictionary
         #with the structure required by the JSON file sent by the SLURM API client
         job_request = args_to_sbatch_request_payload(script_content=input_script,cmd_args_dict=cli_args_dict,sbatch_mappings=command_mappings_config)
@@ -176,7 +178,7 @@ class SbatchEvaluator(CommandEvaluator):
 
 
 class SqueueEvaluator(CommandEvaluator):
-    def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:  
+    def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str,slurm_user:str)->SlurmCommandResponse:  
 
         #dictionary with the arguments/values given to the squeue command
         request_args = args_to_parameters_dict(command_args_dict=vars(cli_args))
@@ -187,7 +189,7 @@ class SqueueEvaluator(CommandEvaluator):
 
 
 class ScontrolEvaluator(CommandEvaluator):
-    def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:    
+    def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str,slurm_user:str)->SlurmCommandResponse:    
 
         request_args, target_job_id = args_to_scontrol_request_payload(cmd_args_dict=vars(cli_args),scontrol_mappings=command_mappings_config)
 
@@ -196,7 +198,7 @@ class ScontrolEvaluator(CommandEvaluator):
         return response
 
 class SinfoEvaluator(CommandEvaluator):
-    def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str)->SlurmCommandResponse:    
+    def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str,slurm_user:str)->SlurmCommandResponse:    
 
         #dictionary with the arguments/values given to the squeue command
         request_args = args_to_parameters_dict(command_args_dict=vars(cli_args))
