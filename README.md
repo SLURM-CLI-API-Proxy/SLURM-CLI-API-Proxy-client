@@ -32,12 +32,12 @@ Due to the extensive range of optional SLURM command arguments, only a limited s
 
 ### Requirement
 - Linux, MacOS or [Windows with WSL](https://learn.microsoft.com/en-us/windows/wsl/)
-- Python version ≥3.10
+- Python version ≥3.12
 
 ### Installation 
 
 ```shell
-# Check python version (requiring ≥3.10)
+# Check python version (requiring ≥3.12)
 python --version
 
 # Create a new virtual environment

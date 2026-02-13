@@ -7,6 +7,8 @@ If you're looking for user documentation, go [here](README.md).
 Make sure python3.12 is available on the host.
 And create a virtual environment with python 3.12
 ```shell
+# install python3.12 (or higher)
+sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt update
 sudo apt install python3.12
 sudo apt install python3.12-venv
