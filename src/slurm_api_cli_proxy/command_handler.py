@@ -165,7 +165,11 @@ class SbatchEvaluator(CommandEvaluator):
         cli_args_dict = vars(cli_args)
         cli_args_dict.pop(self.input_file_argument_name)
 
-        if "chdir" not in cli_args_dict:
+        if "D" in cli_args_dict:
+            cli_args_dict["chdir"] = cli_args_dict["D"]
+            cli_args_dict.pop("D")
+
+        if "chdir" not in cli_args_dict or not cli_args_dict["chdir"]:
             cli_args_dict["chdir"] = f"/home/{slurm_user}/"
 
         #transforms the values given to the parameters and the script file into a dictionary
