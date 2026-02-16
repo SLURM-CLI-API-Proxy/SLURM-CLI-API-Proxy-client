@@ -68,7 +68,7 @@ class CommandEvaluator(ABC):
 
             reference = resources.files(__name__) / config_file_path
             with resources.as_file(reference) as squeue_mappings_file_path:
-              command_mappings_config = CliToJsonPayloadMappings(yaml_config_path=squeue_mappings_file_path)
+              command_mappings_config = CliToJsonPayloadMappings(yaml_config_path=str(squeue_mappings_file_path))
 
             #Getting an appropriate SlurmCliWrapper based on the SLURM API Version required        
             slurm_cli_wrapper = get_slurm_api_client_wrapper(command_mappings_config)
@@ -119,7 +119,7 @@ class CommandEvaluator(ABC):
             return 1
         
 
-    def __get_env_vars(self)->Tuple[str, str]:
+    def __get_env_vars(self)->Tuple[str, str, str]:
         """
         Retrieves the required environment variables for SLURM API proxy.
         This function checks for the presence of the "SLURM_JWT" and "PROXY_SLURM_API_URL"
