@@ -152,7 +152,7 @@ class SbatchEvaluator(CommandEvaluator):
         input_script = None
 
         if not cli_args.proxy_cli_input_file:
-            #If input file is no provided, the script is read from STDIN
+            #If input file is not provided, the script is read from STDIN
             input_script = sys.stdin.read().strip()
         else:
             if os.path.isfile(cli_args.proxy_cli_input_file):
