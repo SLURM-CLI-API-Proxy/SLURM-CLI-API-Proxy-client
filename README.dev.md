@@ -20,8 +20,8 @@ source env/bin/activate
 Git clone this repo.
 
 ```shell
-# make sure to have a recent version of pip
-python -m pip install --upgrade pip
+# make sure to have a recent version of pip and setuptools
+python -m pip install --upgrade pip setuptools
 
 # (from the project root directory)
 # install slurm_api_cli_proxy as an editable package
