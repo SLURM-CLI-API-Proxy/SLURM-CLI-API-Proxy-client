@@ -16,6 +16,8 @@ else
     if [ $EXIT_CODE -eq 0 ]; then
         export $(echo "$OUTPUT")
         echo SLURM_JWT variable updated
+        export SLURM_USER=$USERNAME
+        echo SLURM_USER variable updated
     else
         echo "Error executing scontrol token command (exit code: $EXIT_CODE)"
         exit $EXIT_CODE

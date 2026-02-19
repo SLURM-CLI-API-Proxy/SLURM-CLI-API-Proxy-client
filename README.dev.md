@@ -2,19 +2,24 @@
 
 If you're looking for user documentation, go [here](README.md).
 
-##
-MOCK API
-https://app.swaggerhub.com/apis/hcadavid6/slurm-rest_api_rw_jobs/0.0.37
-
 ## Development install
 
+Make sure python3.12 is available on the host.
+And create a virtual environment with python 3.12
 ```shell
-# Create a virtual environment, e.g. with
-python -m venv env
-
+# install python3.12 (or higher)
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt update
+sudo apt install python3.12
+sudo apt install python3.12-venv
+python3.12 -m venv env
 # activate virtual environment
 source env/bin/activate
+```
 
+Git clone this repo.
+
+```shell
 # make sure to have a recent version of pip and setuptools
 python -m pip install --upgrade pip setuptools
 
@@ -140,7 +145,7 @@ In a new terminal:
 # OPTIONAL: prepare a new directory with fresh git clone to ensure the release
 # has the state of origin/main branch
 cd $(mktemp -d slurm_api_cli_proxy.XXXXXX)
-git clone git@github.com:hcadavid/slurm_api_cli_proxy .
+git clone git@github.com:SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client.git .
 
 # make sure to have a recent version of pip and the publishing dependencies
 python -m pip install --upgrade pip
