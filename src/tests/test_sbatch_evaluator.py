@@ -1,14 +1,11 @@
 from typing import TypedDict
 from slurm_api_cli_proxy.command_handler import SbatchEvaluator
 
-class CliArgsDict(TypedDict):
-  status: str
-  payload: str
-
 def test_sbatch_evaluator_ensure_default_working_dir():
 
+  cli_args_dict = {
   # no chdir or 'D' specified:
-  cli_args_dict = CliArgsDict()
+  }
 
   sbatch_evaluator = SbatchEvaluator()
   sbatch_evaluator.ensure_default_working_dir("slurm_user_name", cli_args_dict)
@@ -18,7 +15,7 @@ def test_sbatch_evaluator_ensure_default_working_dir():
 
 def test_sbatch_evaluator_preserve_explicit_chdir_key():
 
-  cli_args_dict = CliArgsDict()
+  cli_args_dict = {}
   cli_args_dict['chdir'] = "/some/other/path/explicitly/given/"
 
   sbatch_evaluator = SbatchEvaluator()
@@ -29,7 +26,7 @@ def test_sbatch_evaluator_preserve_explicit_chdir_key():
 
 def test_sbatch_evaluator_preserve_explicit_d_key():
 
-  cli_args_dict = CliArgsDict()
+  cli_args_dict = {}
   cli_args_dict['D'] = "/some/other/path/explicitly/given/"
 
   sbatch_evaluator = SbatchEvaluator()
