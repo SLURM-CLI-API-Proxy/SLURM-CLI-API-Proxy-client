@@ -1,11 +1,10 @@
-from typing import TypedDict
 from slurm_api_cli_proxy.command_handler import SbatchEvaluator
 
 def test_sbatch_evaluator_ensure_default_working_dir():
 
-  cli_args_dict = {
+  cli_args_dict = {}
   # no chdir or 'D' specified:
-  }
+
 
   sbatch_evaluator = SbatchEvaluator()
   sbatch_evaluator.ensure_default_working_dir("slurm_user_name", cli_args_dict)
