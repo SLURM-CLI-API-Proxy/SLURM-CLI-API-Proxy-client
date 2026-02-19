@@ -175,7 +175,7 @@ class SbatchEvaluator(CommandEvaluator):
 
         return response
 
-    def ensure_default_working_dir(self, slurm_user:str, cli_args_dict:dict):
+    def ensure_default_working_dir(self, slurm_user:str, cli_args_dict:dict[str,str]):
         # make sure that only chdir is given, not the abbreviation D
         if "D" in cli_args_dict:
             cli_args_dict["chdir"] = cli_args_dict["D"]

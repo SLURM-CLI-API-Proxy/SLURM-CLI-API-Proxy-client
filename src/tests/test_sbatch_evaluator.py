@@ -2,7 +2,7 @@ from slurm_api_cli_proxy.command_handler import SbatchEvaluator
 
 def test_sbatch_evaluator_ensure_default_working_dir():
 
-  cli_args_dict = {}
+  cli_args_dict: dict[str, str] = {}
   # no chdir or 'D' specified:
 
 
@@ -14,7 +14,7 @@ def test_sbatch_evaluator_ensure_default_working_dir():
 
 def test_sbatch_evaluator_preserve_explicit_chdir_key():
 
-  cli_args_dict = {}
+  cli_args_dict: dict[str, str]  = {}
   cli_args_dict['chdir'] = "/some/other/path/explicitly/given/"
 
   sbatch_evaluator = SbatchEvaluator()
@@ -25,7 +25,7 @@ def test_sbatch_evaluator_preserve_explicit_chdir_key():
 
 def test_sbatch_evaluator_preserve_explicit_d_key():
 
-  cli_args_dict = {}
+  cli_args_dict: dict[str, str]  = {}
   cli_args_dict['D'] = "/some/other/path/explicitly/given/"
 
   sbatch_evaluator = SbatchEvaluator()
