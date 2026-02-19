@@ -106,7 +106,7 @@ class CommandEvaluator(ABC):
                 return 0
 
 
-        #Errors catched while building the request
+        #Errors caught while building the request
         except MissingEnvironmentVar as e:
             print(f"[SLURM_CLI_PROXY_ERROR]: Missing environment variable:{e.missing_var}")
             return 1
@@ -165,12 +165,7 @@ class SbatchEvaluator(CommandEvaluator):
         cli_args_dict = vars(cli_args)
         cli_args_dict.pop(self.input_file_argument_name)
 
-        if "D" in cli_args_dict:
-            cli_args_dict["chdir"] = cli_args_dict["D"]
-            cli_args_dict.pop("D")
-
-        if "chdir" not in cli_args_dict or not cli_args_dict["chdir"]:
-            cli_args_dict["chdir"] = f"/home/{slurm_user}/"
+        self.ensure_default_working_dir(slurm_user, cli_args_dict)
 
         #transforms the values given to the parameters and the script file into a dictionary
         #with the structure required by the JSON file sent by the SLURM API client
@@ -179,6 +174,18 @@ class SbatchEvaluator(CommandEvaluator):
         response:SlurmCommandResponse = slurm_cli_wrapper.sbatch_post_request(job_request, configuration,slurm_jwt)
 
         return response
+
+    def ensure_default_working_dir(self, slurm_user, cli_args_dict):
+        # make sure that only chdir is given, not the abbreviation D
+        if "D" in cli_args_dict:
+            cli_args_dict["chdir"] = cli_args_dict["D"]
+            cli_args_dict.pop("D")
+
+        # unless chdir is specified explicitly, set it to the HPC user's home directory
+        if "chdir" not in cli_args_dict or not cli_args_dict["chdir"]:
+            cli_args_dict["chdir"] = f"/home/{slurm_user}/"
+
+        return
 
 
 class SqueueEvaluator(CommandEvaluator):

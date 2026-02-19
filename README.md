@@ -56,10 +56,10 @@ A virtual environment is *required* to install the the non-pypi dependencies. Yo
 #### Unit and integration tests
 
 ```shell
-#Start a dockerized slurm cluster on localhost (works on Linux only)
+# Start a dockerized slurm cluster on localhost (works on Linux only)
 source src/tests/slurm_test_scripts/start_dockerized_slurm.sh
 
-#Run tests 
+# Run tests 
 pytest
 ```
 
@@ -73,7 +73,7 @@ pytest -m "not integration"
 #### Static type checking
 
 ```shell
-#Static type checking with mypy. 
+# Static type checking with mypy. 
 mypy src --check-untyped-defs
 ```
 
@@ -82,25 +82,42 @@ mypy src --check-untyped-defs
 1. Define the URI of the target SLURM API through the `PROXY_SLURM_API_URL` environment variable:
 
 ```shell
-#Example:
+# Example:
 export PROXY_SLURM_API_URL=http://slurm-controller:6820
+```
+```shell
+# Or in the case of Snellius, the Dutch national supercomputer:
+export PROXY_SLURM_API_URL=https://slurm.snellius.surf.nl
 ```
 
 2. Set the SLURM_JWT environment variable with the API token of the target SLURM API. An script is provided to do this if you have ssh access to the SLURM workload manager:
 
 ```shell
-# Setting the SLURM_JWT variable (can be obtained by running 'scontrol token' on the SLURM workload manager)
-export SLURM_JWT=<token>
+# ON THE SLURM HOST generate a token, with an optional lifespan specification in seconds
+scontrol token [lifespan=<int in seconds>]
+```
 
-# Setting the SLURM_JWT variable through the provided script (password for opening an ssh session will be requested)
+```shell
+# Setting the SLURM_JWT
+# the token already is prepended with the environment variable name "SLURM_JWT="
+# so you just have to type "export " and paste the output of the scrontrol token command
+export SLURM_JWT=<token>
+```
+```shell
+# Or setting the SLURM_JWT and SLURM_USER variables through the provided script (password for opening an ssh session will be requested)
 # source update_token.sh <slurm-wlm-user> <slurm-wlm-host>. E.g.:
 source update_token.sh userx slurm-controller
 ```
-   
-3. Run slurm commands as you would do* with the real ones:
+
+2. Set the SLURM_USER environment variable to the username of the user on who's account the JWT token was created. The value of SLURM_USER is used to set a sbatch command's default directory to this user's home:
 
 ```shell
+export SLURM_USER=<username>
+```
 
+4. Run slurm commands as you would do* with the real ones:
+
+```shell
 #sbatch help
 sbatch --help
 

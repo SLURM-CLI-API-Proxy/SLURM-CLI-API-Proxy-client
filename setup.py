@@ -11,7 +11,7 @@ requirements.append(f'openapi_client @ file://{slurm_api_client_path}')
 
 setup(
     name="slurm_api_cli_proxy",
-    version="0.1.0",
+    version="0.2.0",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     include_package_data=True,

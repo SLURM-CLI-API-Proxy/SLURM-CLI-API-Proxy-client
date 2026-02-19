@@ -145,7 +145,7 @@ In a new terminal:
 # OPTIONAL: prepare a new directory with fresh git clone to ensure the release
 # has the state of origin/main branch
 cd $(mktemp -d slurm_api_cli_proxy.XXXXXX)
-git clone git@github.com:hcadavid/slurm_api_cli_proxy .
+git clone git@github.com:SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client.git .
 
 # make sure to have a recent version of pip and the publishing dependencies
 python -m pip install --upgrade pip
