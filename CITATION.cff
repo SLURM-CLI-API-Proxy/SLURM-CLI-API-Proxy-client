@@ -10,7 +10,7 @@ authors:
     given-names: Carsten
     orcid: "https://orcid.org/0009-0008-5871-1485"
 date-released: 2024-11-15
-version: "0.2.0"
+version: "0.2.1"
 repository-code: "https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client"
 keywords:
   - "slurm"

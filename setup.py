@@ -10,7 +10,7 @@ requirements = open(os.path.join(os.path.dirname(__file__), 'requirements.txt'))
 
 setup(
     name="slurm_api_cli_proxy",
-    version="0.2.0",
+    version="0.2.1",
     packages= ["src", "slurm_api_client"],
     include_package_data=True,
     package_data={'slurm_api_cli_proxy': ['mappings/*.yaml']},
