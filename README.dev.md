@@ -152,7 +152,8 @@ python -m pip install --upgrade pip
 python -m pip install .[publishing]
 
 # create the source distribution and the wheel
-python -m build
+python -m build -s
+python -m build -w
 
 # upload to test pypi instance (requires credentials)
 python -m twine upload --repository testpypi dist/*
@@ -168,7 +169,7 @@ In a new terminal, without an activated virtual environment or an env directory:
 cd $(mktemp -d slurm_api_cli_proxy-test.XXXXXX)
 
 # prepare a clean virtual environment and activate it
-python -m venv env
+python3.12 -m venv env
 source env/bin/activate
 
 # make sure to have a recent version of pip and setuptools

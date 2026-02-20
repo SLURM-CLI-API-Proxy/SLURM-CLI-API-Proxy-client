@@ -39,14 +39,31 @@ Due to the extensive range of optional SLURM command arguments, only a limited s
 ```shell
 # Check python version (requiring ≥3.12)
 python --version
+```
 
+```shell
+# If the python version is <3.12
+Make sure python3.12 is available on the host.
+And create a virtual environment with python 3.12
+```
+
+
+```shell
+# install python3.12 (or higher)
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt update
+sudo apt install python3.12
+sudo apt install python3.12-venv
+```
+
+```shell
 # Create a new virtual environment
-python -m venv env
+python3.12 -m venv env
+# activate virtual environment
 source env/bin/activate
 
 # install 
 pip install .
-
 ```
 
 A virtual environment is *required* to install the the non-pypi dependencies. You can also use `conda` to manage python environments. If running from a shell terminal, the virtual environment where the package was installed must be active on it.
