@@ -18,6 +18,6 @@ setuptools>=78.1.1
 six==1.17.0
 types-PyYAML==6.0.12.20241230
 typing_extensions==4.12.2
-urllib3==2.5.0
+urllib3>=2.6.3
 userpath==1.9.2
 zipp>=3.19.1
