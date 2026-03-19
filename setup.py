@@ -13,7 +13,7 @@ requirements = open(os.path.join(os.path.dirname(__file__), 'requirements.txt'))
 setup(
     name="slurm_api_cli_proxy",
     description="Translate SLURM CLI commands to SLURM REST API calls",
-    author="Hector Cadavid, Carsten Schelp",
+    author="Héctor Cadavid, Carsten Schelp",
     version="0.2.1",
     packages= ["src", "slurm_api_client"],
     include_package_data=True,
