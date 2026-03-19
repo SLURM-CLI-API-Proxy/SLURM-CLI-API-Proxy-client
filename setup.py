@@ -2,9 +2,8 @@ from setuptools import setup, find_packages
 import os
 from pathlib import Path
 
-current_dir = os.path.abspath(os.path.dirname(__file__))
-slurm_api_client_path = os.path.join(current_dir, 'slurm_api_client')
-long_description = Path.joinpath(current_dir, "README.md").read_text()
+current_dir = Path(os.path.dirname(__file__))
+long_description = current_dir.joinpath("README.md").read_text()
 
 
 # Generate requirements from requirements.txt
