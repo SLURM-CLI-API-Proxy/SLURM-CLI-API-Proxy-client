@@ -13,7 +13,7 @@ setup(
     name="slurm_api_cli_proxy",
     description="Translate SLURM CLI commands to SLURM REST API calls",
     author="Héctor Cadavid, Carsten Schelp",
-    version="0.2.1",
+    version="0.2.2",
     packages= ["src", "slurm_api_client"],
     include_package_data=True,
     package_data={'slurm_api_cli_proxy': ['mappings/*.yaml']},
