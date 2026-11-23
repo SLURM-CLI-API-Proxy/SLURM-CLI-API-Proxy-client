@@ -1,0 +1,88 @@
+# Proxy mapping configuration for the SLURM WLM release 25.05 and slurmrestd API version 0.0.43
+# scancel is implemented with DELETE /slurm/v0.0.43/jobs; the api_mapping/request_property
+# entries correspond to properties of the "v0.0.43_kill_jobs_msg" object.
+# https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client/blob/main/slurm_api_client/docs/V0043KillJobsMsg.md
+# Job ids are given as positional arguments (scancel 123 124_5 ...) and sent as "jobs".
+
+mapping_meta:
+  command: scancel
+  api_version: 0.0.43
+  wlm_release: 25.05
+  wrapper_package: slurm_api_cli_proxy.client_args_linker.v43.slurm_api_client_wrapper_v43
+  wrapper_class: V43SlurmAPIClientWrapper
+
+parameters:
+
+  - name: --signal
+    abbreviation: -s
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: signal
+
+  - name: --name
+    abbreviation: -n
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job_name
+
+  - name: --user
+    abbreviation: -u
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: user_name
+
+  - name: --partition
+    abbreviation: -p
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: partition
+
+  - name: --account
+    abbreviation: -A
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: account
+
+  - name: --qos
+    abbreviation: -q
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: qos
+
+  - name: --reservation
+    abbreviation: -R
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: reservation
+
+  - name: --state
+    abbreviation: -t
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job_state
+      # scancel accepts e.g. -t PENDING or -t pd,r; the API expects full state names
+      lambda_expression: "lambda p: [{'PD': 'PENDING', 'R': 'RUNNING', 'S': 'SUSPENDED'}.get(s.strip().upper(), s.strip().upper()) for s in p.split(',')]"
+
+  - name: --nodelist
+    abbreviation: -w
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: nodes
+      lambda_expression: "lambda p: p.split(',')"
+
+  # Accepted for compatibility. Jobs that are already gone are never reported (as in
+  # scancel of Slurm 25.05), so this has no further effect.
+  - name: --quiet
+    abbreviation: -Q
+    is_mandatory: false
+    data_type: bool
+    cli_only: true

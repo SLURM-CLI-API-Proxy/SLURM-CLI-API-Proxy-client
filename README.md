@@ -32,60 +32,55 @@ Due to the extensive range of optional SLURM command arguments, only a limited s
 
 ### Requirement
 - Linux, MacOS or [Windows with WSL](https://learn.microsoft.com/en-us/windows/wsl/)
-- Python version ≥3.12
+- Python version ≥3.10
 
 ### Installation 
 
 ```shell
-# Check python version (requiring ≥3.12)
-python --version
-```
-
-```shell
-# If the python version is <3.12
-Make sure python3.12 is available on the host.
-And create a virtual environment with python 3.12
-```
-
-
-```shell
-# install python3.12 (or higher)
-sudo add-apt-repository ppa:deadsnakes/ppa
-sudo apt update
-sudo apt install python3.12
-sudo apt install python3.12-venv
-```
-
-```shell
-# Create a new virtual environment
-python3.12 -m venv env
-# activate virtual environment
+# Create and activate a virtual environment (Python >= 3.10)
+python3 -m venv env
 source env/bin/activate
 
-# install 
+# install the proxy commands (sbatch, squeue, sinfo, scontrol, scancel)
 pip install .
+
+# optional extras
+pip install '.[test]'   # pytest, mypy, ...
+pip install '.[dask]'   # dask-jobqueue, for running Dask workers on SLURM through the proxy
+pip install '.[dev]'    # test + docs + openapi-generator
 ```
 
-A virtual environment is *required* to install the the non-pypi dependencies. You can also use `conda` to manage python environments. If running from a shell terminal, the virtual environment where the package was installed must be active on it.
+A virtual environment is recommended: the proxy installs commands named `sbatch`, `squeue`, etc., which would otherwise shadow a real SLURM installation. If running from a shell terminal, the virtual environment where the package was installed must be active on it.
 
 ### Testing
 
-#### Unit and integration tests
+#### Unit tests (no SLURM cluster needed)
 
 ```shell
-# Start a dockerized slurm cluster on localhost (works on Linux only)
-source src/tests/slurm_test_scripts/start_dockerized_slurm.sh
-
-# Run tests 
-pytest
-```
-
-#### Running unit tests only (doesn't require the dockerized slurm cluster)
-
-```shell
-# Run tests, excluding integration ones (which require the dockerized slurm cluster running on localhost)
 pytest -m "not integration"
 ```
+
+#### Integration tests
+
+A single-node SLURM 25.05 cluster with `slurmrestd` (JWT authentication) is provided as a container in [`testing/slurm-container`](testing/slurm-container). It is built from source, so it also runs on arm64 (e.g. Apple Silicon), and it doesn't need `--privileged`.
+
+```shell
+# Build (first time: compiles SLURM, a few minutes) and start the test cluster on localhost:6821,
+# and export PROXY_SLURM_API_URL, SLURM_JWT and SLURM_USER (user 'testuser')
+source testing/slurm-container/start.sh
+
+# Integration tests that run against the cluster from the host
+pytest -m "integration and not dask"
+
+# Dask on SLURM through the proxy (dask-jobqueue). Runs inside the container, so the
+# Dask workers can reach the scheduler on any Docker setup.
+testing/slurm-container/run_dask_test.sh
+
+# Stop the cluster
+docker rm -f testslurm
+```
+
+The older script `src/tests/slurm_test_scripts/start_dockerized_slurm.sh` (xenon-middleware image, Linux only, `--privileged`) still works for the original integration tests.
 
 #### Static type checking
 
@@ -157,11 +152,50 @@ scontrol update JobId=206 MinCPUsNode=1
 scontrol hold 209
 scontrol release 209
 
+#cancel jobs, or send them a signal
+scancel 209 210
+scancel --name jobx
+scancel --signal SIGUSR1 209
+
+#print only the job id of a new job
+sbatch --parsable my_job.sh
+
 ```
+
+`#SBATCH` directives at the top of a job script are applied as `sbatch` does (command-line options take precedence). The SLURM REST API itself ignores them, so the proxy parses them; directives the proxy doesn't support are reported as an error rather than silently ignored.
+
+Supported `sbatch` options: `-J/--job-name`, `-o/--output`, `-e/--error`, `-D/--chdir`, `--export`, `-A/--account`, `-p/--partition`, `-q/--qos`, `--reservation`, `--comment`, `-d/--dependency`, `-n/--ntasks`, `--ntasks-per-node`, `-c/--cpus-per-task`, `-N/--nodes`, `--mem`, `--mem-per-cpu`, `-t/--time`, `-C/--constraint`, `--gres`, `--parsable`.
+
+`scancel` supports job ids and `-s/--signal`, `-n/--name`, `-u/--user`, `-p/--partition`, `-A/--account`, `-q/--qos`, `-R/--reservation`, `-t/--state`, `-w/--nodelist`, `-Q/--quiet`. As with `scancel` (SLURM 25.05), jobs that no longer exist are not reported; other failures exit with SLURM's error number (e.g. 210 for permission denied).
+
+### Using Dask on SLURM through the proxy
+
+[dask-jobqueue](https://jobqueue.dask.org)'s `SLURMCluster` submits workers with `sbatch` and stops them with `scancel`, so it works with the proxy commands. The workers must be able to reach the Dask scheduler (the machine where you create the cluster), and `python` must point to a Python with `distributed` installed **on the SLURM cluster**:
+
+```python
+import os, sys
+from dask_jobqueue.slurm import SLURMCluster, SLURMJob
+
+class ProxySLURMJob(SLURMJob):
+    # use the proxy commands from this environment, even if a real SLURM CLI is on PATH
+    submit_command = os.path.join(os.path.dirname(sys.executable), "sbatch")
+    cancel_command = os.path.join(os.path.dirname(sys.executable), "scancel")
+
+cluster = SLURMCluster(
+    job_cls=ProxySLURMJob,
+    cores=4, memory="8GiB", walltime="01:00:00", queue="my-partition", account="my-project",
+    python="/path/on/cluster/to/venv/bin/python",
+    log_directory="/home/<user>/dask-logs",
+)
+cluster.scale(jobs=2)
+```
+
+If the proxy's virtual environment is active and no real SLURM CLI is installed, the default `SLURMCluster` (without `job_cls`) works as well.
+
 
 🚧 Release notice* 🚧
 
-Only `sbatch` and `squeue` and `scontrol` commands have been implemented, with a limited number of arguments. However, the tool is designed in a way that new arguments can be integrated as these are needed. This requires only to specify a mapping between the value given to the new argument and the property sent on the payload of the corresponding API request. More details on this are available on the [developer's documentation](https://slurm-cli-api-proxy.github.io/SLURM-CLI-API-Proxy-client/).
+Only `sbatch`, `squeue`, `sinfo`, `scontrol` and `scancel` have been implemented, with a limited number of arguments. However, the tool is designed in a way that new arguments can be integrated as these are needed. This requires only to specify a mapping between the value given to the new argument and the property sent on the payload of the corresponding API request. More details on this are available on the [developer's documentation](https://slurm-cli-api-proxy.github.io/SLURM-CLI-API-Proxy-client/).
 
 If you encounter issues or have feedback, please report them through the project's issue tracker.
 

@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "slurm_api_cli_proxy"
+version = "0.2.2"
+description = "Translate SLURM CLI commands to SLURM REST API calls"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Héctor Cadavid" },
+    { name = "Carsten Schelp" },
+]
+keywords = ["slurm", "cli", "rest", "api", "proxy"]
+requires-python = ">=3.10"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+]
+# Runtime dependencies only: the CLI itself + the generated OpenAPI client.
+dependencies = [
+    "PyYAML>=6.0",
+    "pydantic>=2",
+    "python-dateutil>=2.8.2",
+    "typing-extensions>=4.7.1",
+    "urllib3>=2.1.0,<3.0.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8", "pytest-cov", "mypy", "types-PyYAML"]
+dask = ["dask-jobqueue", "distributed"]
+docs = ["mkdocs>=1.6"]
+dev = ["slurm_api_cli_proxy[test,docs]", "openapi-generator-cli==7.10.0.post0"]
+
+[project.urls]
+Repository = "https://github.com/SLURM-CLI-API-Proxy/SLURM-CLI-API-Proxy-client"
+Documentation = "https://slurm-cli-api-proxy.github.io/SLURM-CLI-API-Proxy-client/"
+
+[project.scripts]
+sbatch = "slurm_api_cli_proxy.command_handler:sbatch"
+squeue = "slurm_api_cli_proxy.command_handler:squeue"
+sinfo = "slurm_api_cli_proxy.command_handler:sinfo"
+scontrol = "slurm_api_cli_proxy.command_handler:scontrol"
+scancel = "slurm_api_cli_proxy.command_handler:scancel"
+
+[tool.setuptools]
+# Two importable packages live in different folders:
+#   src/slurm_api_cli_proxy          -> slurm_api_cli_proxy (the CLI proxy)
+#   slurm_api_client/openapi_client  -> openapi_client (generated Slurm REST client)
+package-dir = { "" = "src", "openapi_client" = "slurm_api_client/openapi_client" }
+
+[tool.setuptools.packages.find]
+where = ["src", "slurm_api_client"]
+include = ["slurm_api_cli_proxy*", "openapi_client*"]
+
+[tool.setuptools.package-data]
+slurm_api_cli_proxy = ["mappings/*.yaml"]
+openapi_client = ["py.typed"]

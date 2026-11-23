@@ -11,17 +11,19 @@ import traceback
 from typing import Tuple
 from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
 from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SlurmCommandResponse, get_slurm_api_client_wrapper,ApiClientException
-from slurm_api_cli_proxy.client_args_linker.args_to_payload_mapper import args_to_sbatch_request_payload,args_to_parameters_dict,args_to_scontrol_request_payload,UnsuportedArgumentException
+from slurm_api_cli_proxy.client_args_linker.args_to_payload_mapper import args_to_sbatch_request_payload,args_to_parameters_dict,args_to_scontrol_request_payload,args_to_scancel_request_payload,UnsuportedArgumentException
 from slurm_api_cli_proxy.client_args_linker.slurm_api_client_wrapper import SlurmAPIClientWrapper
 import openapi_client
 import logging
-from .arguments_evaluator import build_parser
+from .arguments_evaluator import build_parser, parse_sbatch_directives, DirectiveError
 
 
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
+# urllib3 logs a warning for every connection retry; the command reports the final error itself
+logging.getLogger("urllib3").setLevel(logging.ERROR)
 
 class MissingEnvironmentVar(Exception):    
     def __init__(self, missing_var, message="Required environment variables are missing"):
@@ -58,7 +60,12 @@ class CommandEvaluator(ABC):
         pass
 
 
-    def eval_command(self,config_file_path:str,include_input_file_arg:bool=False):
+    def add_extra_arguments(self, parser: argparse.ArgumentParser) -> None:
+        """Hook for command-specific arguments that are not in the mapping file (e.g. positionals)."""
+        pass
+
+
+    def eval_command(self,config_file_path:str,include_input_file_arg:bool=False) -> int:
         try:
             #Command setup (general)
 
@@ -66,7 +73,8 @@ class CommandEvaluator(ABC):
             #Sbatch has an error code = 130 when aborted (ctrl-c) (codes 129-192 indicate jobs terminated by Linux signals) 
             signal.signal(signal.SIGINT, lambda signum,frame : sys.exit(130))
 
-            reference = resources.files(__name__) / config_file_path
+            # files() of the package (not of this module): works on Python 3.10+ (module names need 3.12+)
+            reference = resources.files("slurm_api_cli_proxy") / config_file_path
             with resources.as_file(reference) as squeue_mappings_file_path:
               command_mappings_config = CliToJsonPayloadMappings(yaml_config_path=str(squeue_mappings_file_path))
 
@@ -77,6 +85,8 @@ class CommandEvaluator(ABC):
 
             if (include_input_file_arg):
                 cli_param_parser.add_argument(self.input_file_argument_name, nargs='?', help='Input script')
+
+            self.add_extra_arguments(cli_param_parser)
 
             cli_args = cli_param_parser.parse_args()
 
@@ -97,25 +107,29 @@ class CommandEvaluator(ABC):
                 slurm_user=slurm_user
             )
 
+            for warning in response.warnings:
+                print(warning, file=sys.stderr)
+
             if (len(response.errors)>0):
-                print(response.errors)
-                #TODO check if special error codes are required
-                return 1
+                for error in response.errors:
+                    print(error, file=sys.stderr)
+                return response.exit_code or 1
             else:
-                print(response.output)
+                if response.output:
+                    print(response.output)
                 return 0
 
 
         #Errors caught while building the request
         except MissingEnvironmentVar as e:
-            print(f"[SLURM_CLI_PROXY_ERROR]: Missing environment variable:{e.missing_var}")
+            print(f"[SLURM_CLI_PROXY_ERROR]: Missing environment variable:{e.missing_var}", file=sys.stderr)
             return 1
         except UnsuportedArgumentException as e:
-            print(f"[SLURM_CLI_PROXY_ERROR]: Unsupported argument (or not yet implemented):{e.message}")
+            print(f"[SLURM_CLI_PROXY_ERROR]: Unsupported argument (or not yet implemented):{e.message}", file=sys.stderr)
             return 1
         except ApiClientException as e:
             #TODO debug log
-            print(f"[SLURM_CLI_PROXY_ERROR]: API client exception:{e}")
+            print(f"[SLURM_CLI_PROXY_ERROR]: API client exception:{e}", file=sys.stderr)
             return 1
         
 
@@ -165,13 +179,29 @@ class SbatchEvaluator(CommandEvaluator):
         cli_args_dict = vars(cli_args)
         cli_args_dict.pop(self.input_file_argument_name)
 
+        # '#SBATCH' directives in the script: the REST API ignores them, so apply them
+        # here. As with sbatch, options on the command line take precedence.
+        try:
+            directive_args = parse_sbatch_directives(command_mappings_config, input_script)
+        except DirectiveError as e:
+            return SlurmCommandResponse(errors=[f"sbatch: error: {e.message}"])
+        for name, value in directive_args.items():
+            if cli_args_dict.get(name) is None or cli_args_dict.get(name) is False:
+                cli_args_dict[name] = value
+
         self.ensure_default_working_dir(slurm_user, cli_args_dict)
+
+        parsable = bool(cli_args_dict.get("parsable"))
 
         #transforms the values given to the parameters and the script file into a dictionary
         #with the structure required by the JSON file sent by the SLURM API client
         job_request = args_to_sbatch_request_payload(script_content=input_script,cmd_args_dict=cli_args_dict,sbatch_mappings=command_mappings_config)
 
         response:SlurmCommandResponse = slurm_cli_wrapper.sbatch_post_request(job_request, configuration,slurm_jwt)
+
+        if parsable and response.job_id is not None:
+            # sbatch --parsable prints only the job id
+            response.output = str(response.job_id)
 
         return response
 
@@ -208,6 +238,24 @@ class ScontrolEvaluator(CommandEvaluator):
 
         return response
 
+class ScancelEvaluator(CommandEvaluator):
+
+    job_ids_argument_name = 'proxy_cli_job_ids'
+
+    def add_extra_arguments(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument(self.job_ids_argument_name, nargs='*', metavar='job_id', help='Job id(s) to cancel/signal (e.g. 123 or 123_4)')
+
+    def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str,slurm_user:str)->SlurmCommandResponse:
+
+        cli_args_dict = dict(vars(cli_args))
+        job_ids = cli_args_dict.pop(self.job_ids_argument_name) or []
+        quiet = bool(cli_args_dict.get("quiet"))
+
+        request = args_to_scancel_request_payload(job_ids=job_ids, cmd_args_dict=cli_args_dict, scancel_mappings=command_mappings_config)
+
+        return slurm_cli_wrapper.scancel_delete_request(request, configuration, slurm_jwt, quiet=quiet)
+
+
 class SinfoEvaluator(CommandEvaluator):
     def process_command_args(self,slurm_cli_wrapper:SlurmAPIClientWrapper,cli_args,command_mappings_config:CliToJsonPayloadMappings,configuration:openapi_client.Configuration,slurm_jwt:str,slurm_user:str)->SlurmCommandResponse:    
 
@@ -219,31 +267,37 @@ class SinfoEvaluator(CommandEvaluator):
         return response
 
 
-def sbatch():
+def sbatch() -> int:
 
     eval = SbatchEvaluator()
-    eval.eval_command(config_file_path='mappings/sbatch_mappings_r25.05_v0.0.43.yaml',include_input_file_arg=True)
+    return eval.eval_command(config_file_path='mappings/sbatch_mappings_r25.05_v0.0.43.yaml',include_input_file_arg=True)
 
 
-def squeue():
+def squeue() -> int:
 
     eval = SqueueEvaluator()
-    eval.eval_command(config_file_path='mappings/squeue_mappings_r25.05_v0.0.43.yaml')    
+    return eval.eval_command(config_file_path='mappings/squeue_mappings_r25.05_v0.0.43.yaml')    
 
 
-def scontrol():
+def scontrol() -> int:
 
     eval = ScontrolEvaluator()
-    eval.eval_command(config_file_path='mappings/scontrol_mappings_r25.05_v0.0.43.yaml')    
+    return eval.eval_command(config_file_path='mappings/scontrol_mappings_r25.05_v0.0.43.yaml')    
 
 
-def sinfo():
+def sinfo() -> int:
 
     eval = SinfoEvaluator()
-    eval.eval_command(config_file_path='mappings/sinfo_mappings_r25.05_v0.0.43.yaml')    
+    return eval.eval_command(config_file_path='mappings/sinfo_mappings_r25.05_v0.0.43.yaml')    
     
 
 
 
 
 
+
+
+def scancel() -> int:
+
+    eval = ScancelEvaluator()
+    return eval.eval_command(config_file_path='mappings/scancel_mappings_r25.05_v0.0.43.yaml')

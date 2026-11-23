@@ -1,6 +1,7 @@
 import argparse
 from typing import Dict, Any, Tuple
 from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
+from slurm_api_cli_proxy.mappings.converters import CONVERTERS
 import os
 
 class InternalConfigurationException(Exception):
@@ -15,6 +16,15 @@ class UnsuportedArgumentException(Exception):
     def __init__(self, message):
         self.message = message
         super().__init__(self.message)
+
+def _apply_lambda_expression(expression:str, value:Any, option:str) -> Any:
+    """Evaluate a mapping's lambda_expression (converters from mappings.converters are in scope)."""
+    func = eval(expression, dict(CONVERTERS))
+    try:
+        return func(value)
+    except ValueError as e:
+        raise UnsuportedArgumentException(f"Invalid value for {option}: {value!r} ({e})") from e
+
 
 def args_to_sbatch_request_payload(script_content:str,cmd_args_dict:dict,sbatch_mappings:CliToJsonPayloadMappings)->dict:
     """
@@ -72,20 +82,61 @@ def args_to_sbatch_request_payload(script_content:str,cmd_args_dict:dict,sbatch_
             # look in the mappings for the corresponding property that 
             # must be included on the request payload
             arg_mappings = sbatch_mappings.arguments_dict[original_arg_name]
-            
+
+            # Options handled by the CLI itself (e.g. --parsable) are not sent to the API
+            if arg_mappings.get('cli_only'):
+                continue
+
             if 'api_mapping' in arg_mappings:
                 ## path within the dictionary/JSON doc where the property will be included
                 doc_path = arg_mappings['api_mapping']['request_property']
                 
                 ## if a lambda expression is included, it is used to pre-process the value
                 if 'lambda_expression' in arg_mappings['api_mapping']:
-                    preproc_func = eval(arg_mappings['api_mapping']['lambda_expression'])
-                    arg_value = preproc_func(arg_value)
+                    arg_value = _apply_lambda_expression(arg_mappings['api_mapping']['lambda_expression'], arg_value, original_arg_name)
 
                 __add_nested_path(request_payload,doc_path,arg_value)
                 
             else:
                 raise UnsuportedArgumentException(f"Command argument not supported or not yet implemented in the CLI Proxy:{original_arg_name}")
+
+    return request_payload
+
+
+
+def args_to_scancel_request_payload(job_ids:list[str],cmd_args_dict:dict,scancel_mappings:CliToJsonPayloadMappings)->dict:
+    """
+    Builds the payload of a DELETE /jobs request (kill_jobs_msg) from scancel's arguments.
+
+    Args:
+        job_ids: positional job ids given to scancel (e.g. ['123', '124_5'])
+        cmd_args_dict: the options parsed by argparse (argparse naming conventions)
+        scancel_mappings: the scancel mapping configuration
+    Returns:
+        dict, e.g. {"jobs": ["123"], "signal": "SIGTERM", "user_name": "alice"}
+    Raises:
+        UnsuportedArgumentException: if neither job ids nor filters are given
+    """
+    request_payload:Dict[str,Any] = {}
+    if job_ids:
+        request_payload["jobs"] = [str(j) for j in job_ids]
+
+    for cmd_arg, arg_value in cmd_args_dict.items():
+        if arg_value is None or arg_value is False:
+            continue
+        original_arg_name = f"--{cmd_arg.replace('_','-')}"
+        arg_mappings = scancel_mappings.arguments_dict.get(original_arg_name)
+        if arg_mappings is None or arg_mappings.get('cli_only'):
+            continue
+        if 'api_mapping' not in arg_mappings:
+            raise UnsuportedArgumentException(f"Command argument not supported or not yet implemented in the CLI Proxy:{original_arg_name}")
+        if 'lambda_expression' in arg_mappings['api_mapping']:
+            arg_value = _apply_lambda_expression(arg_mappings['api_mapping']['lambda_expression'], arg_value, original_arg_name)
+        __add_nested_path(request_payload, arg_mappings['api_mapping']['request_property'], arg_value)
+
+    filters = set(request_payload) - {"signal"}
+    if not filters:
+        raise UnsuportedArgumentException("scancel: error: No job identification provided")
 
     return request_payload
 

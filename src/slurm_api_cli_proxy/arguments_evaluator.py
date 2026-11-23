@@ -2,6 +2,7 @@ import yaml
 import os
 from pathlib import Path
 import argparse
+import shlex
 from typing import List
 from slurm_api_cli_proxy.mappings.cli_to_json_map import CliToJsonPayloadMappings
 
@@ -49,3 +50,54 @@ def build_parser(mappings:CliToJsonPayloadMappings):
 
 
 
+
+
+def sbatch_directive_tokens(script: str) -> List[str]:
+    """
+    Collects the options given as '#SBATCH' directives in a job script.
+
+    Like sbatch, directives are read from the top of the script until the first line
+    that is neither blank nor a comment. Text after a '#' inside a directive is a
+    comment. E.g. '#SBATCH -J job  # name' -> ['-J', 'job'].
+    """
+    tokens: List[str] = []
+    for line in script.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if not stripped.startswith("#"):
+            break
+        if stripped.startswith("#SBATCH"):
+            tokens.extend(shlex.split(stripped[len("#SBATCH"):], comments=True))
+    return tokens
+
+
+class DirectiveError(Exception):
+    def __init__(self, message: str):
+        self.message = message
+        super().__init__(message)
+
+
+def parse_sbatch_directives(mappings: CliToJsonPayloadMappings, script: str) -> dict:
+    """
+    Parses a script's '#SBATCH' directives with the same option definitions as the
+    sbatch command line. Returns the options that were set (argparse names).
+
+    The SLURM REST API does not process '#SBATCH' lines in the submitted script, so the
+    proxy has to apply them itself (as sbatch does on the client side).
+
+    Raises:
+        DirectiveError: for directives that the proxy does not support or that are invalid
+    """
+    tokens = sbatch_directive_tokens(script)
+    if not tokens:
+        return {}
+    parser = build_parser(mappings)
+    parser.exit_on_error = False
+    try:
+        namespace, unknown = parser.parse_known_args(tokens)
+    except (argparse.ArgumentError, SystemExit) as e:
+        raise DirectiveError(f"invalid #SBATCH directive: {e}") from e
+    if unknown:
+        raise DirectiveError(f"unsupported #SBATCH directive(s): {' '.join(unknown)}")
+    return {k: v for k, v in vars(namespace).items() if v is not None and v is not False}

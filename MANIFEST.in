@@ -1,1 +1,2 @@
-include src/slurm_api_cli_proxy/mappings/*
+include src/slurm_api_cli_proxy/mappings/*.yaml
+include slurm_api_client/openapi_client/py.typed

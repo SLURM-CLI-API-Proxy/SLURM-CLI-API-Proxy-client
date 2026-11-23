@@ -33,7 +33,7 @@ parameters:
     is_mandatory: false
     data_type: str
     api_mapping:
-      request_property: job.output
+      request_property: job.standard_output
 
   - name: --chdir
     abbreviation: -D
@@ -42,16 +42,137 @@ parameters:
     api_mapping:
       request_property: job.current_working_directory
 
+  # Handled by the proxy itself (not sent to the API): print only the job id
+  - name: --parsable
+    abbreviation: --parsable
+    is_mandatory: false
+    data_type: bool
+    cli_only: true
+
+  # Options used by dask-jobqueue's SLURMCluster job scripts, and other common ones.
+  # --mem/--time/--gres values are converted with mappings/converters.py
+  - name: --error
+    abbreviation: -e
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job.standard_error
+
+  - name: --account
+    abbreviation: -A
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job.account
+
+  - name: --partition
+    abbreviation: -p
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job.partition
+
+  - name: --qos
+    abbreviation: -q
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job.qos
+
+  - name: --reservation
+    abbreviation: null
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job.reservation
+
+  - name: --comment
+    abbreviation: null
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job.comment
+
+  - name: --dependency
+    abbreviation: -d
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job.dependency
+
+  - name: --ntasks
+    abbreviation: -n
+    is_mandatory: false
+    data_type: int
+    api_mapping:
+      request_property: job.tasks
+
+  - name: --ntasks-per-node
+    abbreviation: null
+    is_mandatory: false
+    data_type: int
+    api_mapping:
+      request_property: job.tasks_per_node
+
+  - name: --cpus-per-task
+    abbreviation: -c
+    is_mandatory: false
+    data_type: int
+    api_mapping:
+      request_property: job.cpus_per_task
+
+  - name: --nodes
+    abbreviation: -N
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job.nodes
+
+  - name: --mem
+    abbreviation: null
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job.memory_per_node
+      lambda_expression: "lambda p: memory_to_mb_no_val(p)"
+
+  - name: --mem-per-cpu
+    abbreviation: null
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job.memory_per_cpu
+      lambda_expression: "lambda p: memory_to_mb_no_val(p)"
+
+  - name: --time
+    abbreviation: -t
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job.time_limit
+      lambda_expression: "lambda p: time_to_minutes_no_val(p)"
+
+  - name: --constraint
+    abbreviation: -C
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job.constraints
+
+  - name: --gres
+    abbreviation: null
+    is_mandatory: false
+    data_type: str
+    api_mapping:
+      request_property: job.tres_per_node
+      lambda_expression: "lambda p: gres_to_tres(p)"
+
 
   # - name: --array
   #   abbreviation: -a
   #   is_mandatory: false
   #   data_type: str
 
-  # - name: --account
-  #   abbreviation: -A
-  #   is_mandatory: false
-  #   data_type: str
 
   # - name: --bb
   #   abbreviation: 
@@ -68,25 +189,13 @@ parameters:
   #   is_mandatory: false
   #   data_type: str
 
-  # - name: --comment
-  #   abbreviation: 
-  #   is_mandatory: false
-  #   data_type: str
 
   # - name: --cpu-freq
   #   abbreviation: 
   #   is_mandatory: false
   #   data_type: str
 
-  # - name: --cpus-per-task
-  #   abbreviation: -c
-  #   is_mandatory: false
-  #   data_type: int
 
-  # - name: --dependency
-  #   abbreviation: -d
-  #   is_mandatory: false
-  #   data_type: str
 
   # - name: --deadline
   #   abbreviation: 
@@ -98,10 +207,6 @@ parameters:
   #   is_mandatory: false
   #   data_type: int
 
-  # - name: --error
-  #   abbreviation: -e
-  #   is_mandatory: false
-  #   data_type: str
 
 
   # - name: --get-user-env
@@ -174,10 +279,6 @@ parameters:
   #   is_mandatory: false
   #   data_type: str
 
-  # - name: --ntasks
-  #   abbreviation: -n
-  #   is_mandatory: false
-  #   data_type: int
 
   # - name: --nice
   #   abbreviation: 
@@ -189,30 +290,14 @@ parameters:
   #   is_mandatory: false
   #   data_type: bool
 
-  # - name: --ntasks-per-node
-  #   abbreviation: 
-  #   is_mandatory: false
-  #   data_type: int
 
-  # - name: --nodes
-  #   abbreviation: -N
-  #   is_mandatory: false
-  #   data_type: int
 
   # - name: --overcommit
   #   abbreviation: -O
   #   is_mandatory: false
   #   data_type: bool
 
-  # - name: --partition
-  #   abbreviation: -p
-  #   is_mandatory: false
-  #   data_type: str
 
-  # - name: --parsable
-  #   abbreviation: 
-  #   is_mandatory: false
-  #   data_type: bool
 
   # - name: --power
   #   abbreviation: 
@@ -234,10 +319,6 @@ parameters:
   #   is_mandatory: false
   #   data_type: str
 
-  # - name: --qos
-  #   abbreviation: -q
-  #   is_mandatory: false
-  #   data_type: str
 
   # - name: --quiet
   #   abbreviation: -Q
@@ -284,10 +365,6 @@ parameters:
   #   is_mandatory: false
   #   data_type: int
 
-  # - name: --time
-  #   abbreviation: -t
-  #   is_mandatory: false
-  #   data_type: int
 
   # - name: --time-min
   #   abbreviation: 
@@ -344,20 +421,12 @@ parameters:
   #   is_mandatory: false
   #   data_type: str
 
-  # - name: --mem
-  #   abbreviation: 
-  #   is_mandatory: false
-  #   data_type: int
 
   # - name: --mincpus
   #   abbreviation: 
   #   is_mandatory: false
   #   data_type: int
 
-  # - name: --reservation
-  #   abbreviation: 
-  #   is_mandatory: false
-  #   data_type: str
 
   # - name: --tmp
   #   abbreviation: 
@@ -369,10 +438,6 @@ parameters:
   #   is_mandatory: false
   #   data_type: bool
 
-  # - name: --mem-per-cpu
-  #   abbreviation: 
-  #   is_mandatory: false
-  #   data_type: int
 
   # - name: --sockets-per-node
   #   abbreviation: 
